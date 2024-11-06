@@ -5,13 +5,15 @@ import netCDF4 as nc
 import numpy as np
 import os
 from pathlib import Path
+import pandas as pd
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
 NC_UINT = "u4"
 NP_UINT = np.uint32
 
-
+dir_name = os.path.dirname(__file__)
+components = pd.read_csv(os.path.join(dir_name, "components.csv"), index_col=0)
 
 class SMSFileType(IntEnum):
     """
@@ -49,6 +51,8 @@ class Block:
     _variables: Dict  # variables of the block
     _groups: Dict  # groups of the block
 
+    components : Dict  # components of the block
+
     # Constructor
 
     def __init__(
@@ -59,6 +63,7 @@ class Block:
             variables: Dict = None,
             groups: Dict = None,
         ):
+        self.components = Dict(components.T.to_dict())
         if fp:
             obj = self.from_netcdf(fp)
             self._attributes = obj.attributes
@@ -192,6 +197,46 @@ class Block:
         """Deserialize a NetCDF file to create a Block instance with nested sub-blocks."""
         with nc.Dataset(filename, "r") as ncfile:
             return cls._from_netcdf(ncfile)
+    
+    # Functions
+        
+    def add(self, component_name, name, **kwargs):
+        """
+        Add a new object to the block.
+
+        Parameters
+        ----------
+        component_name : str
+            The class name of the block
+        name : str
+            The name of the block
+        kwargs : dict
+            The attributes of the block
+        """
+        if component_name == "Variable":
+            self.variables[name] = Variable(name, **kwargs)
+        elif component_name == "Block":
+            self.groups[name] = Block(name, **kwargs)
+        else:
+            raise ValueError(f"Class {component_name} not supported.")
+    
+    # Utilities
+    
+    def static(self, component_name: str) -> Dict:
+        """
+        Return the Dictionary of static components for component_name.
+        For example, for component_name = "attribute", the Dictionary of attributes is returned.
+
+        Parameters
+        ----------
+        component_name : string
+
+        Returns
+        -------
+        Dict
+
+        """
+        return getattr(self, self.components[component_name]["list_name"])
 
 class SMSNetwork(Block):
     """

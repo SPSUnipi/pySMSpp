@@ -1,0 +1,5 @@
+component,list_name,description,type
+Attribute,attributes,"Attributes of the netCDF group"
+Dimension,dimensions,"Dimensions of the netCDF group"
+Variable,variables,"Variables of the netCDF group"
+Gropus,groups,"Groups of the netCDF group"
