@@ -21,7 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
+        # python-version:
+        #   - 3.13
+        #   - 3.12
+        #   - 3.11
+        #   - 3.10
+        #   - 3.9
         os:
         - ubuntu-latest
         - macos-latest
@@ -33,10 +38,10 @@ jobs:
       with:
         fetch-depth: 0 # Needed for setuptools_scm
 
-    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    - name: Set up Python on ${{ matrix.os }}
       uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+      # with:
+      #   python-version: ${{ matrix.python-version }}
 
     - name: Download package
       uses: actions/download-artifact@v4
