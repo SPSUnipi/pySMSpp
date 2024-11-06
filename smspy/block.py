@@ -30,13 +30,13 @@ class SMSFileType(IntEnum):
 
 class Variable:
     name: str
-    type: str
+    var_type: str
     dimensions: tuple
     data: float | np.ndarray
 
-    def __init__(self, name, type, dimensions, data):
+    def __init__(self, name, var_type, dimensions, data):
         self.name = name
-        self.type = type
+        self.type = var_type
         self.dimensions = dimensions
         self.data = data
 
