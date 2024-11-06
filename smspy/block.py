@@ -38,7 +38,7 @@ class Variable:
 
     def __init__(self, name, var_type, dimensions, data):
         self.name = name
-        self.type = var_type
+        self.var_type = var_type
         self.dimensions = dimensions
         self.data = data
 
