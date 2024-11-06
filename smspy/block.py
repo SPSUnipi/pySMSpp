@@ -36,7 +36,7 @@ class Variable:
     dimensions: tuple
     data: float | np.ndarray
 
-    def __init__(self, name, var_type, dimensions, data):
+    def __init__(self, name: str, var_type: str, dimensions: tuple, data: float | np.ndarray):
         self.name = name
         self.var_type = var_type
         self.dimensions = dimensions
