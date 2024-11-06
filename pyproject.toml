@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smspy"
+version = "0.0.1"
+authors = [
+  { name="Unipi developers", email="davide.fioriti@unipi.it" },
+]
+description = "Basic interface to interact with SMS++"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+]
+
+requires-python = ">=3.9"
+
+dependencies = [
+    "numpy",
+    "pandas>=0.24",
+    "netcdf4",
+    "pathlib",
+]
+
+[project.urls]
+Homepage = "https://github.com/SPSUnipi/SMSpy"
+Issues = "https://github.com/SPSUnipi/SMSpy/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest", 
+    "coverage",
+    "pre-commit",
+    "ncompare",
+    "mypy",
+]
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+
+[tool.setuptools.packages.find]
+include = ["smspy"]
+
+[tool.setuptools.package-data]
+"smspy" = ["py.typed"]
+
+# Pytest settings
+
+[tool.pytest.ini_options]   
+filterwarnings = [
+    "error::DeprecationWarning", # Raise all DeprecationWarnings as errors
+    "error::FutureWarning",      # Raise all FutureWarnings as errors
+]
+
+# Coverage settings
+
+[tool.coverage.run]
+branch = true
+source = ["smspy"]
+omit = ["test/*"]
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
+
+# Static type checker settings
+[tool.mypy]
+exclude = ['dev/*', 'examples/*', 'doc/*']
+ignore_missing_imports = true
+no_implicit_optional = true
+warn_unused_ignores = true
+show_error_code_links = true
+
+
+[[tool.mypy.overrides]]
+module = "smspy.*"
+disallow_untyped_defs = true
+check_untyped_defs = true
