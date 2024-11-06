@@ -42,10 +42,14 @@ class Variable:
 
 class Block:
 
+    # Class variables
+
     _attributes: Dict  # attributes of the block
     _dimensions: Dict  # dimensions of the block
     _variables: Dict  # variables of the block
     _groups: Dict  # groups of the block
+
+    # Constructor
 
     def __init__(
             self,
@@ -67,6 +71,8 @@ class Block:
             self._variables = variables if variables else Dict()
             self._groups = groups if groups else Dict()
 
+    # Properties
+    
     @property
     def attributes(self) -> Dict:
         """Return the attributes of the block."""
@@ -86,6 +92,29 @@ class Block:
     def groups(self) -> Dict:
         """Return the groups of the block."""
         return self._groups
+
+    @property
+    def block_type(self, ignore_missing: bool = True) -> str:
+        """Return the type of the block."""
+        if "type" in self.attributes:
+            return self.attributes["type"]
+        elif ignore_missing:
+            return None
+        raise AttributeError("Block type not defined.")
+    
+    @block_type.setter
+    def block_type(self, block_type: str):
+        """
+        Set the type of the block.
+        
+        Parameters
+        ----------
+        block_type : str
+            The type of the block.
+        """
+        self.attributes["type"] = block_type
+
+    # Input/Output operations
 
     def _to_netcdf_helper(self, grp : nc.Dataset | nc.Group):
         """Helper function to recursively save a Block and its sub-blocks to NetCDF."""

@@ -1,1 +1,1 @@
-from smspy.block import SMSNetwork, Block
+from smspy.block import SMSNetwork, Block, SMSFileType
