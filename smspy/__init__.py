@@ -1,1 +1,5 @@
-from smspy.block import SMSNetwork, Block, SMSFileType
+from smspy.block import (
+    SMSNetwork as SMSNetwork,
+    Block as Block,
+    SMSFileType as SMSFileType,
+)
