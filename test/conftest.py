@@ -13,7 +13,7 @@ def get_network(fname=sample_networks[0]):
     return os.path.join(os.path.dirname(__file__), "test_data", fname)
 
 
-def check_compare(fp_n1, fp_n2, fp_out="tmp.txt"):
+def check_compare(fp_n1, fp_n2, fp_out="test/temp/tmp.txt"):
     """
     Utility function to compare two netCDF files and check if they are the same.
 
