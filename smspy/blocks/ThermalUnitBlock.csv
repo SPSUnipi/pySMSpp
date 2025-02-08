@@ -1,0 +1,13 @@
+block_name,attribute,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+ThermalUnitBlock,block_type,Attribute,str,-,-,n/a,required,Type of the block
+ThermalUnitBlock,id,Attribute,str,-,-,n/a,optional,Id of the block
+ThermalUnitBlock,MinPower,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,MW,n/a,optional,Minimum power output of the unit
+ThermalUnitBlock,MaxPower,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,MW,n/a,optional,Maximum power output of the unit
+ThermalUnitBlock,StartUpCost,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,USD,n/a,optional,Start-up cost of the unit
+ThermalUnitBlock,LinearTerm,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,USD/MWh,n/a,optional,Linear term of the cost function
+ThermalUnitBlock,ConstantTerm,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,USD,n/a,optional,Constant term of the cost function
+ThermalUnitBlock,MinUpTime,Variable,double,-|NumberUnits|,h,n/a,optional,Minimum up time of the unit
+ThermalUnitBlock,MinDownTime,Variable,double,-|NumberUnits|,h,n/a,optional,Minimum down time of the unit
+ThermalUnitBlock,InitialPower,Variable,double,-|NumberUnits|,MW,n/a,optional,Initial power output of the unit
+ThermalUnitBlock,InitUpDownTime,Variable,double,-|NumberUnits|,h,n/a,optional,Initial up/down time of the unit
+ThermalUnitBlock,InertiaCommitment,Variable,double,-|NumberUnits|,n/a,n/a,optional,Inertia commitment of the unit
