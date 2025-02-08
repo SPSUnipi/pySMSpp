@@ -9,3 +9,32 @@ The package aims to support:
 - Add/remove/edit operations model components
 - Execution of SMS++ models
 - Reading SMS++ results as netCDF4 files
+
+
+## How to develop
+
+1. First, clone the repository using git:
+
+    ```bash
+        git clone https://github.com/SPSUnipi/SMSpy
+    ```
+
+2. Create a virtual environment using venv or conda. For exaample, using venv:
+
+    ```bash
+        python -m venv .venv
+        source .venv/bin/activate
+    ```
+
+3. Install the required packages and pre-commit hooks:
+
+    ```bash
+        pip install -e .[dev]
+        pre-commit install
+    ```
+
+4. Develop and test the code. For testing, please run:
+
+    ```bash
+        pytest
+    ```
