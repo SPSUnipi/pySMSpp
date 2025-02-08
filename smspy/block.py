@@ -15,6 +15,34 @@ NP_UINT = np.uint32
 dir_name = os.path.dirname(__file__)
 components = pd.read_csv(os.path.join(dir_name, "components.csv"), index_col=0)
 
+blocks = Dict()
+for file_name in os.listdir(os.path.join(dir_name, "blocks")):
+    if file_name.endswith(".csv"):
+        key = file_name.replace(".csv", "")
+        file_path = os.path.join(dir_name, "blocks", file_name)
+        blocks[key] = pd.read_csv(file_path).iloc[:, 1:].set_index("attribute")
+
+
+def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
+    """
+    Return the attibute value.
+
+    Parameters
+    ----------
+    block_type : str
+        The type of the block.
+    attr_name : str
+        The name of the attribute.
+
+    Returns
+    -------
+    str
+    """
+    if field is None:
+        return blocks[block_type].loc[attr_name]
+    else:
+        return blocks[block_type].at[attr_name, field]
+
 
 class SMSFileType(IntEnum):
     """
@@ -37,10 +65,14 @@ class Variable:
     name: str
     var_type: str
     dimensions: tuple
-    data: float | np.ndarray
+    data: float | list | np.ndarray
 
     def __init__(
-        self, name: str, var_type: str, dimensions: tuple, data: float | np.ndarray
+        self,
+        name: str,
+        var_type: str,
+        dimensions: tuple,
+        data: float | list | np.ndarray,
     ):
         self.name = name
         self.var_type = var_type
@@ -54,7 +86,7 @@ class Block:
     _attributes: Dict  # attributes of the block
     _dimensions: Dict  # dimensions of the block
     _variables: Dict  # variables of the block
-    _groups: Dict  # groups of the block
+    _blocks: Dict  # blocks beloning to the block
 
     components: Dict  # components of the block
 
@@ -66,7 +98,8 @@ class Block:
         attributes: Dict = None,
         dimensions: Dict = None,
         variables: Dict = None,
-        groups: Dict = None,
+        blocks: Dict = None,
+        **kwargs,
     ):
         self.components = Dict(components.T.to_dict())
         if fp:
@@ -74,12 +107,13 @@ class Block:
             self._attributes = obj.attributes
             self._dimensions = obj.dimensions
             self._variables = obj.variables
-            self._groups = obj.groups
+            self._blocks = obj.blocks
         else:
             self._attributes = attributes if attributes else Dict()
             self._dimensions = dimensions if dimensions else Dict()
             self._variables = variables if variables else Dict()
-            self._groups = groups if groups else Dict()
+            self._blocks = blocks if blocks else Dict()
+        self.from_kwargs(**kwargs)
 
     # Properties
 
@@ -99,9 +133,9 @@ class Block:
         return self._variables
 
     @property
-    def groups(self) -> Dict:
-        """Return the groups of the block."""
-        return self._groups
+    def blocks(self) -> Dict:
+        """Return the blocks of the block."""
+        return self._blocks
 
     @property
     def block_type(self, ignore_missing: bool = True) -> str:
@@ -160,11 +194,10 @@ class Block:
 
     def add_variable(
         self,
-        name: str,
-        var_type: str,
-        dimensions: tuple,
-        data: float | np.ndarray,
+        name,
+        *args,
         force: bool = False,
+        **kwargs,
     ):
         """
         Add a variable to the block.
@@ -177,35 +210,58 @@ class Block:
             The type of the variable
         dimensions : tuple
             The dimensions of the variable
-        data : float | np.ndarray
+        data : float | list | np.ndarray
             The data of the variable
         force : bool (default: False)
             If True, overwrite the variable if it exists.
         """
         if not force and name in self.variables:
             raise ValueError(f"Variable {name} already exists.")
-        self.variables[name] = Variable(name, var_type, dimensions, data)
+        if len(args) == 1:
+            assert isinstance(args[0], Variable), "args must be a Variable object."
+            self.variables[name] = args[0]
+        else:
+            self.variables[name] = Variable(name, *args, **kwargs)
 
-    def add_group(self, name: str, **kwargs):
+    def add_block(self, name: str, *args, **kwargs):
         """
-        Add a group to the block.
+        Add a block.
 
         Parameters
         ----------
         name : str
-            The name of the group
+            The name of the block
         kwargs : dict
-            The attributes of the group.
-            If the argument "group" is present, the group is set to that value.
+            The attributes of the block.
+            If the argument "block" is present, the block is set to that value.
             Otherwise, arguments are passed to the Block constructor.
         """
         force = kwargs.pop("force", False)
-        if not force and name in self.groups:
-            raise ValueError(f"Group {name} already exists.")
-        if "group" in kwargs:
-            self.groups[name] = kwargs["group"]
+        if not force and name in self.blocks:
+            raise ValueError(f"Block {name} already exists.")
+        if "block" in kwargs:
+            if not isinstance(kwargs["block"], Block):
+                raise ValueError("block must be a Block object.")
+            self.blocks[name] = kwargs["block"]
         else:
-            self.groups[name] = Block(**kwargs)
+            self.blocks[name] = Block().from_kwargs(kwargs)
+        return self
+
+    def from_kwargs(self, **kwargs):
+        """
+        Create a new Block from a dictionary.
+
+        Parameters
+        ----------
+        dct : dict
+            The attributes of the block.
+        """
+        if "block_type" in kwargs:
+            btype = kwargs.pop("block_type")
+            self.block_type = btype
+        for key, value in kwargs.items():
+            nc_cmp = get_attr_field(self.block_type, key, "netcdf_component")
+            self.add(nc_cmp, key, value)
         return self
 
     # Input/Output operations
@@ -226,7 +282,7 @@ class Block:
             var[:] = value.data
 
         # Save each sub-Block as a subgroup
-        for key, sub_block in self.groups.items():
+        for key, sub_block in self.blocks.items():
             subgrp = grp.createGroup(key)
             sub_block._to_netcdf_helper(subgrp)
 
@@ -272,7 +328,7 @@ class Block:
 
         # Recursively load sub-blocks
         for subgrp_name, subgrb in grb.groups.items():
-            new_block.add_group(subgrp_name, group=Block._from_netcdf(subgrb))
+            new_block.add_block(subgrp_name, block=Block._from_netcdf(subgrb))
 
         return new_block
 
@@ -297,15 +353,16 @@ class Block:
         kwargs : dict
             The attributes of the block
         """
-        match component_name:
+        component_nctype = self.components[component_name]["nctype"]
+        match component_nctype:
             case "Attribute":
                 self.add_attribute(name, *args, **kwargs)
             case "Dimension":
                 self.add_dimension(name, *args, **kwargs)
             case "Variable":
                 self.add_variable(name, *args, **kwargs)
-            case "Group":
-                self.add_group(name, *args, **kwargs)
+            case "Block":
+                self.add_block(name, *args, block_type=component_name, **kwargs)
             case _:
                 raise ValueError(f"Class {component_name} not supported.")
         return self
@@ -362,7 +419,7 @@ class SMSNetwork(Block):
             self._attributes = sms_network.attributes
             self._dimensions = sms_network.dimensions
             self._variables = sms_network.variables
-            self._groups = sms_network.groups
+            self._blocks = sms_network.blocks
         else:
             super().__init__(**kwargs)
             self.file_type = file_type
@@ -387,24 +444,5 @@ class SMSNetwork(Block):
             attributes=blk.attributes,
             dimensions=blk.dimensions,
             variables=blk.variables,
-            groups=blk.groups,
+            blocks=blk.blocks,
         )
-
-
-# # n = SMSNetwork(file_type = SMSFileType.eProbFile)
-# # n.to_netcdf4("test.nc", force=True)
-
-# fp_sample = "/mnt/c/Users/Davide/git/gitunipi/SMSpp_builder/resources/smspp/microgrid_microgrid_ALL_1N.nc4"
-# fp_out = "test_resave.nc4"
-
-# n2 = SMSNetwork(fp_sample)
-
-# n2real = nc.Dataset(fp_sample)
-# print(n2.file_type)  # Output: SMSFileType.eProbFile
-# n2.to_netcdf(fp_out, force=True)
-# n3 = SMSNetwork(fp_out)
-# print(n3.file_type)  # Output: SMSFileType.eProbFile
-
-# n3real = nc.Dataset(fp_out)
-
-# print(f"ncompare {fp_sample} {fp_out} --only-diffs --show-attributes --file-text subset_comparison.txt")

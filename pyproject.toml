@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm>=8"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,7 +11,10 @@ authors = [
 description = "Basic interface to interact with SMS++"
 readme = "README.md"
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Operating System :: OS Independent",
 ]
@@ -74,8 +77,10 @@ no_implicit_optional = true
 warn_unused_ignores = true
 show_error_code_links = true
 
-
 [[tool.mypy.overrides]]
 module = "smspy.*"
 disallow_untyped_defs = true
 check_untyped_defs = true
+
+# [tool.setuptools.dynamic]
+# version = {attr = "smspy.__version__"}
