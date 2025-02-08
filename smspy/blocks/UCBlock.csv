@@ -3,7 +3,7 @@ UCBlock,block_type,Attribute,str,-,-,n/a,required,Type of the block
 UCBlock,id,Attribute,str,-,-,n/a,optional,Id of the block
 UCBlock,TimeHorizon,Dimension,int,-,-,n/a,required,Time horizon of the optimization problem
 UCBlock,NumberUnits,Dimension,int,-,-,n/a,required,Number of units
-UCBlock,NumberElectricalGenerators,optional,Dimension,int,-,-,n/a,Number of electrical generators
+UCBlock,NumberElectricalGenerators,Dimension,int,-,-,n/a,optional,Number of electrical generators
 UCBlock,NumberNodes,Dimension,int,-,-,1,optional,Number of nodes
 UCBlock,NumberLines,Dimension,int,-,-,n/a,optional,Number of lines
 UCBlock,GeneratorNode,Variable,int,-|NumberElectricalGenerators,-,n/a,optional,List of buses of connection by unit
