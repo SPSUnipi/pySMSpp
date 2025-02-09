@@ -85,6 +85,9 @@ def add_base_ucblock(b, n_units=0, n_elec_generators=0):
 
 
 def build_base_tub():
+    """
+    Build a ThermalUnitBlock with MinPower, MaxPower, and LinearTerm.
+    """
     return Block().from_kwargs(
         block_type="ThermalUnitBlock",
         MinPower=Variable("MinPower", "float", None, 0.0),
@@ -94,6 +97,9 @@ def build_base_tub():
 
 
 def add_ucblock_with_one_unit(b):
+    """
+    Create a UCBlock with one unit and a ThermalUnitBlock.
+    """
     add_base_ucblock(b, n_units=1, n_elec_generators=1)
     tb = build_base_tub()
     b.blocks["UCBlock_0"].add_block("ThermalUnitBlock", "UnitBlock_0", tb)
