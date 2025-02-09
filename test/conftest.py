@@ -1,3 +1,4 @@
+from smspy import Block, Variable
 import os
 import re
 
@@ -54,3 +55,33 @@ def check_compare(fp_n1, fp_n2, fp_out="test/temp/tmp.txt"):
             assert len(numbers) == 2
 
             assert numbers[0] == numbers[1]
+
+
+def add_base_ucblock(b):
+    b.add(
+        "UCBlock",
+        "UCBlock_0",
+        TimeHorizon=24,
+        NumberUnits=1,
+        NumberElectricalGenerators=0,
+        NumberNodes=3,
+        NumberLines=2,
+        GeneratorNode=Variable(
+            "GeneratorNode", "int", ("NumberElectricalGenerators",), [0, 0, 0]
+        ),
+        StartLine=Variable("StartLine", "int", ("NumberNodes",), [0, 1]),
+        EndLine=Variable("EndLine", "int", ("NumberNodes",), [1, 2]),
+        MinPowerFlow=Variable("MinPowerFlow", "float", ("NumberNodes",), [0.0, 0.0]),
+        MaxPowerFlow=Variable(
+            "MaxPowerFlow", "float", ("NumberNodes",), [100.0, 100.0]
+        ),
+    )
+
+
+def build_base_tub():
+    return Block().from_kwargs(
+        block_type="ThermalUnitBlock",
+        MinPower=Variable("MinPower", "float", None, 0.0),
+        MaxPower=Variable("MaxPower", "float", None, 100.0),
+        LinearTerm=Variable("LinearTerm", "float", None, 0.3),
+    )

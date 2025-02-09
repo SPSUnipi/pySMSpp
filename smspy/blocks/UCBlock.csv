@@ -1,18 +1,18 @@
-block_name,attribute,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
-UCBlock,block_type,Attribute,str,-,-,n/a,required,Type of the block
-UCBlock,id,Attribute,str,-,-,n/a,optional,Id of the block
-UCBlock,TimeHorizon,Dimension,int,-,-,n/a,required,Time horizon of the optimization problem
-UCBlock,NumberUnits,Dimension,int,-,-,n/a,required,Number of units
-UCBlock,NumberElectricalGenerators,Dimension,int,-,-,n/a,optional,Number of electrical generators
-UCBlock,NumberNodes,Dimension,int,-,-,1,optional,Number of nodes
-UCBlock,NumberLines,Dimension,int,-,-,n/a,optional,Number of lines
-UCBlock,GeneratorNode,Variable,int,-|NumberElectricalGenerators,-,n/a,optional,List of buses of connection by unit
-UCBlock,StartLine,Variable,int,-|NumberLines,-,n/a,optional,Start buses of lines
-UCBlock,EndLine,Variable,int,-|NumberLines,-,n/a,optional,End buses of lines
-UCBlock,MinPowerFlow,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,MW,n/a,optional,Minimum power flow of lines
-UCBlock,MaxPowerFlow,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,MW,n/a,optional,Maximum power flow of lines
-UCBlock,LineSusceptance,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,Siemens,n/a,optional,Susceptance of lines
-UCBlock,LineResistance,Variable,double,-|NumberLines,Ohm,n/a,optional,Resistance of lines
-UCBlock,ActivePowerDemand,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,n/a,optional,Active power demand of nodes
-UCBlock,UnitBlock_*,Group,UnitBlock,list,-.-,n/a,optional,Unit blocks
-UCBlock,NetworkBlock_*,Group,NetworkBlock,list,-.-,n/a,optional,Network blocks
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+UCBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+UCBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+UCBlock,TimeHorizon,Dimension,Dimension,int,-,-,,required,Time horizon of the optimization problem
+UCBlock,NumberUnits,Dimension,Dimension,int,-,-,,required,Number of units
+UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number of electrical generators
+UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1.0,optional,Number of nodes
+UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
+UCBlock,GeneratorNode,Variable,Variable,int,-|NumberElectricalGenerators,-,,optional,List of buses of connection by unit
+UCBlock,StartLine,Variable,Variable,int,-|NumberLines,-,,optional,Start buses of lines
+UCBlock,EndLine,Variable,Variable,int,-|NumberLines,-,,optional,End buses of lines
+UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Minimum power flow of lines
+UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Maximum power flow of lines
+UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,Siemens,,optional,Susceptance of lines
+UCBlock,LineResistance,Variable,Variable,double,-|NumberLines,Ohm,,optional,Resistance of lines
+UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
+UCBlock,UnitBlock_*,Block,Group,UnitBlock,list,-.-,,optional,Unit blocks
+UCBlock,NetworkBlock_*,Block,Group,NetworkBlock,list,-.-,,optional,Network blocks

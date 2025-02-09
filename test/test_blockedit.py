@@ -1,4 +1,5 @@
 from smspy import SMSNetwork, Block, Variable
+from conftest import add_base_ucblock, build_base_tub
 
 
 def test_attribute():
@@ -50,50 +51,11 @@ def test_fromkwargs():
 
 def test_add_block():
     b = SMSNetwork()
-    b.add(
-        "UCBlock",
-        "UCBlock_0",
-        TimeHorizon=24,
-        NumberUnits=1,
-        NumberElectricalGenerators=0,
-        NumberNodes=3,
-        NumberLines=2,
-        GeneratorNode=Variable(
-            "GeneratorNode", "int", ("NumberElectricalGenerators",), [0, 0, 0]
-        ),
-        StartLine=Variable("StartLine", "int", ("NumberNodes",), [0, 1]),
-        EndLine=Variable("EndLine", "int", ("NumberNodes",), [1, 2]),
-        MinPowerFlow=Variable("MinPowerFlow", "float", ("NumberNodes",), [0.0, 0.0]),
-        MaxPowerFlow=Variable(
-            "MaxPowerFlow", "float", ("NumberNodes",), [100.0, 100.0]
-        ),
-    )
+    add_base_ucblock(b)
 
 
 def test_add_block_with_subblocks():
-    tb = Block().from_kwargs(
-        block_type="ThermalUnitBlock",
-        MinPower=Variable("MinPower", "float", None, 0.0),
-        MaxPower=Variable("MaxPower", "float", None, 100.0),
-        LinearTerm=Variable("LinearTerm", "float", None, 0.3),
-    )
     b = SMSNetwork()
-    b.add(
-        "UCBlock",
-        "UCBlock_0",
-        TimeHorizon=24,
-        NumberUnits=1,
-        NumberElectricalGenerators=0,
-        NumberNodes=3,
-        NumberLines=2,
-        GeneratorNode=Variable(
-            "GeneratorNode", "int", ("NumberElectricalGenerators",), [0, 0, 0]
-        ),
-        StartLine=Variable("StartLine", "int", ("NumberNodes",), [0, 1]),
-        EndLine=Variable("EndLine", "int", ("NumberNodes",), [1, 2]),
-        MinPowerFlow=Variable("MinPowerFlow", "float", ("NumberNodes",), [0.0, 0.0]),
-        MaxPowerFlow=Variable(
-            "MaxPowerFlow", "float", ("NumberNodes",), [100.0, 100.0]
-        ),
-        UnitBlock_0=tb,
-    )
+    tb = build_base_tub()
+    add_base_ucblock(b)
+    b.blocks["UCBlock_0"].add_block("ThermalUnitBlock", "UnitBlock_0", tb)

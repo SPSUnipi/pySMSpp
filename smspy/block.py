@@ -20,7 +20,9 @@ for file_name in os.listdir(os.path.join(dir_name, "blocks")):
     if file_name.endswith(".csv"):
         key = file_name.replace(".csv", "")
         file_path = os.path.join(dir_name, "blocks", file_name)
-        blocks[key] = pd.read_csv(file_path).iloc[:, 1:].set_index("attribute")
+        blk_conf = pd.read_csv(file_path).iloc[:, 1:]
+        blk_conf["attribute"] = blk_conf["attribute"].str.replace("*", "")
+        blocks[key] = blk_conf.set_index("attribute")
 
 
 def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
@@ -38,10 +40,29 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
     -------
     str
     """
-    if field is None:
-        return blocks[block_type].loc[attr_name]
+    block_attrs = blocks[block_type].query("smspp_object == 'Block'")
+    simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
+
+    if attr_name in simple_attrs.index:
+        attr = attr_name
     else:
-        return blocks[block_type].at[attr_name, field]
+        attr_sel = block_attrs.loc[
+            block_attrs.index.to_series().map(lambda x: attr_name.startswith(x))
+        ]
+        if attr_sel.shape[0] == 1:
+            attr = attr_sel.index[0]
+        elif attr_sel.empty:
+            raise ValueError(f"Attribute {attr_name} not found in block {block_type}.")
+        else:
+            raise ValueError(
+                f"Ambiguous attribute {attr_name} in block {block_type}."
+                + f"Possible types: {attr_sel.index.tolist()}."
+            )
+
+    if field is None:
+        return blocks[block_type].loc[attr]
+    else:
+        return blocks[block_type].at[attr, field]
 
 
 class SMSFileType(IntEnum):
@@ -244,7 +265,7 @@ class Block:
                 raise ValueError("block must be a Block object.")
             self.blocks[name] = kwargs["block"]
         else:
-            self.blocks[name] = Block().from_kwargs(kwargs)
+            self.blocks[name] = Block().from_kwargs(**kwargs)
         return self
 
     def from_kwargs(self, **kwargs):
@@ -260,7 +281,7 @@ class Block:
             btype = kwargs.pop("block_type")
             self.block_type = btype
         for key, value in kwargs.items():
-            nc_cmp = get_attr_field(self.block_type, key, "netcdf_component")
+            nc_cmp = get_attr_field(self.block_type, key, "smspp_object")
             self.add(nc_cmp, key, value)
         return self
 
@@ -446,3 +467,31 @@ class SMSNetwork(Block):
             variables=blk.variables,
             blocks=blk.blocks,
         )
+
+
+tb = Block().from_kwargs(
+    block_type="ThermalUnitBlock",
+    MinPower=Variable("MinPower", "float", None, 0.0),
+    MaxPower=Variable("MaxPower", "float", None, 100.0),
+    LinearTerm=Variable("LinearTerm", "float", None, 0.3),
+)
+b = SMSNetwork()
+b.add(
+    "UCBlock",
+    "UCBlock_0",
+    TimeHorizon=24,
+    NumberUnits=1,
+    NumberElectricalGenerators=0,
+    NumberNodes=3,
+    NumberLines=2,
+    GeneratorNode=Variable(
+        "GeneratorNode", "int", ("NumberElectricalGenerators",), [0, 0, 0]
+    ),
+    StartLine=Variable("StartLine", "int", ("NumberNodes",), [0, 1]),
+    EndLine=Variable("EndLine", "int", ("NumberNodes",), [1, 2]),
+    MinPowerFlow=Variable("MinPowerFlow", "float", ("NumberNodes",), [0.0, 0.0]),
+    MaxPowerFlow=Variable("MaxPowerFlow", "float", ("NumberNodes",), [100.0, 100.0]),
+    UnitBlock_0=tb,
+)
+
+print("Done.")
