@@ -1,6 +1,7 @@
 from smspy import Block, Variable
 import os
 import re
+import numpy as np
 
 # Reads a sample network; microgrid_ALL_4N.nc4 is composed by:
 # on node 0: 2 intermittent, 1 battery, 1 hydro, 1 thermal, and 1 load
@@ -65,24 +66,82 @@ def check_compare_nc(fp_n1, fp_n2, fp_out=get_temp_file("tmp.txt")):
             assert numbers[0] == numbers[1]
 
 
-def add_base_ucblock(b, n_units=0, n_elec_generators=0):
+def check_ucblock_solver_output(fp_out, target_obj=None):
+    """
+    Check the output of the UCBlockSolver.
+
+    Parameters
+    ----------
+    fp_out : str
+        The path to the output file.
+    target_obj : float (optional)
+        The target objective value.
+    """
+    # ensure file exists
+    assert os.path.isfile(fp_out)
+
+    # read the file
+    with open(fp_out, "r") as f:
+        smspp_log = f.read()
+
+    res = re.search("Status = (.*)\n", smspp_log)
+    smspp_status = res.group(1).replace("\r", "")
+    assert "Success" in smspp_status
+
+    res = re.search("Upper bound = (.*)\n", smspp_log)
+    smspp_obj = float(res.group(1).replace("\r", ""))
+    if target_obj is not None:
+        assert np.isclose(smspp_obj, target_obj)
+
+
+def add_base_ucblock(
+    b,
+    n_nodes=1,
+    n_lines=0,
+    n_units=0,
+    n_elec_generators=0,
+    max_p=100.0,
+    time_horizon=24,
+    active_p=10.0,
+):
     """
     Create a base UCBlock with 3 nodes and 2 lines.
     """
     kwargs = {
         "id": "0",
-        "TimeHorizon": 24,
+        "TimeHorizon": time_horizon,
         "NumberUnits": n_units,
         "NumberElectricalGenerators": n_elec_generators,
-        "NumberNodes": 3,
-        "NumberLines": 2,
-        "StartLine": Variable("StartLine", "int", ("NumberLines",), [0, 1]),
-        "EndLine": Variable("EndLine", "int", ("NumberLines",), [1, 2]),
-        "MinPowerFlow": Variable("MinPowerFlow", "float", ("NumberLines",), [0.0, 0.0]),
-        "MaxPowerFlow": Variable(
-            "MaxPowerFlow", "float", ("NumberLines",), [100.0, 100]
+        "NumberNodes": n_nodes,
+        "NumberLines": n_lines,
+        "ActivePowerDemand": Variable(
+            "ActivePowerDemand",
+            "float",
+            (
+                "NumberNodes",
+                "TimeHorizon",
+            ),
+            np.full((n_nodes, time_horizon), active_p),
         ),
     }
+    if n_lines > 0:
+        kwargs = {
+            **kwargs,
+            **{
+                "StartLine": Variable(
+                    "StartLine", "int", ("NumberLines",), list(range(n_lines))
+                ),
+                "EndLine": Variable(
+                    "EndLine", "int", ("NumberLines",), list(range(1, n_lines + 1))
+                ),
+                "MinPowerFlow": Variable(
+                    "MinPowerFlow", "float", ("NumberLines",), [0.0] * n_lines
+                ),
+                "MaxPowerFlow": Variable(
+                    "MaxPowerFlow", "float", ("NumberLines",), [max_p] * n_lines
+                ),
+            },
+        }
     if n_elec_generators > 0:
         kwargs["GeneratorNode"] = Variable(
             "GeneratorNode",
@@ -93,23 +152,26 @@ def add_base_ucblock(b, n_units=0, n_elec_generators=0):
     b.add("UCBlock", "Block_0", **kwargs)
 
 
-def build_base_tub():
+def build_base_tub(max_p=100.0, linear_term=0.3):
     """
     Build a ThermalUnitBlock with MinPower, MaxPower, and LinearTerm.
     """
     return Block().from_kwargs(
         block_type="ThermalUnitBlock",
-        MinPower=Variable("MinPower", "float", None, 0.0),
-        MaxPower=Variable("MaxPower", "float", None, 100.0),
-        LinearTerm=Variable("LinearTerm", "float", None, 0.3),
+        MinPower=Variable("MinPower", "float", (), 0.0),
+        MaxPower=Variable("MaxPower", "float", (), max_p),
+        LinearTerm=Variable("LinearTerm", "float", (), linear_term),
+        InitUpDownTime=Variable("InitUpDownTime", "int", (), 1),
     )
 
 
-def add_ucblock_with_one_unit(b):
+def add_ucblock_with_one_unit(b, **kwargs):
     """
     Create a UCBlock with one unit and a ThermalUnitBlock.
     """
-    add_base_ucblock(b, n_units=1, n_elec_generators=1)
+    n_units = kwargs.get("n_units", 1)
+    n_egs = kwargs.get("n_elec_generators", 1)
+    add_base_ucblock(b, n_units=n_units, n_elec_generators=n_egs, **kwargs)
     tb = build_base_tub()
-    b.blocks["Block_0"].add_block("ThermalUnitBlock", "UnitBlock_0", tb)
+    b.blocks["Block_0"].add_block("UnitBlock_0", block=tb)
     return b

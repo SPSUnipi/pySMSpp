@@ -7,10 +7,17 @@ import os
 from pathlib import Path
 import pandas as pd
 
+import shutil
+
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
 NC_UINT = "u4"
 NP_UINT = np.uint32
+
+IS_SMSPP_INSTALLED = shutil.which("ucblock_solver") is not None
+
+if not IS_SMSPP_INSTALLED:
+    print("WARNING: SMS++ not installed.\n")
 
 dir_name = os.path.dirname(__file__)
 components = pd.read_csv(os.path.join(dir_name, "components.csv"), index_col=0)
@@ -77,7 +84,7 @@ class SMSFileType(IntEnum):
 
     """
 
-    eProbFile = (0,)  # Problem file: Block and Configuration
+    eProbFile = 0  # Problem file: Block and Configuration
     eBlockFile = 1  # Block file
     eConfigFile = 2  # Configuration file
 
@@ -95,6 +102,8 @@ class Variable:
         dimensions: tuple,
         data: float | list | np.ndarray,
     ):
+        if dimensions is None:
+            dimensions = ()
         self.name = name
         self.var_type = var_type
         self.dimensions = dimensions
@@ -467,3 +476,59 @@ class SMSNetwork(Block):
             variables=blk.variables,
             blocks=blk.blocks,
         )
+
+    def optimize(
+        self,
+        fp_out: Path | str,
+        fp_temp: Path | str = "temp.nc",
+        configfile: Path | str = "config.txt",
+        smspp_tool: str = "auto",
+        **kwargs,
+    ):
+        """
+        Optimize the SMSNetwork object.
+
+        Parameters
+        ----------
+        fp_out : Path | str
+            The path to the output file.
+        fp_temp : Path | str (default: "temp.nc")
+            The path to the temporary file.
+        smspp_tool : str (default: "auto")
+            The optimization mode. Supported values
+            - "auto": Automatically select the optimization mode by the type of the inner block.
+              If UCBlock, then it selects ucblock_solver.
+            - "ucblock_solver"
+        kwargs : dict
+            The arguments to pass to the optimization function.
+        """
+        if not IS_SMSPP_INSTALLED:
+            raise ImportError("SMS++ not installed.")
+        if smspp_tool == "auto":
+            if self.blocks["Block_0"].block_type == "UCBlock":
+                smspp_tool = "ucblock_solver"
+            else:
+                raise ValueError(
+                    f'"auto" smspp_tool option not yet type not supported with block type {self.blocks["Block_0"].type}.'
+                )
+
+        force = kwargs.get("force", True)
+
+        fp_out_str = str(Path(fp_out).resolve())
+        fp_temp_str = str(Path(fp_temp).resolve())
+        configfile_str = str(Path(configfile).resolve())
+        configdir_str = str(Path(configfile).resolve().parent.resolve())
+        if not configdir_str.endswith("/"):
+            configdir_str += "/"
+
+        # delete files if they exist
+        if force and Path(fp_out_str).exists():
+            Path(fp_out_str).unlink()
+        if force and Path(fp_temp_str).exists():
+            Path(fp_temp_str).unlink()
+
+        if smspp_tool == "ucblock_solver":
+            self.to_netcdf(fp_temp, force=force)
+            os.system(
+                f"ucblock_solver {fp_temp_str} -c {configdir_str} -S {configfile_str} >> {fp_out_str}"
+            )
