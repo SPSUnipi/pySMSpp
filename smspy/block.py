@@ -467,31 +467,3 @@ class SMSNetwork(Block):
             variables=blk.variables,
             blocks=blk.blocks,
         )
-
-
-tb = Block().from_kwargs(
-    block_type="ThermalUnitBlock",
-    MinPower=Variable("MinPower", "float", None, 0.0),
-    MaxPower=Variable("MaxPower", "float", None, 100.0),
-    LinearTerm=Variable("LinearTerm", "float", None, 0.3),
-)
-b = SMSNetwork()
-b.add(
-    "UCBlock",
-    "UCBlock_0",
-    TimeHorizon=24,
-    NumberUnits=1,
-    NumberElectricalGenerators=0,
-    NumberNodes=3,
-    NumberLines=2,
-    GeneratorNode=Variable(
-        "GeneratorNode", "int", ("NumberElectricalGenerators",), [0, 0, 0]
-    ),
-    StartLine=Variable("StartLine", "int", ("NumberNodes",), [0, 1]),
-    EndLine=Variable("EndLine", "int", ("NumberNodes",), [1, 2]),
-    MinPowerFlow=Variable("MinPowerFlow", "float", ("NumberNodes",), [0.0, 0.0]),
-    MaxPowerFlow=Variable("MaxPowerFlow", "float", ("NumberNodes",), [100.0, 100.0]),
-    UnitBlock_0=tb,
-)
-
-print("Done.")
