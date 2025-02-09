@@ -1,5 +1,5 @@
 from smspy import SMSNetwork, Block, Variable
-from conftest import add_base_ucblock, build_base_tub
+from conftest import add_base_ucblock, add_ucblock_with_one_unit
 
 
 def test_attribute():
@@ -56,6 +56,4 @@ def test_add_block():
 
 def test_add_block_with_subblocks():
     b = SMSNetwork()
-    tb = build_base_tub()
-    add_base_ucblock(b)
-    b.blocks["UCBlock_0"].add_block("ThermalUnitBlock", "UnitBlock_0", tb)
+    add_ucblock_with_one_unit(b)
