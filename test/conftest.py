@@ -10,11 +10,19 @@ sample_networks = [
 ]
 
 
-def get_network(fname=sample_networks[0]):
+def get_datafile(fname):
     return os.path.join(os.path.dirname(__file__), "test_data", fname)
 
 
-def check_compare(fp_n1, fp_n2, fp_out="test/temp/tmp.txt"):
+def get_network(fname=sample_networks[0]):
+    return get_datafile(fname)
+
+
+def get_temp_file(fname):
+    return os.path.join(os.path.dirname(__file__), "temp", fname)
+
+
+def check_compare_nc(fp_n1, fp_n2, fp_out=get_temp_file("tmp.txt")):
     """
     Utility function to compare two netCDF files and check if they are the same.
 
@@ -62,16 +70,17 @@ def add_base_ucblock(b, n_units=0, n_elec_generators=0):
     Create a base UCBlock with 3 nodes and 2 lines.
     """
     kwargs = {
+        "id": "0",
         "TimeHorizon": 24,
         "NumberUnits": n_units,
         "NumberElectricalGenerators": n_elec_generators,
         "NumberNodes": 3,
         "NumberLines": 2,
-        "StartLine": Variable("StartLine", "int", ("NumberNodes",), [0, 1]),
-        "EndLine": Variable("EndLine", "int", ("NumberNodes",), [1, 2]),
-        "MinPowerFlow": Variable("MinPowerFlow", "float", ("NumberNodes",), [0.0, 0.0]),
+        "StartLine": Variable("StartLine", "int", ("NumberLines",), [0, 1]),
+        "EndLine": Variable("EndLine", "int", ("NumberLines",), [1, 2]),
+        "MinPowerFlow": Variable("MinPowerFlow", "float", ("NumberLines",), [0.0, 0.0]),
         "MaxPowerFlow": Variable(
-            "MaxPowerFlow", "float", ("NumberNodes",), [100.0, 100]
+            "MaxPowerFlow", "float", ("NumberLines",), [100.0, 100]
         ),
     }
     if n_elec_generators > 0:
@@ -81,7 +90,7 @@ def add_base_ucblock(b, n_units=0, n_elec_generators=0):
             ("NumberElectricalGenerators",),
             [0] * n_elec_generators,
         )
-    b.add("UCBlock", "UCBlock_0", **kwargs)
+    b.add("UCBlock", "Block_0", **kwargs)
 
 
 def build_base_tub():
@@ -102,5 +111,5 @@ def add_ucblock_with_one_unit(b):
     """
     add_base_ucblock(b, n_units=1, n_elec_generators=1)
     tb = build_base_tub()
-    b.blocks["UCBlock_0"].add_block("ThermalUnitBlock", "UnitBlock_0", tb)
+    b.blocks["Block_0"].add_block("ThermalUnitBlock", "UnitBlock_0", tb)
     return b

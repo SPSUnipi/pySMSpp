@@ -1,4 +1,4 @@
-from conftest import get_network, check_compare
+from conftest import get_network, check_compare_nc
 import smspy
 import os
 
@@ -13,4 +13,4 @@ def test_load_save_network():
     # Save the network to a temporary file
     net.to_netcdf(fp_n2, force=True)
 
-    check_compare(fp_n1, fp_n2)
+    check_compare_nc(fp_n1, fp_n2)
