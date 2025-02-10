@@ -3,8 +3,6 @@ from pathlib import Path
 import subprocess
 import re
 
-IS_SMSPP_INSTALLED = shutil.which("ucblock_solver") is not None
-
 
 class SMSPPSolverTool:
     def __init__(self):
@@ -20,6 +18,12 @@ class SMSPPSolverTool:
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
+
+    def is_available(self):
+        """
+        Check if the SMS++ tool is available in the PATH.
+        """
+        return False
 
     @property
     def status(self):
@@ -67,6 +71,12 @@ class UCBlockSolver(SMSPPSolverTool):
 
     def __repr__(self):
         return f"UCBlockSolverTool\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}\n\tforce={self.force}"
+
+    def is_available(self):
+        """
+        Check if the SMS++ tool is available in the PATH.
+        """
+        return shutil.which("ucblock_solver") is not None
 
     def optimize(self, **kwargs):
         """

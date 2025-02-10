@@ -5,6 +5,7 @@ from conftest import (
     get_datafile,
     add_ucblock_with_one_unit,
 )
+import pytest
 
 
 def test_optimize_example():
@@ -19,10 +20,14 @@ def test_optimize_example():
         fp_network=fp_temp,
         fp_out=fp_out,
     )
-    b.to_netcdf(fp_temp, force=True)
-    ucs.optimize()
 
-    assert "Success" in ucs.status
+    if ucs.is_available():
+        b.to_netcdf(fp_temp, force=True)
+        ucs.optimize()
+
+        assert "Success" in ucs.status
+    else:
+        pytest.skip("UCBlockSolver not available in PATH")
 
 
 def test_optimize_ucsolver():
@@ -38,7 +43,11 @@ def test_optimize_ucsolver():
         fp_network=fp_temp,
         fp_out=fp_out,
     )
-    b.to_netcdf(fp_temp, force=True)
-    ucs.optimize()
 
-    assert "Success" in ucs.status
+    if ucs.is_available():
+        b.to_netcdf(fp_temp, force=True)
+        ucs.optimize()
+
+        assert "Success" in ucs.status
+    else:
+        pytest.skip("UCBlockSolver not available in PATH")
