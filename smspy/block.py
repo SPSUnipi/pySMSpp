@@ -8,20 +8,29 @@ import os
 from pathlib import Path
 import pandas as pd
 
+import sys
+
+if sys.version_info >= (3, 10):
+    import importlib.resources as ilr
+else:
+    import importlib_resources as ilr
+
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
 NC_UINT = "u4"
 NP_UINT = np.uint32
 
+print(ilr.files("smspy.data"))
+
 dir_name = os.path.dirname(__file__)
-components = pd.read_csv(os.path.join(dir_name, "components.csv"), index_col=0)
+components = pd.read_csv(os.path.join(dir_name, "data", "components.csv"), index_col=0)
 
 blocks = Dict()
-for file_name in os.listdir(os.path.join(dir_name, "blocks")):
+for file_name in os.listdir(os.path.join(dir_name, "data", "blocks")):
     if file_name.endswith(".csv"):
         key = file_name.replace(".csv", "")
-        file_path = os.path.join(dir_name, "blocks", file_name)
+        file_path = os.path.join(dir_name, "data", "blocks", file_name)
         blk_conf = pd.read_csv(file_path).iloc[:, 1:]
         blk_conf["attribute"] = blk_conf["attribute"].str.replace("*", "")
         blocks[key] = blk_conf.set_index("attribute")

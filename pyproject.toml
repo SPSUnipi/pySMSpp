@@ -41,11 +41,11 @@ dev = [
     "mypy",
 ]
 
+[tool.setuptools]
+packages = ["smspy"]
+
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
-
-[tool.setuptools.packages.find]
-include = ["smspy"]
 
 [tool.setuptools.package-data]
 "smspy" = ["py.typed"]

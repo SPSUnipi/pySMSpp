@@ -1,0 +1,3 @@
+include smspy/data/*.csv
+include smspy/data/blocks/*.csv
+include README.md LICENSE
