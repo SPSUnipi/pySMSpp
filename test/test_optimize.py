@@ -1,6 +1,5 @@
-from smspy import SMSNetwork, SMSFileType
+from smspy import SMSNetwork, SMSFileType, UCBlockSolver
 from conftest import (
-    check_ucblock_solver_output,
     get_network,
     get_temp_file,
     get_datafile,
@@ -11,12 +10,19 @@ from conftest import (
 def test_optimize_example():
     fp = get_network()
     b = SMSNetwork(fp)
+
     fp_out = get_temp_file("test_optimize_example.txt")
     fp_temp = get_temp_file("test_optimize_example.nc")
     configfile = get_datafile("configs/UCBlockSolver/uc_solverconfig.txt")
-    b.optimize(fp_out, fp_temp, configfile)
+    ucs = UCBlockSolver(
+        configfile=configfile,
+        fp_network=fp_temp,
+        fp_out=fp_out,
+    )
+    b.to_netcdf(fp_temp, force=True)
+    ucs.optimize()
 
-    check_ucblock_solver_output(fp_out)
+    assert "Success" in ucs.status
 
 
 def test_optimize_ucsolver():
@@ -27,6 +33,12 @@ def test_optimize_ucsolver():
     fp_temp = get_temp_file("test_optimize_ucsolver.nc")
     configfile = get_datafile("configs/UCBlockSolver/uc_solverconfig.txt")
 
-    b.optimize(fp_out, fp_temp, configfile)
+    ucs = UCBlockSolver(
+        configfile=configfile,
+        fp_network=fp_temp,
+        fp_out=fp_out,
+    )
+    b.to_netcdf(fp_temp, force=True)
+    ucs.optimize()
 
-    check_ucblock_solver_output(fp_out)
+    assert "Success" in ucs.status

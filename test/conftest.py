@@ -66,34 +66,6 @@ def check_compare_nc(fp_n1, fp_n2, fp_out=get_temp_file("tmp.txt")):
             assert numbers[0] == numbers[1]
 
 
-def check_ucblock_solver_output(fp_out, target_obj=None):
-    """
-    Check the output of the UCBlockSolver.
-
-    Parameters
-    ----------
-    fp_out : str
-        The path to the output file.
-    target_obj : float (optional)
-        The target objective value.
-    """
-    # ensure file exists
-    assert os.path.isfile(fp_out)
-
-    # read the file
-    with open(fp_out, "r") as f:
-        smspp_log = f.read()
-
-    res = re.search("Status = (.*)\n", smspp_log)
-    smspp_status = res.group(1).replace("\r", "")
-    assert "Success" in smspp_status
-
-    res = re.search("Upper bound = (.*)\n", smspp_log)
-    smspp_obj = float(res.group(1).replace("\r", ""))
-    if target_obj is not None:
-        assert np.isclose(smspp_obj, target_obj)
-
-
 def add_base_ucblock(
     b,
     n_nodes=1,

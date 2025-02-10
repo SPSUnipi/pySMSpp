@@ -1,4 +1,5 @@
 from smspy.components import Dict
+from smspy.smspp_tools import UCBlockSolver, SMSPPSolverTool
 from enum import IntEnum
 
 import netCDF4 as nc
@@ -7,17 +8,11 @@ import os
 from pathlib import Path
 import pandas as pd
 
-import shutil
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
 NC_UINT = "u4"
 NP_UINT = np.uint32
-
-IS_SMSPP_INSTALLED = shutil.which("ucblock_solver") is not None
-
-if not IS_SMSPP_INSTALLED:
-    print("WARNING: SMS++ not installed.\n")
 
 dir_name = os.path.dirname(__file__)
 components = pd.read_csv(os.path.join(dir_name, "components.csv"), index_col=0)
@@ -479,10 +474,10 @@ class SMSNetwork(Block):
 
     def optimize(
         self,
-        fp_out: Path | str,
+        configfile: Path | str,
         fp_temp: Path | str = "temp.nc",
-        configfile: Path | str = "config.txt",
-        smspp_tool: str = "auto",
+        fp_out: Path | str = None,
+        smspp_solver: SMSPPSolverTool | str = "auto",
         **kwargs,
     ):
         """
@@ -497,38 +492,30 @@ class SMSNetwork(Block):
         smspp_tool : str (default: "auto")
             The optimization mode. Supported values
             - "auto": Automatically select the optimization mode by the type of the inner block.
-              If UCBlock, then it selects ucblock_solver.
-            - "ucblock_solver"
+              If UCBlock, then it selects UCBlockSolver.
+            - "UCBlockSolver": Use the UCBlockSolver tool.
         kwargs : dict
             The arguments to pass to the optimization function.
         """
-        if not IS_SMSPP_INSTALLED:
-            raise ImportError("SMS++ not installed.")
-        if smspp_tool == "auto":
-            if self.blocks["Block_0"].block_type == "UCBlock":
-                smspp_tool = "ucblock_solver"
-            else:
-                raise ValueError(
-                    f'"auto" smspp_tool option not yet type not supported with block type {self.blocks["Block_0"].type}.'
-                )
+        if isinstance(smspp_solver, str):
+            if smspp_solver == "auto":
+                match self.blocks["Block_0"].block_type:
+                    case "UCBlock":
+                        smspp_solver = "UCBlockSolver"
+                    case _:
+                        raise ValueError(
+                            f'"auto" smspp_solver option not yet type not supported with block type {self.blocks["Block_0"].type}.'
+                        )
+            match smspp_solver:
+                case "UCBlockSolver":
+                    smspp_solver = UCBlockSolver(
+                        configfile=configfile,
+                        fp_network=fp_temp,
+                        fp_out=fp_out,
+                        **kwargs,
+                    )
+                case _:
+                    raise ValueError(f"SMS++ tool {smspp_solver} not supported.")
 
-        force = kwargs.get("force", True)
-
-        fp_out_str = str(Path(fp_out).resolve())
-        fp_temp_str = str(Path(fp_temp).resolve())
-        configfile_str = str(Path(configfile).resolve())
-        configdir_str = str(Path(configfile).resolve().parent.resolve())
-        if not configdir_str.endswith("/"):
-            configdir_str += "/"
-
-        # delete files if they exist
-        if force and Path(fp_out_str).exists():
-            Path(fp_out_str).unlink()
-        if force and Path(fp_temp_str).exists():
-            Path(fp_temp_str).unlink()
-
-        if smspp_tool == "ucblock_solver":
-            self.to_netcdf(fp_temp, force=force)
-            os.system(
-                f"ucblock_solver {fp_temp_str} -c {configdir_str} -S {configfile_str} >> {fp_out_str}"
-            )
+        self.to_netcdf(fp_temp, force=True)
+        smspp_solver.optimize(self, **kwargs)
