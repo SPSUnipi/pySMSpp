@@ -527,4 +527,4 @@ class SMSNetwork(Block):
                     raise ValueError(f"SMS++ tool {smspp_solver} not supported.")
 
         self.to_netcdf(fp_temp, force=True)
-        smspp_solver.optimize(self, **kwargs)
+        return smspp_solver.optimize(**kwargs)

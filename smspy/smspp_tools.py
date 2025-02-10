@@ -33,6 +33,18 @@ class SMSPPSolverTool:
     def log(self):
         return self._log
 
+    @property
+    def objective_value(self):
+        return self._objective_value
+
+    @property
+    def lower_bound(self):
+        return self._lower_bound
+
+    @property
+    def upper_bound(self):
+        return self._upper_bound
+
 
 class UCBlockSolver(SMSPPSolverTool):
     """
@@ -107,6 +119,8 @@ class UCBlockSolver(SMSPPSolverTool):
             Path(self.fp_out).parent.mkdir(parents=True, exist_ok=True)
             with open(self.fp_out, "w") as f:
                 f.write(self._log)
+
+        return self
 
     def parse_ucblock_solver_log(self):
         """

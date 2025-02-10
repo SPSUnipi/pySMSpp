@@ -6,26 +6,27 @@ from conftest import (
     add_ucblock_with_one_unit,
 )
 import pytest
+import numpy as np
+
+RTOL = 1e-4
+ATOL = 1e-2
 
 
 def test_optimize_example():
-    fp = get_network()
-    b = SMSNetwork(fp)
-
+    fp_network = get_network()
     fp_out = get_temp_file("test_optimize_example.txt")
-    fp_temp = get_temp_file("test_optimize_example.nc")
     configfile = get_datafile("configs/UCBlockSolver/uc_solverconfig.txt")
     ucs = UCBlockSolver(
         configfile=configfile,
-        fp_network=fp_temp,
+        fp_network=fp_network,
         fp_out=fp_out,
     )
 
     if ucs.is_available():
-        b.to_netcdf(fp_temp, force=True)
         ucs.optimize()
 
         assert "Success" in ucs.status
+        assert np.isclose(ucs.objective_value, 1.93158759e04, atol=ATOL, rtol=RTOL)
     else:
         pytest.skip("UCBlockSolver not available in PATH")
 
@@ -45,9 +46,8 @@ def test_optimize_ucsolver():
     )
 
     if ucs.is_available():
-        b.to_netcdf(fp_temp, force=True)
-        ucs.optimize()
+        result = b.optimize(configfile, fp_temp, fp_out)
 
-        assert "Success" in ucs.status
+        assert "Success" in result.status
     else:
         pytest.skip("UCBlockSolver not available in PATH")
