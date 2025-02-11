@@ -30,8 +30,8 @@ The package aims to support:
     Alternatively, using conda:
 
     ```bash
-        conda create -n pySMSpp python=3.10
-        conda activate pySMSpp
+        conda create -n pysmspp python=3.10
+        conda activate pysmspp
     ```
 
 3. Install the required packages and pre-commit hooks:
