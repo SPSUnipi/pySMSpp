@@ -134,6 +134,9 @@ venv.bak/
 .spyderproject
 .spyproject
 
+# VSCode
+.vscode/*
+
 # Rope project settings
 .ropeproject
 
@@ -163,3 +166,6 @@ cython_debug/
 
 # testing temporary folders
 test/temp*
+
+# lp files
+*.lp

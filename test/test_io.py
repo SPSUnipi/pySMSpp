@@ -1,5 +1,5 @@
 from conftest import get_network, check_compare_nc
-import smspy
+import pysmspp
 import os
 
 
@@ -9,7 +9,7 @@ def test_load_save_network():
     os.makedirs(os.path.dirname(fp_n2), exist_ok=True)
 
     # Load a sample network
-    net = smspy.SMSNetwork(fp_n1)
+    net = pysmspp.SMSNetwork(fp_n1)
     # Save the network to a temporary file
     net.to_netcdf(fp_n2, force=True)
 

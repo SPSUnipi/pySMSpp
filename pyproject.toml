@@ -3,7 +3,7 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "smspy"
+name = "pysmspp"
 version = "0.0.1"
 authors = [
   { name="Unipi developers", email="davide.fioriti@unipi.it" },
@@ -29,8 +29,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SPSUnipi/SMSpy"
-Issues = "https://github.com/SPSUnipi/SMSpy/issues"
+Homepage = "https://github.com/SPSUnipi/pySMSpp"
+Issues = "https://github.com/SPSUnipi/pySMSpp/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -40,15 +40,27 @@ dev = [
     "ncompare",
     "mypy",
 ]
+docs=[
+    "numpydoc",
+    "sphinx",
+    "sphinx-book-theme",
+    "pydata-sphinx-theme",
+    "sphinx-reredirects",
+    "nbsphinx",
+    "nbsphinx-link",
+    "scikit-learn",
+    "ipython",
+    "ipykernel",
+]
 
 [tool.setuptools]
-packages = ["smspy"]
+packages = ["pysmspp"]
 
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
 
 [tool.setuptools.package-data]
-"smspy" = ["py.typed"]
+"pysmspp" = ["py.typed"]
 
 # Pytest settings
 
@@ -62,7 +74,7 @@ filterwarnings = [
 
 [tool.coverage.run]
 branch = true
-source = ["smspy"]
+source = ["pysmspp"]
 omit = ["test/*"]
 [tool.coverage.report]
 exclude_also = [
@@ -78,9 +90,9 @@ warn_unused_ignores = true
 show_error_code_links = true
 
 [[tool.mypy.overrides]]
-module = "smspy.*"
+module = "pysmspp.*"
 disallow_untyped_defs = true
 check_untyped_defs = true
 
 # [tool.setuptools.dynamic]
-# version = {attr = "smspy.__version__"}
+# version = {attr = "pysmspp.__version__"}

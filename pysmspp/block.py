@@ -1,5 +1,5 @@
-from smspy.components import Dict
-from smspy.smspp_tools import UCBlockSolver, SMSPPSolverTool
+from pysmspp.components import Dict
+from pysmspp.smspp_tools import UCBlockSolver, SMSPPSolverTool
 from enum import IntEnum
 
 import netCDF4 as nc
@@ -8,20 +8,11 @@ import os
 from pathlib import Path
 import pandas as pd
 
-import sys
-
-if sys.version_info >= (3, 10):
-    import importlib.resources as ilr
-else:
-    import importlib_resources as ilr
-
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
 NC_UINT = "u4"
 NP_UINT = np.uint32
-
-print(ilr.files("smspy.data"))
 
 dir_name = os.path.dirname(__file__)
 components = pd.read_csv(os.path.join(dir_name, "data", "components.csv"), index_col=0)

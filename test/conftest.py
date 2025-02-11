@@ -1,4 +1,4 @@
-from smspy import Block, Variable
+from pysmspp import Block, Variable
 import os
 import re
 import numpy as np

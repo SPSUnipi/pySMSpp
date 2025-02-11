@@ -1,4 +1,4 @@
-from smspy import SMSNetwork, SMSFileType, UCBlockSolver
+from pysmspp import SMSNetwork, SMSFileType, UCBlockSolver
 from conftest import (
     get_network,
     get_temp_file,

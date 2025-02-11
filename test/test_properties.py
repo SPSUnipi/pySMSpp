@@ -1,21 +1,21 @@
-import smspy
+import pysmspp
 
 
 def test_block_type():
-    block = smspy.Block()
+    block = pysmspp.Block()
     block.block_type = "block"
     assert block.block_type == "block"
 
 
 def test_SMSNetwork_file_type():
-    net = smspy.SMSNetwork(file_type=smspy.SMSFileType.eConfigFile)
-    assert net.file_type == smspy.SMSFileType.eConfigFile
-    net.file_type = smspy.SMSFileType.eConfigFile
-    assert net.file_type == smspy.SMSFileType.eConfigFile
+    net = pysmspp.SMSNetwork(file_type=pysmspp.SMSFileType.eConfigFile)
+    assert net.file_type == pysmspp.SMSFileType.eConfigFile
+    net.file_type = pysmspp.SMSFileType.eConfigFile
+    assert net.file_type == pysmspp.SMSFileType.eConfigFile
 
 
 def test_static():
-    block = smspy.Block()
+    block = pysmspp.Block()
     block.block_type = "block"
 
     for c in block.components.keys():

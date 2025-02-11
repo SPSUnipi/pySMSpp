@@ -1,4 +1,4 @@
-from smspy import SMSNetwork, Block, Variable
+from pysmspp import SMSNetwork, Block, Variable
 from conftest import add_base_ucblock, add_ucblock_with_one_unit
 
 
