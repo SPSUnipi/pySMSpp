@@ -1,7 +1,7 @@
-# SMSpy
+# pySMSpp
 
-[![Tests](https://github.com/SPSUnipi/SMSpy/actions/workflows/test.yml/badge.svg)](https://github.com/SPSUnipi/SMSpy/actions/workflows/test.yml)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/SPSUnipi/SMSpy/main.svg)](https://results.pre-commit.ci/latest/github/SPSUnipi/SMSpy/main)
+[![Tests](https://github.com/SPSUnipi/pySMSpp/actions/workflows/test.yml/badge.svg)](https://github.com/SPSUnipi/pySMSpp/actions/workflows/test.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/SPSUnipi/pySMSpp/main.svg)](https://results.pre-commit.ci/latest/github/SPSUnipi/pySMSpp/main)
 
 This package aims at providing a python interface to create [SMS++](https://gitlab.com/smspp/smspp-project) models using a simple python interface.
 The package aims to support:
@@ -16,14 +16,22 @@ The package aims to support:
 1. First, clone the repository using git:
 
     ```bash
-        git clone https://github.com/SPSUnipi/SMSpy
+        git clone https://github.com/SPSUnipi/pySMSpp
     ```
 
-2. Create a virtual environment using venv or conda. For exaample, using venv:
+2. Create a virtual environment using venv or conda.
+    For exaample, using venv:
 
     ```bash
         python -m venv .venv
         source .venv/bin/activate
+    ```
+   
+    Alternatively, using conda:
+
+    ```bash
+        conda create -n pySMSpp python=3.10
+        conda activate pySMSpp
     ```
 
 3. Install the required packages and pre-commit hooks:
@@ -32,6 +40,8 @@ The package aims to support:
         pip install -e .[dev]
         pre-commit install
     ```
+
+    Note that the `-e` command line option installs the package in editable mode, so that changes to the source code are immediately available in the environment being used. The `[dev]` option installs the packages required for development. The `pre-commit install` command installs the pre-commit hooks, which are used to check the code before committing to ensure code quality standards.
 
 4. Develop and test the code. For testing, please run:
 
