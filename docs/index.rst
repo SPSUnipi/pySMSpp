@@ -27,6 +27,15 @@ Documentation
    getting-started/installation
    getting-started/quick-start
 
+**Examples**
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: Examples
+
+   examples/ucblock_thermal_1bus
+
 **User Guide**
 
 * :doc:`/api_reference`
