@@ -29,6 +29,8 @@ Documentation
 
 **Examples**
 
+* :doc:`/examples/ucblock_thermal_1bus`
+
 .. toctree::
    :hidden:
    :maxdepth: 1
