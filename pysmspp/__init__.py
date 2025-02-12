@@ -1,5 +1,6 @@
 from pysmspp.block import (
     SMSNetwork as SMSNetwork,
+    SMSConfig as SMSConfig,
     Block as Block,
     SMSFileType as SMSFileType,
     Variable as Variable,

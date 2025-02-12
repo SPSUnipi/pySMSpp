@@ -1,1 +1,0 @@
-uc_solverconfig.txt copied from smspp-project/tools/ucblock_solver

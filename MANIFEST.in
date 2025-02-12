@@ -1,3 +1,4 @@
 include pysmspp/data/*.csv
 include pysmspp/data/blocks/*.csv
+include pysmspp/data/configs/*.txt
 include README.md LICENSE

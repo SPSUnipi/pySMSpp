@@ -84,7 +84,8 @@ class UCBlockSolver(SMSPPSolverTool):
     def __repr__(self):
         return f"UCBlockSolverTool\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}\n\tforce={self.force}"
 
-    def is_available(self):
+    @staticmethod
+    def is_available():
         """
         Check if the SMS++ tool is available in the PATH.
         """

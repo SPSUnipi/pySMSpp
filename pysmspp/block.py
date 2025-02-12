@@ -27,6 +27,67 @@ for file_name in os.listdir(os.path.join(dir_name, "data", "blocks")):
         blocks[key] = blk_conf.set_index("attribute")
 
 
+class SMSConfig:
+    """
+    SMSConfig is a class to specify the configuration file for SMS++.
+    """
+
+    def __init__(self, fp: Path | str = None, template: str = None):
+        """
+        Initialize a SMSConfig object.
+        If an existing fp is provided, it is used as the configuration file; an error is thrown if the file does not exist.
+        If a template is provided, the configuration file is set to the template file in the data/configs directory.
+        fp and template cannot be both None.
+
+        Parameters
+        ----------
+        fp : Path | str (default: None)
+            The path to the configuration file.
+        template : str (default: None)
+            The template name of the configuration file.
+        """
+        if fp is None and template is None:
+            raise ValueError("Either fp or template must be provided.")
+        if fp is not None and template is not None:
+            raise ValueError("fp or template cannot be specified together.")
+
+        if template is None:
+            fp_p = Path(fp)
+            if not fp_p.exists():
+                raise FileNotFoundError(f"File {fp} not found.")
+            else:
+                self._config = str(fp_p.resolve())
+        else:
+            dirconfigs = Path(dir_name, "data", "configs")
+            if not template.endswith(".txt"):
+                template = template + ".txt"
+            fp_config = Path(dirconfigs, template)
+            if fp_config.exists():
+                self._config = str(fp_config.resolve())
+            else:
+                raise FileNotFoundError(
+                    f"Template {template} is not found. Supported templates are:\n"
+                    + "\n".join(SMSConfig.get_templates())
+                )
+
+    def __repr__(self):
+        return f'Configuration path: "{self.config}"'
+
+    def __str__(self):
+        return self.config
+
+    @property
+    def config(self):
+        """Return the configuration path."""
+        return self._config
+
+    @staticmethod
+    def get_templates():
+        """Return the list of available templates."""
+        dirconfigs = Path(dir_name, "data", "configs")
+        return [f.name for f in dirconfigs.glob("*.txt")]
+
+
 def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
     """
     Return the attibute value.
@@ -501,7 +562,7 @@ class SMSNetwork(Block):
 
     def optimize(
         self,
-        configfile: Path | str,
+        configfile: SMSConfig | Path | str,
         fp_temp: Path | str = "temp.nc",
         fp_out: Path | str = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
@@ -512,10 +573,12 @@ class SMSNetwork(Block):
 
         Parameters
         ----------
-        fp_out : Path | str
-            The path to the output file.
+        configfile : SMSConfig | Path | str
+            The configuration file. If a path is provided, it is first parsed into a SMSConfig object.
         fp_temp : Path | str (default: "temp.nc")
             The path to the temporary file.
+        fp_out : Path | str (default: None)
+            The path to the output file.
         smspp_tool : str (default: "auto")
             The optimization mode. Supported values:
 
@@ -526,6 +589,8 @@ class SMSNetwork(Block):
         kwargs : dict
             The arguments to pass to the optimization function.
         """
+        if not isinstance(configfile, SMSConfig):
+            configfile = SMSConfig(configfile)
         if isinstance(smspp_solver, str):
             if smspp_solver == "auto":
                 match self.blocks["Block_0"].block_type:
@@ -538,7 +603,7 @@ class SMSNetwork(Block):
             match smspp_solver:
                 case "UCBlockSolver":
                     smspp_solver = UCBlockSolver(
-                        configfile=configfile,
+                        configfile=str(configfile),
                         fp_network=fp_temp,
                         fp_out=fp_out,
                         **kwargs,

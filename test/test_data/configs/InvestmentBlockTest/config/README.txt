@@ -1,1 +1,0 @@
-BSPar.txt and uc_solverconfig.txt copied from smspp-project/InvestmentBlock/test/config
