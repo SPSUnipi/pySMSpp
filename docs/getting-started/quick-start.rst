@@ -56,7 +56,7 @@ Finally, the network is optimized with the following code:
 
 .. code:: python
     
-    configfile = "../../test/test_data/configs/UCBlockSolver/uc_solverconfig.txt"  # path to the solver configuration file
+    configfile = SMSConfig(template="uc_solverconfig")  # path to the template solver config file "uc_solverconfig"
     temporary_smspp_file = "./smspp_temp_file.nc"  # path to the temporary SMS++ file used as intermediate file to launch SMS++
     output_file = "./smspp_output.txt"  # path to the output file (optional)
 
