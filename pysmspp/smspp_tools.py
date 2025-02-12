@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 import subprocess
 import re
+import numpy as np
 
 
 class SMSPPSolverTool:
@@ -135,7 +136,15 @@ class UCBlockSolver(SMSPPSolverTool):
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
         res = re.search("Status = (.*)\n", self._log)
+
+        if not res:  # if success not found
+            self._status = "Failed"
+            self._objective_value = np.nan
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+
         smspp_status = res.group(1).replace("\r", "")
         self._status = smspp_status
 
