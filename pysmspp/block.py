@@ -195,10 +195,15 @@ class Block:
             The value of the attribute
         force : bool (default: False)
             If True, overwrite the attribute if it exists.
+
+        Returns
+        -------
+        Returns the value of the attribute being created.
         """
         if not force and name in self.attributes:
             raise ValueError(f"Attribute {name} already exists.")
         self.attributes[name] = value
+        return value
 
     def add_dimension(self, name: str, value: int, force: bool = False):
         """
@@ -212,10 +217,15 @@ class Block:
             The value of the dimension
         force : bool (default: False)
             If True, overwrite the dimension if it exists.
+
+        Returns
+        -------
+        Returns the value of the dimension being created.
         """
         if not force and name in self.dimensions:
             raise ValueError(f"Dimension {name} already exists.")
         self.dimensions[name] = value
+        return value
 
     def add_variable(
         self,
@@ -239,6 +249,10 @@ class Block:
             The data of the variable
         force : bool (default: False)
             If True, overwrite the variable if it exists.
+
+        Returns
+        -------
+        Returns the variable being created.
         """
         if not force and name in self.variables:
             raise ValueError(f"Variable {name} already exists.")
@@ -247,6 +261,7 @@ class Block:
             self.variables[name] = args[0]
         else:
             self.variables[name] = Variable(name, *args, **kwargs)
+        return self.variables[name]
 
     def add_block(self, name: str, *args, **kwargs):
         """
@@ -260,6 +275,10 @@ class Block:
             The attributes of the block.
             If the argument "block" is present, the block is set to that value.
             Otherwise, arguments are passed to the Block constructor.
+
+        Returns
+        -------
+        Returns the block being created.
         """
         force = kwargs.pop("force", False)
         if not force and name in self.blocks:
@@ -280,6 +299,10 @@ class Block:
         ----------
         dct : dict
             The attributes of the block.
+
+        Returns
+        -------
+        Returns the block being created.
         """
         if "block_type" in kwargs:
             btype = kwargs.pop("block_type")
@@ -377,17 +400,21 @@ class Block:
             The name of the block
         kwargs : dict
             The attributes of the block
+
+        Returns
+        -------
+        Returns the object being created: Attribute, Dimension, Variable, or Block.
         """
         component_nctype = self.components[component_name]["nctype"]
         match component_nctype:
             case "Attribute":
-                self.add_attribute(name, *args, **kwargs)
+                return self.add_attribute(name, *args, **kwargs)
             case "Dimension":
-                self.add_dimension(name, *args, **kwargs)
+                return self.add_dimension(name, *args, **kwargs)
             case "Variable":
-                self.add_variable(name, *args, **kwargs)
+                return self.add_variable(name, *args, **kwargs)
             case "Block":
-                self.add_block(name, *args, block_type=component_name, **kwargs)
+                return self.add_block(name, *args, block_type=component_name, **kwargs)
             case _:
                 raise ValueError(f"Class {component_name} not supported.")
         return self
