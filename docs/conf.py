@@ -45,12 +45,12 @@ language = "en"
 # html_theme = "sphinx_book_theme"
 html_theme = "sphinx_rtd_theme"
 
-html_theme_options = {
-    "repository_url": "https://github.com/SPSUnipi/pySMSpp",
-    # "use_repository_button": True,
-    # "show_navbar_depth": 1,
-    # "show_toc_level": 2,
-}
+# html_theme_options = {
+#     # "repository_url": "https://github.com/SPSUnipi/pySMSpp",
+#     # "use_repository_button": True,
+#     # "show_navbar_depth": 1,
+#     # "show_toc_level": 2,
+# }
 
 html_static_path = ["_static"]
 
