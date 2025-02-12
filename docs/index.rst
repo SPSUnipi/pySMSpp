@@ -27,3 +27,13 @@ Documentation
    getting-started/installation
    getting-started/quick-start
 
+**User Guide**
+
+* :doc:`/api_reference`
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: User Guide
+
+   api_reference

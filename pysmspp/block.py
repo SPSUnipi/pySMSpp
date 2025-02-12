@@ -490,10 +490,12 @@ class SMSNetwork(Block):
         fp_temp : Path | str (default: "temp.nc")
             The path to the temporary file.
         smspp_tool : str (default: "auto")
-            The optimization mode. Supported values
+            The optimization mode. Supported values:
+
             - "auto": Automatically select the optimization mode by the type of the inner block.
               If UCBlock, then it selects UCBlockSolver.
             - "UCBlockSolver": Use the UCBlockSolver tool.
+
         kwargs : dict
             The arguments to pass to the optimization function.
         """

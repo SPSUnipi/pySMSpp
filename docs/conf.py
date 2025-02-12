@@ -10,6 +10,7 @@ project = "pySMSpp"
 # copyright = '2025, '
 author = "Davide Fioriti"
 
+
 # version = 'v0.0.1'
 # release = 'v0.0.1'
 
