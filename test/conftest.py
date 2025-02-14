@@ -145,5 +145,5 @@ def add_ucblock_with_one_unit(b, **kwargs):
     n_egs = kwargs.get("n_elec_generators", 1)
     add_base_ucblock(b, n_units=n_units, n_elec_generators=n_egs, **kwargs)
     tb = build_base_tub()
-    b.blocks["Block_0"].add_block("UnitBlock_0", block=tb)
+    b.blocks["Block_0"].add("ThermalUnitBlock", "UnitBlock_0", block=tb)
     return b

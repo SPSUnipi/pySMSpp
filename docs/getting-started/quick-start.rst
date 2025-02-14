@@ -49,7 +49,7 @@ In the unit commitment block stated above, no generator is yet added. To add a g
         InitUpDownTime=Variable("InitUpDownTime", "int", (), 1),
     )
 
-    sn.blocks["Block_0"].add_block("UnitBlock_0", block=thermal_unit_block)
+    sn.blocks["Block_0"].add("ThermalUnitBlock", "UnitBlock_0", block=thermal_unit_block)
 
 
 Finally, the network is optimized with the following code:
