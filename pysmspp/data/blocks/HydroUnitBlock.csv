@@ -1,6 +1,7 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
-HydroUnitBlock,NumberReservoirs,Attribute,Attribute,uint,-,-,,optional,Number of reservoirs
+HydroUnitBlock,NumberReservoirs,Attribute,Attribute,uint,-,-,,required,Number of reservoirs
 HydroUnitBlock,NumberArcs,Attribute,Attribute,uint,-,-,,required,Number of arcs
+HydroUnitBlock,TotalNumberPieces,Attribute,Attribute,uint,-,-,,required,Total number of pieces
 HydroUnitBlock,StartArc,Variable,Variable,uint,-|NumberArcs,-,,required,Starting point of arc
 HydroUnitBlock,EndArc,Variable,Variable,uint,-|NumberArcs,-,,required,Ending point of arc
 HydroUnitBlock,MaxVolumetric,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Maximum volume of reservoir
