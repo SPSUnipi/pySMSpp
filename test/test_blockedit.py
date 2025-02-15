@@ -1,5 +1,12 @@
 from pysmspp import SMSNetwork, Block, Variable
-from conftest import add_base_ucblock, add_ucblock_with_one_unit
+from conftest import (
+    add_base_ucblock,
+    add_ucblock_with_one_unit,
+    add_tub_to_ucblock,
+    add_bub_to_ucblock,
+    add_hub_to_ucblock,
+    add_iub_to_ucblock,
+)
 
 
 def test_attribute():
@@ -57,3 +64,42 @@ def test_add_block():
 def test_add_block_with_subblocks():
     b = SMSNetwork()
     add_ucblock_with_one_unit(b)
+
+    assert b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "ThermalUnitBlock"
+
+
+def test_add_tub():
+    b = SMSNetwork()
+    add_base_ucblock(b)
+    add_tub_to_ucblock(b)
+
+    assert b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "ThermalUnitBlock"
+
+
+def test_add_bub():
+    b = SMSNetwork()
+    add_base_ucblock(b)
+    add_bub_to_ucblock(b)
+
+    assert b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "BatteryUnitBlock"
+
+
+def test_add_hub():
+    b = SMSNetwork()
+    add_base_ucblock(b)
+    add_hub_to_ucblock(b)
+
+    assert b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "HydroUnitBlock"
+
+
+def test_add_iub():
+    b = SMSNetwork()
+    add_base_ucblock(b)
+    add_iub_to_ucblock(b)
+
+    assert (
+        b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "IntermittentUnitBlock"
+    )
+
+
+test_add_tub()
