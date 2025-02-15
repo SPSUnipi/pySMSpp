@@ -1,0 +1,11 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+SlackUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+SlackUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+SlackUnitBlock,MaxPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum power output of the unit
+SlackUnitBlock,MaxPrimaryPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum primary power output of the unit
+SlackUnitBlock,MaxSecondaryPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum secondary power output of the unit
+SlackUnitBlock,MaxInertia,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum inertia contribution
+SlackUnitBlock,ActivePowerCost,Variable,Variable,double,-|TimeHorizon,MW,,optional,Per-unit cost of active power
+SlackUnitBlock,PrimaryCost,Variable,Variable,double,-|TimeHorizon,MW,,optional,Per-unit cost of primary power
+SlackUnitBlock,SecondaryCost,Variable,Variable,double,-|TimeHorizon,MW,,optional,Per-unit cost of secondary power
+SlackUnitBlock,InertiaCost,Variable,Variable,double,-|TimeHorizon,MW,,optional,Per-unit cost of inertia
