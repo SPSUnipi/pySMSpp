@@ -100,6 +100,3 @@ def test_add_iub():
     assert (
         b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "IntermittentUnitBlock"
     )
-
-
-test_add_tub()
