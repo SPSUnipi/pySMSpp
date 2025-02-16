@@ -80,5 +80,9 @@ def test_optimize_ucsolver_all_components():
         assert "success" in result.status.lower()
         assert "warning" not in result.log.lower()
         assert "error" not in result.log.lower()
+        assert "ThermalUnitBlock" in result.log
+        assert "BatteryUnitBlock" in result.log
+        assert "HydroUnitBlock" in result.log
+        assert "IntermittentUnitBlock" in result.log
     else:
         pytest.skip("UCBlockSolver not available in PATH")
