@@ -566,6 +566,7 @@ class SMSNetwork(Block):
         fp_temp: Path | str = "temp.nc",
         fp_out: Path | str = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
+        inner_block_name: str = "Block_0",
         **kwargs,
     ):
         """
@@ -586,6 +587,8 @@ class SMSNetwork(Block):
               If UCBlock, then it selects UCBlockSolver.
             - "UCBlockSolver": Use the UCBlockSolver tool.
 
+        inner_block_name : str (default: "Block_0")
+            The name of the inner block, to decide on the automatic solver to use.
         kwargs : dict
             The arguments to pass to the optimization function.
         """
@@ -593,12 +596,13 @@ class SMSNetwork(Block):
             configfile = SMSConfig(configfile)
         if isinstance(smspp_solver, str):
             if smspp_solver == "auto":
-                match self.blocks["Block_0"].block_type:
+                ib = self.blocks[inner_block_name]
+                match ib.block_type:
                     case "UCBlock":
                         smspp_solver = "UCBlockSolver"
                     case _:
                         raise ValueError(
-                            f'"auto" smspp_solver option not yet type not supported with block type {self.blocks["Block_0"].type}.'
+                            f'"auto" smspp_solver option not yet type not supported with block type {ib.type}.'
                         )
             match smspp_solver:
                 case "UCBlockSolver":
