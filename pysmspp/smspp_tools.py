@@ -3,6 +3,7 @@ from pathlib import Path
 import subprocess
 import re
 import numpy as np
+import os
 
 
 class SMSPPSolverTool:
@@ -114,8 +115,14 @@ class UCBlockSolver(SMSPPSolverTool):
             capture_output=True,
             shell=True,
         )
-        self._log = result.stdout.decode("utf-8")
+        self._log = (
+            result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
+        )
         self.parse_ucblock_solver_log()
+        if result.returncode != 0:
+            raise ValueError(
+                f"Failed to run ucblock_solver; error log:\n{result.stderr.decode('utf-8')}"
+            )
         # write output to file, if option passed
         if self.fp_out is not None:
             Path(self.fp_out).parent.mkdir(parents=True, exist_ok=True)
@@ -144,6 +151,7 @@ class UCBlockSolver(SMSPPSolverTool):
             self._objective_value = np.nan
             self._lower_bound = np.nan
             self._upper_bound = np.nan
+            return
 
         smspp_status = res.group(1).replace("\r", "")
         self._status = smspp_status

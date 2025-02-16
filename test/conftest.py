@@ -149,7 +149,7 @@ def build_base_bub(max_p=100.0, max_e=200.0, eta=0.9):
         MaxStorage=Variable("MaxStorage", "float", (), max_e),
         InitialStorage=Variable("InitialStorage", "float", (), max_e),
         StoringBatteryRho=Variable("StoringBatteryRho", "float", (), eta),
-        ExtractingBatteryRho=Variable("ExtractingBatteryRho", "float", (), eta),
+        ExtractingBatteryRho=Variable("ExtractingBatteryRho", "float", (), 1 / eta),
     )
 
 
@@ -159,13 +159,13 @@ def build_base_hub(
     """
     Build a HydroUnitBlock.
     """
-    N_ARCS = 3
+    N_ARCS = 3  # Number of arcs: 1 arc for discharge, 1 spill, 1 recharge
     return Block().from_kwargs(
         block_type="HydroUnitBlock",
         NumberReservoirs=1,
         NumberArcs=N_ARCS,
-        StartArc=Variable("StartArc", "uint", ("NumberArcs",), np.full((N_ARCS,), 0)),
-        EndArc=Variable("EndArc", "uint", ("NumberArcs",), np.full((N_ARCS,), 1)),
+        StartArc=Variable("StartArc", "int", ("NumberArcs",), np.full((N_ARCS,), 0)),
+        EndArc=Variable("EndArc", "int", ("NumberArcs",), np.full((N_ARCS,), 1)),
         MaxPower=Variable(
             "MaxPower", "double", ("NumberArcs",), np.array([max_p, 0.0, 0.0])
         ),
@@ -191,13 +191,11 @@ def build_base_hub(
         ),
         InitialVolumetric=Variable("InitialVolumetric", "double", (), max_e),
         NumberPieces=Variable(
-            "NumberPieces", "uint", ("NumberArcs",), np.full((N_ARCS,), 1)
+            "NumberPieces", "int", ("NumberArcs",), np.full((N_ARCS,), 1)
         ),
-        TotalNumberPieces=Variable(
-            "TotalNumberPieces", "uint", (), np.sum(np.full((N_ARCS,), 1))
-        ),
+        TotalNumberPieces=N_ARCS,
         LinearTerm=Variable(
-            "LinearTerm", "double", ("TotalNumberPieces",), [1 / eta, 0.0, eta]
+            "LinearTerm", "double", ("TotalNumberPieces",), [1 / eta, 0.0, 1 / eta]
         ),
         ConstantTerm=Variable(
             "ConstantTerm", "double", ("TotalNumberPieces",), np.full((N_ARCS,), 0.0)
