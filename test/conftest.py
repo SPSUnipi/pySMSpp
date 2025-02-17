@@ -137,6 +137,181 @@ def build_base_tub(max_p=100.0, linear_term=0.3):
     )
 
 
+def build_base_bub(max_p=100.0, max_e=200.0, eta=0.9):
+    """
+    Build a BatteryUnitBlock.
+    """
+    return Block().from_kwargs(
+        block_type="BatteryUnitBlock",
+        MinPower=Variable("MinPower", "float", (), -max_p),
+        MaxPower=Variable("MaxPower", "float", (), max_p),
+        MinStorage=Variable("MinStorage", "float", (), 0.0),
+        MaxStorage=Variable("MaxStorage", "float", (), max_e),
+        InitialStorage=Variable("InitialStorage", "float", (), max_e),
+        StoringBatteryRho=Variable("StoringBatteryRho", "float", (), eta),
+        ExtractingBatteryRho=Variable("ExtractingBatteryRho", "float", (), 1 / eta),
+    )
+
+
+def build_base_hub(
+    max_p=100.0, min_p=-100.0, max_flow=200.0, max_e=200, inflow_t=1, eta=0.9
+):
+    """
+    Build a HydroUnitBlock.
+    """
+    N_ARCS = 3  # Number of arcs: 1 arc for discharge, 1 spill, 1 recharge
+    return Block().from_kwargs(
+        block_type="HydroUnitBlock",
+        NumberReservoirs=1,
+        NumberArcs=N_ARCS,
+        StartArc=Variable("StartArc", "int", ("NumberArcs",), np.full((N_ARCS,), 0)),
+        EndArc=Variable("EndArc", "int", ("NumberArcs",), np.full((N_ARCS,), 1)),
+        MaxPower=Variable(
+            "MaxPower", "double", ("NumberArcs",), np.array([max_p, 0.0, 0.0])
+        ),
+        MinPower=Variable(
+            "MinPower", "double", ("NumberArcs",), np.array([0.0, 0.0, min_p])
+        ),
+        MinFlow=Variable(
+            "MinFlow", "double", ("NumberArcs",), np.array([0.0, 0.0, -max_flow])
+        ),
+        MaxFlow=Variable(
+            "MaxFlow",
+            "double",
+            ("NumberArcs",),
+            np.array([max_p * 100.0, max_flow, 0.0]),
+        ),
+        MinVolumetric=Variable("MinVolumetric", "double", (), 0.0),
+        MaxVolumetric=Variable("MaxVolumetric", "double", (), max_e),
+        Inflows=Variable(
+            "Inflows",
+            "double",
+            ("NumberReservoirs", "TimeHorizon"),
+            np.full((1, inflow_t), 0.0),
+        ),
+        InitialVolumetric=Variable("InitialVolumetric", "double", (), max_e),
+        NumberPieces=Variable(
+            "NumberPieces", "int", ("NumberArcs",), np.full((N_ARCS,), 1)
+        ),
+        TotalNumberPieces=N_ARCS,
+        LinearTerm=Variable(
+            "LinearTerm", "double", ("TotalNumberPieces",), [1 / eta, 0.0, 1 / eta]
+        ),
+        ConstantTerm=Variable(
+            "ConstantTerm", "double", ("TotalNumberPieces",), np.full((N_ARCS,), 0.0)
+        ),
+    )
+
+
+def build_base_iub(max_p=100.0):
+    """
+    Build a IntermittentUnitBlock.
+    """
+    return Block().from_kwargs(
+        block_type="IntermittentUnitBlock",
+        MinPower=Variable("MinPower", "float", (), 0.0),
+        MaxPower=Variable("MaxPower", "float", (), max_p),
+    )
+
+
+def build_base_sub(max_p=100.0, cost=1000.0):
+    """
+    Build a SlackUnitBlock.
+    """
+    return Block().from_kwargs(
+        block_type="SlackUnitBlock",
+        MaxPower=Variable("MaxPower", "float", (), max_p),
+        ActivePowerCost=Variable("ActivePowerCost", "float", (), cost),
+    )
+
+
+def get_new_ucname(b):
+    """
+    Get the next available UCBlock name.
+    """
+    return f"UnitBlock_{len(b.blocks)}"
+
+
+def add_tub_to_ucblock(b, **kwargs):
+    """
+    Add a ThermalUnitBlock to an existing UCBlock.
+    """
+    tb = build_base_tub(**kwargs)
+
+    ucb = b.blocks["Block_0"]
+    ucname = get_new_ucname(ucb)
+
+    ucb.dimensions["NumberUnits"] += 1
+    ucb.dimensions["NumberElectricalGenerators"] += 1
+
+    ucb.add("ThermalUnitBlock", ucname, block=tb)
+    return b
+
+
+def add_bub_to_ucblock(b, **kwargs):
+    """
+    Add a BatteryUnitBlock to an existing UCBlock.
+    """
+    bub = build_base_bub(**kwargs)
+
+    ucb = b.blocks["Block_0"]
+    ucname = get_new_ucname(ucb)
+
+    ucb.dimensions["NumberUnits"] += 1
+    ucb.dimensions["NumberElectricalGenerators"] += 1
+
+    ucb.add("BatteryUnitBlock", ucname, block=bub)
+    return b
+
+
+def add_hub_to_ucblock(b, **kwargs):
+    """
+    Add a HydroUnitBlock to an existing UCBlock.
+    """
+    hub = build_base_hub(**kwargs)
+
+    ucb = b.blocks["Block_0"]
+    ucname = get_new_ucname(ucb)
+
+    ucb.dimensions["NumberUnits"] += 1
+    ucb.dimensions["NumberElectricalGenerators"] += 1
+
+    ucb.add("HydroUnitBlock", ucname, block=hub)
+    return b
+
+
+def add_iub_to_ucblock(b, **kwargs):
+    """
+    Add a IntermittentUnitBlock to an existing UCBlock.
+    """
+    iub = build_base_iub(**kwargs)
+
+    ucb = b.blocks["Block_0"]
+    ucname = get_new_ucname(ucb)
+
+    ucb.dimensions["NumberUnits"] += 1
+    ucb.dimensions["NumberElectricalGenerators"] += 1
+
+    ucb.add("IntermittentUnitBlock", ucname, block=iub)
+    return b
+
+
+def add_sub_to_ucblock(b, **kwargs):
+    """
+    Add a SlackUnitBlock to an existing UCBlock.
+    """
+    sub = build_base_sub(**kwargs)
+
+    ucb = b.blocks["Block_0"]
+    ucname = get_new_ucname(ucb)
+
+    ucb.dimensions["NumberUnits"] += 1
+    ucb.dimensions["NumberElectricalGenerators"] += 1
+
+    ucb.add("SlackUnitBlock", ucname, block=sub)
+    return b
+
+
 def add_ucblock_with_one_unit(b, **kwargs):
     """
     Create a UCBlock with one unit and a ThermalUnitBlock.

@@ -1,13 +1,15 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
 ThermalUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 ThermalUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
-ThermalUnitBlock,MinPower,Variable,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,MW,,optional,Minimum power output of the unit
-ThermalUnitBlock,MaxPower,Variable,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,MW,,optional,Maximum power output of the unit
-ThermalUnitBlock,StartUpCost,Variable,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,USD,,optional,Start-up cost of the unit
-ThermalUnitBlock,LinearTerm,Variable,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,USD/MWh,,optional,Linear term of the cost function
-ThermalUnitBlock,ConstantTerm,Variable,Variable,double,-|NumberUnits|NumberUnits-TimeHorizon|,USD,,optional,Constant term of the cost function
-ThermalUnitBlock,MinUpTime,Variable,Variable,double,-|NumberUnits|,h,,optional,Minimum up time of the unit
-ThermalUnitBlock,MinDownTime,Variable,Variable,double,-|NumberUnits|,h,,optional,Minimum down time of the unit
-ThermalUnitBlock,InitialPower,Variable,Variable,double,-|NumberUnits|,MW,,optional,Initial power output of the unit
-ThermalUnitBlock,InitUpDownTime,Variable,Variable,double,-|NumberUnits|,h,,optional,Initial up/down time of the unit
-ThermalUnitBlock,InertiaCommitment,Variable,Variable,double,-|NumberUnits|,,,optional,Inertia commitment of the unit
+ThermalUnitBlock,MinPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Minimum power output of the unit
+ThermalUnitBlock,MaxPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum power output of the unit
+ThermalUnitBlock,StartUpCost,Variable,Variable,double,-|TimeHorizon,USD,,optional,Start-up cost of the unit
+ThermalUnitBlock,QuadTerm,Variable,Variable,double,-|TimeHorizon,-,,optional,Quadratic term of the cost function
+ThermalUnitBlock,LinearTerm,Variable,Variable,double,-|TimeHorizon,USD/MWh,,optional,Linear term of the cost function
+ThermalUnitBlock,ConstantTerm,Variable,Variable,double,-|TimeHorizon,USD,,optional,Constant term of the cost function
+ThermalUnitBlock,FixedConsumption,Variable,Variable,double,1| [T],-,,optional,Fixed consumption
+ThermalUnitBlock,MinUpTime,Variable,Variable,double,-,h,,optional,Minimum up time of the unit
+ThermalUnitBlock,MinDownTime,Variable,Variable,double,-,h,,optional,Minimum down time of the unit
+ThermalUnitBlock,InitialPower,Variable,Variable,double,-,MW,,optional,Initial power output of the unit
+ThermalUnitBlock,InitUpDownTime,Variable,Variable,double,-,h,,optional,Initial up/down time of the unit
+ThermalUnitBlock,InertiaCommitment,Variable,Variable,double,-,,,optional,Inertia commitment of the unit

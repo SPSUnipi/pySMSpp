@@ -1,0 +1,27 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+HydroUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+HydroUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+HydroUnitBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,required,Number of reservoirs
+HydroUnitBlock,NumberArcs,Dimension,Dimension,int,-,-,,required,Number of arcs
+HydroUnitBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,required,Total number of pieces
+HydroUnitBlock,StartArc,Variable,Variable,int,-|NumberArcs,-,,required,Starting point of arc
+HydroUnitBlock,EndArc,Variable,Variable,int,-|NumberArcs,-,,required,Ending point of arc
+HydroUnitBlock,MaxVolumetric,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Maximum volume of reservoir
+HydroUnitBlock,MinVolumetric,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Minimum volume of reservoir
+HydroUnitBlock,Inflows,Variable,Variable,double,TimeHorizon-NumberReservoirs,-,,optional,Inflows
+HydroUnitBlock,MaxFlow,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Maximum volumetric flow rate
+HydroUnitBlock,MinFlow,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Minimum volumetric flow rate
+HydroUnitBlock,MaxPower,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Maximum power output
+HydroUnitBlock,MinPower,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Minimum power output
+HydroUnitBlock,PrimaryRho,Variable,Variable,double,NumberReservoirs-NumberArcs,-,,optional,Fraction of primary reserve
+HydroUnitBlock,SecondaryRho,Variable,Variable,double,NumberReservoirs-NumberArcs,-,,optional,Fraction of secondary reserve
+HydroUnitBlock,NumberPieces,Variable,Variable,int,-,-,,required,Number of pieces
+HydroUnitBlock,ConstantTerm,Variable,Variable,double,NumberPieces,-,,required,Constant multiplier of FTAP function
+HydroUnitBlock,LinearTerm,Variable,Variable,double,NumberPieces,-,,required,Linear multiplier of FTAP function
+HydroUnitBlock,DeltaRampUp,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Ramp-up limit
+HydroUnitBlock,DeltaRampDown,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Ramp-down limit
+HydroUnitBlock,DownhillFlow,Variable,Variable,int,NumberPieces,-,,optional,Downhill flow rate
+HydroUnitBlock,UphillFlow,Variable,Variable,int,NumberPieces,-,,optional,Uphill flow rate
+HydroUnitBlock,InertiaPower,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Inertia power
+HydroUnitBlock,InitialFlowRate,Variable,Variable,double,NumberPieces,-,,optional,Initial flow rate
+HydroUnitBlock,InitialVolumetric,Variable,Variable,double,NumberReservoirs,-,,optional,Initial volumetric

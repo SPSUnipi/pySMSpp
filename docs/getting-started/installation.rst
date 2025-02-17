@@ -47,10 +47,10 @@ You can now install the package locally using pip::
     cd /path/to/your/folder/pySMSpp
     pip install .
 
-If you aim to develop the package, we recommend to install the package in editable mode (option ``-e``) and install the development dependencies (option ``[dev]``)::
+If you aim to develop the package, we recommend to install the package in editable mode (option ``-e``), install the development dependencies (option ``[dev]``), and install the pre-commit to ensure code quality::
 
     pip install -e .[dev]
-
+    pre-commit install
 
 Getting SMS++
 =============
