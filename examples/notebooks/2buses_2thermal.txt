@@ -1,0 +1,133 @@
+Using a default Block configuration
+Solver: CPXMILPSolver
+Version identifier: 22.1.1.0 | 2022-11-27 | 9160aff4d
+CPXPARAM_TimeLimit                               3600
+CPXPARAM_MIP_Pool_AbsGap                         0.0001
+Tried aggregator 1 time.
+MIP Presolve eliminated 432 rows and 264 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.28 ticks)
+
+Root node processing (before b&c):
+  Real time             =    0.00 sec. (0.32 ticks)
+Parallel b&c, 12 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.00 sec. (0.32 ticks)
+Elapsed time: 5.96050000e-03 s
+Status = 10 (Success)
+Upper bound = 1.44000000e+03
+Lower bound = 1.44000000e+03
+
+----- ThermalUnitBlock 0 -----
+Function value = 2.88000000e+02
+Commitment     = [ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ]
+Start up       = [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+Shut down      = [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+Active power   = [      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01      4.00000000e+01 ]
+
+----- ThermalUnitBlock 1 -----
+Function value = 1.15200000e+03
+Commitment     = [ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ]
+Start up       = [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+Shut down      = [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+Active power   = [      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01      6.00000000e+01 ]
+
+----- DCNetworkBlock 0 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 1 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 2 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 3 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 4 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 5 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 6 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 7 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 8 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 9 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 10 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 11 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 12 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 13 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 14 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 15 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 16 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 17 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 18 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 19 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 20 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 21 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 22 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+
+----- DCNetworkBlock 23 -----
+Function value   = 0.00000000e+00
+Power flow       = [     -1.00000000e+01 ]
+

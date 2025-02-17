@@ -164,7 +164,16 @@ class Variable:
         self.var_type = var_type
         self.dimensions = dimensions
         self.data = data
-
+        
+    def __repr__(self):
+        return (
+            f"Variable\n"
+            f"Name: {self.name}\n"
+            f"Variable type: {self.var_type}\n"
+            f"Dimensions: {self.dimensions}\n"
+            f"Data: {self.data}"
+        )
+    
 
 class Block:
     # Class variables
@@ -202,6 +211,21 @@ class Block:
         self.from_kwargs(**kwargs)
 
     # Properties
+    
+    def __repr__(self):
+        # Estrai i nomi delle chiavi, se presenti
+        dim_str = ", ".join(self.dimensions.keys()) if self.dimensions else "None"
+        var_str = ", ".join(self.variables.keys()) if self.variables else "None"
+        attr_str = ", ".join(self.attributes.keys()) if self.attributes else "None"
+        block_str = ", ".join(self.blocks.keys()) if self.blocks else "None"
+    
+        return (
+            f"Block object\n"
+            f"Dimensions: {dim_str}\n"
+            f"Variables: {var_str}\n"
+            f"Attributes: {attr_str}\n"
+            f"Blocks: {block_str}"
+        )
 
     @property
     def attributes(self) -> Dict:
@@ -536,6 +560,10 @@ class SMSNetwork(Block):
         else:
             super().__init__(**kwargs)
             self.file_type = file_type
+        
+    def __repr__(self):
+         return f"SMSNetwork Object\n{super().__repr__()}"
+    
 
     @property
     def file_type(self) -> SMSFileType:
