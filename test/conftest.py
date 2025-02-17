@@ -214,6 +214,17 @@ def build_base_iub(max_p=100.0):
     )
 
 
+def build_base_sub(max_p=100.0, cost=1000.0):
+    """
+    Build a SlackUnitBlock.
+    """
+    return Block().from_kwargs(
+        block_type="SlackUnitBlock",
+        MaxPower=Variable("MaxPower", "float", (), max_p),
+        ActivePowerCost=Variable("ActivePowerCost", "float", (), cost),
+    )
+
+
 def get_new_ucname(b):
     """
     Get the next available UCBlock name.
@@ -282,6 +293,22 @@ def add_iub_to_ucblock(b, **kwargs):
     ucb.dimensions["NumberElectricalGenerators"] += 1
 
     ucb.add("IntermittentUnitBlock", ucname, block=iub)
+    return b
+
+
+def add_sub_to_ucblock(b, **kwargs):
+    """
+    Add a SlackUnitBlock to an existing UCBlock.
+    """
+    sub = build_base_sub(**kwargs)
+
+    ucb = b.blocks["Block_0"]
+    ucname = get_new_ucname(ucb)
+
+    ucb.dimensions["NumberUnits"] += 1
+    ucb.dimensions["NumberElectricalGenerators"] += 1
+
+    ucb.add("SlackUnitBlock", ucname, block=sub)
     return b
 
 

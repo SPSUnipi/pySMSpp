@@ -8,6 +8,7 @@ from conftest import (
     add_bub_to_ucblock,
     add_hub_to_ucblock,
     add_iub_to_ucblock,
+    add_sub_to_ucblock,
 )
 import pytest
 import numpy as np
@@ -70,6 +71,9 @@ def test_optimize_ucsolver_all_components():
     # Add intermittent unit block
     add_iub_to_ucblock(b)
 
+    # Add slack unit block
+    add_sub_to_ucblock(b)
+
     fp_out = get_temp_file("test_optimize_ucsolver_all_components.txt")
     fp_temp = get_temp_file("test_optimize_ucsolver_all_components.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
@@ -84,5 +88,6 @@ def test_optimize_ucsolver_all_components():
         assert "BatteryUnitBlock" in result.log
         assert "HydroUnitBlock" in result.log
         assert "IntermittentUnitBlock" in result.log
+        assert "SlackUnitBlock" in result.log
     else:
         pytest.skip("UCBlockSolver not available in PATH")
