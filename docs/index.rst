@@ -30,6 +30,7 @@ Documentation
 **Examples**
 
 * :doc:`/examples/ucblock_thermal_1bus`
+* :doc:`/examples/ucblock_2thermal_line`
 
 .. toctree::
    :hidden:
@@ -37,6 +38,8 @@ Documentation
    :caption: Examples
 
    examples/ucblock_thermal_1bus
+   examples/ucblock_2thermal_line
+
 
 **User Guide**
 
