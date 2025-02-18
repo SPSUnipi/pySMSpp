@@ -169,3 +169,7 @@ test/temp*
 
 # lp files
 *.lp
+
+# SMS and pypsa files
+*.nc
+*.txt
