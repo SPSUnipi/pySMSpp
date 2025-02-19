@@ -4,3 +4,5 @@ IntermittentUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
 IntermittentUnitBlock,MinPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Minimum power output of the unit
 IntermittentUnitBlock,MaxPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum power output of the unit
 IntermittentUnitBlock,InitialPower,Variable,Variable,double,-,MW,,optional,Initial power output of the unit
+IntermittentUnitBlock,Gamma,Variable,Variable,double,-,-,,optional,Uncertainty in output power
+IntermittentUnitBlock,Kappa,Variable,Variable,double,-,-,,optional,Capacity expansion parameter

@@ -6,6 +6,9 @@ UCBlock,NumberUnits,Dimension,Dimension,int,-,-,,required,Number of units
 UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number of electrical generators
 UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1.0,optional,Number of nodes
 UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
+UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs
+UCBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,optional,Number of reservoirs
+UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces of the power flow function
 UCBlock,GeneratorNode,Variable,Variable,int,-|NumberElectricalGenerators,-,,optional,List of buses of connection by unit
 UCBlock,StartLine,Variable,Variable,int,-|NumberLines,-,,optional,Start buses of lines
 UCBlock,EndLine,Variable,Variable,int,-|NumberLines,-,,optional,End buses of lines
