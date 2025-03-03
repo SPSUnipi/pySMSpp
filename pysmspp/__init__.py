@@ -4,6 +4,8 @@ from pysmspp.block import (
     Block as Block,
     SMSFileType as SMSFileType,
     Variable as Variable,
+    components as components,
+    blocks as blocks,
 )
 from pysmspp.smspp_tools import (
     SMSPPSolverTool as SMSPPSolverTool,

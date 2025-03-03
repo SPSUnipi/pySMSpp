@@ -9,6 +9,18 @@ from conftest import (
 )
 
 
+def test_blocks_entry():
+    from pysmspp import blocks
+
+    assert "ThermalUnitBlock" in blocks.keys()
+
+
+def test_components_entry():
+    from pysmspp import components
+
+    assert "ThermalUnitBlock" in components.index
+
+
 def test_attribute():
     b = SMSNetwork()
 
