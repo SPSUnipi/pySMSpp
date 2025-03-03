@@ -7,7 +7,7 @@ ThermalUnitBlock,StartUpCost,Variable,Variable,double,-|TimeHorizon,USD,,optiona
 ThermalUnitBlock,QuadTerm,Variable,Variable,double,-|TimeHorizon,-,,optional,Quadratic term of the cost function
 ThermalUnitBlock,LinearTerm,Variable,Variable,double,-|TimeHorizon,USD/MWh,,optional,Linear term of the cost function
 ThermalUnitBlock,ConstantTerm,Variable,Variable,double,-|TimeHorizon,USD,,optional,Constant term of the cost function
-ThermalUnitBlock,FixedConsumption,Variable,Variable,double,1| [T],-,,optional,Fixed consumption
+ThermalUnitBlock,FixedConsumption,Variable,Variable,double,1|TimeHorizon,-,,optional,Fixed consumption
 ThermalUnitBlock,MinUpTime,Variable,Variable,double,-,h,,optional,Minimum up time of the unit
 ThermalUnitBlock,MinDownTime,Variable,Variable,double,-,h,,optional,Minimum down time of the unit
 ThermalUnitBlock,InitialPower,Variable,Variable,double,-,MW,,optional,Initial power output of the unit
