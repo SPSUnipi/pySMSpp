@@ -12,9 +12,9 @@ UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces
 UCBlock,GeneratorNode,Variable,Variable,int,-|NumberElectricalGenerators,-,,optional,List of buses of connection by unit
 UCBlock,StartLine,Variable,Variable,int,-|NumberLines,-,,optional,Start buses of lines
 UCBlock,EndLine,Variable,Variable,int,-|NumberLines,-,,optional,End buses of lines
-UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Minimum power flow of lines
-UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Maximum power flow of lines
-UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines|TimeHorizon|NumberNodes-TimeHorizon,Siemens,,optional,Susceptance of lines
+UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Minimum power flow of lines
+UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Maximum power flow of lines
+UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines,Siemens,,optional,Susceptance of lines
 UCBlock,LineResistance,Variable,Variable,double,-|NumberLines,Ohm,,optional,Resistance of lines
 UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
 UCBlock,UnitBlock_*,Block,Group,UnitBlock,list,-.-,,optional,Unit blocks
