@@ -75,6 +75,7 @@ def add_base_ucblock(
     max_p=100.0,
     time_horizon=24,
     active_p=10.0,
+    name_inner_block="Block_0",
 ):
     """
     Create a base UCBlock with 3 nodes and 2 lines.
@@ -121,7 +122,7 @@ def add_base_ucblock(
             ("NumberElectricalGenerators",),
             [0] * n_elec_generators,
         )
-    b.add("UCBlock", "Block_0", **kwargs)
+    b.add("UCBlock", name_inner_block, **kwargs)
 
 
 def build_base_tub(max_p=100.0, linear_term=0.3):
@@ -232,13 +233,13 @@ def get_new_ucname(b):
     return f"UnitBlock_{len(b.blocks)}"
 
 
-def add_tub_to_ucblock(b, **kwargs):
+def add_tub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     """
     Add a ThermalUnitBlock to an existing UCBlock.
     """
     tb = build_base_tub(**kwargs)
 
-    ucb = b.blocks["Block_0"]
+    ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
     ucb.dimensions["NumberUnits"] += 1
@@ -248,13 +249,13 @@ def add_tub_to_ucblock(b, **kwargs):
     return b
 
 
-def add_bub_to_ucblock(b, **kwargs):
+def add_bub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     """
     Add a BatteryUnitBlock to an existing UCBlock.
     """
     bub = build_base_bub(**kwargs)
 
-    ucb = b.blocks["Block_0"]
+    ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
     ucb.dimensions["NumberUnits"] += 1
@@ -264,13 +265,13 @@ def add_bub_to_ucblock(b, **kwargs):
     return b
 
 
-def add_hub_to_ucblock(b, **kwargs):
+def add_hub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     """
     Add a HydroUnitBlock to an existing UCBlock.
     """
     hub = build_base_hub(**kwargs)
 
-    ucb = b.blocks["Block_0"]
+    ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
     ucb.dimensions["NumberUnits"] += 1
@@ -280,13 +281,13 @@ def add_hub_to_ucblock(b, **kwargs):
     return b
 
 
-def add_iub_to_ucblock(b, **kwargs):
+def add_iub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     """
     Add a IntermittentUnitBlock to an existing UCBlock.
     """
     iub = build_base_iub(**kwargs)
 
-    ucb = b.blocks["Block_0"]
+    ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
     ucb.dimensions["NumberUnits"] += 1
@@ -296,13 +297,13 @@ def add_iub_to_ucblock(b, **kwargs):
     return b
 
 
-def add_sub_to_ucblock(b, **kwargs):
+def add_sub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     """
     Add a SlackUnitBlock to an existing UCBlock.
     """
     sub = build_base_sub(**kwargs)
 
-    ucb = b.blocks["Block_0"]
+    ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
     ucb.dimensions["NumberUnits"] += 1
@@ -312,7 +313,7 @@ def add_sub_to_ucblock(b, **kwargs):
     return b
 
 
-def add_ucblock_with_one_unit(b, **kwargs):
+def add_ucblock_with_one_unit(b, name_inner_block="Block_0", **kwargs):
     """
     Create a UCBlock with one unit and a ThermalUnitBlock.
     """
@@ -320,5 +321,27 @@ def add_ucblock_with_one_unit(b, **kwargs):
     n_egs = kwargs.get("n_elec_generators", 1)
     add_base_ucblock(b, n_units=n_units, n_elec_generators=n_egs, **kwargs)
     tb = build_base_tub()
-    b.blocks["Block_0"].add("ThermalUnitBlock", "UnitBlock_0", block=tb)
+    b.blocks[name_inner_block].add("ThermalUnitBlock", "UnitBlock_0", block=tb)
+    return b
+
+
+def build_base_investmentblock(b, innerblock=None):
+    """
+    Build a sample InvestmentBlock to the network.
+    """
+    if innerblock is None:
+        temp = Block()
+        add_ucblock_with_one_unit(temp, name_inner_block="Block_0", active_p=200.0)
+        innerblock = temp.blocks["Block_0"]
+    b.add(
+        "InvestmentBlock",
+        "InvestmentBlock",
+        NumAssets=1,
+        Assets=Variable("Assets", "int", ("NumAssets",), [1]),
+        AssetType=Variable("AssetType", "int", ("NumAssets",), [0]),
+        Cost=Variable("Cost", "int", ("NumAssets",), [1]),
+        LowerBound=Variable("LowerBound", "double", ("NumAssets",), [1e-6]),
+        UpperBound=Variable("UpperBound", "double", ("NumAssets",), [10000.0]),
+        InnerBlock=innerblock,
+    )
     return b

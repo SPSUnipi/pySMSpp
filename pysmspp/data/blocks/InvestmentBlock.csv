@@ -1,0 +1,16 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+InvestmentBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+InvestmentBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+InvestmentBlock,NumAssets,Dimension,Dimension,int,-,-,,required,Number of assets subject to investment
+InvestmentBlock,NumConstraints,Dimension,Dimension,int,-,-,,optional,Number of linear constraints
+InvestmentBlock,Assets,Variable,Variable,int,NumAssets,-,,required,Asset index in the list of assets subject to investment
+InvestmentBlock,AssetType,Variable,Variable,int,-|NumAssets,-,,required,Type of each asset (0: UnitBlock; 1: NetworkBlock)
+InvestmentBlock,Cost,Variable,Variable,double,-|NumAssets,-,,required,Investment cost of each asset
+InvestmentBlock,DisinvestmentCost,Variable,Variable,double,-|NumAssets,-,,required,Disinvestment cost of each asset
+InvestmentBlock,LowerBound,Variable,Variable,double,-|NumAssets,-,,optional,Minimum capacity of each asset
+InvestmentBlock,UpperBound,Variable,Variable,double,-|NumAssets,-,,optional,Maximum capacity of each asset
+InvestmentBlock,InstalledQuantity,Variable,Variable,double,-|NumAssets,-,,optional,Installed capacity of each asset
+InvestmentBlock,Constraints_LowerBound,Variable,Variable,double,-|NumConstraints,-,,optional,Lower bound of each constraint
+InvestmentBlock,Constraints_UpperBound,Variable,Variable,double,-|NumConstraints,-,,optional,Upper bound of each constraint
+InvestmentBlock,Constraints_A,Variable,Variable,double,-|NumConstraints-NumAssets,-,,optional,Coefficients of matrix of the linear constraints
+InvestmentBlock,InnerBlock,Block,Block,block,-,-,,optional,Innerblock of the investment block

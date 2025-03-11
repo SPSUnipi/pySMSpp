@@ -215,7 +215,7 @@ class Block:
             f"Attributes: {attr_str}\n"
             f"Blocks: {block_str}"
         )
-    
+
     # Properties
 
     @property
@@ -343,10 +343,17 @@ class Block:
         """
         Add a block.
 
+        >>> add_block("Block_0", block=Block())
+        >>> add_block("Block_0", Block())
+        >>> add_block("Block_0", **kwargs})
+
         Parameters
         ----------
         name : str
             The name of the block
+        args : list
+            The arguments to pass to the Block constructor.
+            If a Block argument is passed, it is used as the block.
         kwargs : dict
             The attributes of the block.
             If the argument "block" is present, the block is set to that value.
@@ -363,6 +370,11 @@ class Block:
             if not isinstance(kwargs["block"], Block):
                 raise ValueError("block must be a Block object.")
             self.blocks[name] = kwargs["block"]
+        elif len(args) >= 1:
+            if len(args) == 1 and isinstance(args[0], Block):
+                self.blocks[name] = args[0]
+            else:
+                raise ValueError("Non accepted arguments have been passed.")
         else:
             self.blocks[name] = Block().from_kwargs(**kwargs)
         return self
@@ -553,7 +565,7 @@ class SMSNetwork(Block):
             self.file_type = file_type
 
     def __repr__(self):
-         return f"SMSNetwork Object\n{super().__repr__()}"
+        return f"SMSNetwork Object\n{super().__repr__()}"
 
     @property
     def file_type(self) -> SMSFileType:

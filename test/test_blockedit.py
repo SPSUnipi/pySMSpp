@@ -6,6 +6,7 @@ from conftest import (
     add_bub_to_ucblock,
     add_hub_to_ucblock,
     add_iub_to_ucblock,
+    build_base_investmentblock,
 )
 
 
@@ -112,3 +113,11 @@ def test_add_iub():
     assert (
         b.blocks["Block_0"].blocks["UnitBlock_0"].block_type == "IntermittentUnitBlock"
     )
+
+
+def test_investment_block():
+    b = SMSNetwork()
+    build_base_investmentblock(b)
+    print(b)
+    assert b.blocks["InvestmentBlock"].block_type == "InvestmentBlock"
+    assert b.blocks["InvestmentBlock"].blocks["InnerBlock"].block_type == "UCBlock"
