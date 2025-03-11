@@ -10,4 +10,5 @@ from pysmspp.block import (
 from pysmspp.smspp_tools import (
     SMSPPSolverTool as SMSPPSolverTool,
     UCBlockSolver as UCBlockSolver,
+    InvestmentBlockTestSolver as InvestmentBlockTestSolver,
 )

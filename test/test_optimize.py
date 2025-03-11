@@ -1,4 +1,10 @@
-from pysmspp import SMSConfig, SMSNetwork, SMSFileType, UCBlockSolver
+from pysmspp import (
+    SMSConfig,
+    SMSNetwork,
+    SMSFileType,
+    UCBlockSolver,
+    InvestmentBlockTestSolver,
+)
 from conftest import (
     get_network,
     get_temp_file,
@@ -89,5 +95,24 @@ def test_optimize_ucsolver_all_components():
         assert "HydroUnitBlock" in result.log
         assert "IntermittentUnitBlock" in result.log
         assert "SlackUnitBlock" in result.log
+    else:
+        pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_investmentsolvertest():
+    fp_network = get_network("investment_1N.nc4")
+    fp_out = get_temp_file("test_optimize_investmentsolvertest.txt")
+    configfile = SMSConfig(template="InvestmentBlock/BSPar.txt")
+
+    ucs = InvestmentBlockTestSolver(
+        configfile=str(configfile),
+        fp_network=fp_network,
+        fp_out=fp_out,
+    )
+
+    if InvestmentBlockTestSolver.is_available():
+        ucs.optimize()
+
+        assert "Success" in ucs.status
     else:
         pytest.skip("UCBlockSolver not available in PATH")
