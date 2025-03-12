@@ -58,7 +58,6 @@ class UCBlockSolver(SMSPPSolverTool):
         fp_network: Path | str,
         configfile: Path | str,
         fp_out: Path | str = None,
-        force=True,
     ):
         """
         Parameters
@@ -69,8 +68,6 @@ class UCBlockSolver(SMSPPSolverTool):
             Path to the configuration file.
         fp_out : Path | str, optional
             Path to the output file, by default None.
-        force : bool, optional
-            Whether to overwrite existing files, by default True.
         """
         self._log = None
         self._status = None
@@ -81,10 +78,9 @@ class UCBlockSolver(SMSPPSolverTool):
         self.fp_out = None if fp_out is None else str(Path(fp_out).resolve())
         if not self.configdir.endswith("/"):
             self.configdir += "/"
-        self.force = force
 
     def __repr__(self):
-        return f"UCBlockSolverTool\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}\n\tforce={self.force}"
+        return f"UCBlockSolverTool\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}"
 
     @staticmethod
     def is_available():
@@ -169,7 +165,7 @@ class UCBlockSolver(SMSPPSolverTool):
 
 class InvestmentBlockTestSolver(SMSPPSolverTool):
     """
-    Class to interact with the InvestmentBlockTestSolver tool from SMS++.
+    Class to interact with the InvestmentBlockTestSolver tool from SMS++, with executable file "InvestmentBlock_test".
     """
 
     def __init__(
@@ -177,9 +173,11 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         fp_network: Path | str,
         configfile: Path | str,
         fp_out: Path | str = None,
-        force=True,
+        out_dir: Path | str = None,
     ):
         """
+        Constructor for the InvestmentBlockTestSolver, with executable file "InvestmentBlock_test".
+
         Parameters
         ----------
         fp_network : Path | str
@@ -188,8 +186,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             Path to the configuration file.
         fp_out : Path | str, optional
             Path to the output file, by default None.
-        force : bool, optional
-            Whether to overwrite existing files, by default True.
+        out_dir : Path | str, optional
+            Path to the output directory, by default None.
         """
         self._log = None
         self._status = None
@@ -197,13 +195,19 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         self.fp_network = str(Path(fp_network).resolve())
         self.configfile = str(Path(configfile).resolve())
         self.configdir = str(Path(configfile).resolve().parent.resolve())
-        self.fp_out = None if fp_out is None else str(Path(fp_out).resolve())
+        self.fp_out = None if fp_out is None else str(Path(out_dir).resolve())
+        self.outdir = (
+            str(Path(fp_out).resolve().parent)
+            if out_dir is None
+            else str(Path(out_dir).resolve())
+        )
         if not self.configdir.endswith("/"):
             self.configdir += "/"
-        self.force = force
+        if not self.outdir.endswith("/"):
+            self.outdir += "/"
 
     def __repr__(self):
-        return f"InvestmentBlockTestSolver\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tconfigdir={self.configdir}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}\n\tforce={self.force}"
+        return f"InvestmentBlockTestSolver\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tconfigdir={self.configdir}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}\n\tout_dir={self.out_dir}"
 
     @staticmethod
     def is_available():
@@ -256,6 +260,139 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
     ):  # TODO: needs revision to better capture the output
         """
         Check the output of the InvestmentBlockTestSolver.
+        It will extract the status, upper bound, lower bound, and objective value from the log.
+
+        Parameters
+        ----------
+        log : str
+            The path to the output file.
+        """
+        if self._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        res = re.search("Solution value: (.*)\n", self._log)
+
+        if not res:  # if success not found
+            self._status = "Failed"
+            self._objective_value = np.nan
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+            return
+
+        self._objective_value = float(res.group(1).replace("\r", ""))
+
+        res = re.search("Solver status: (.*)\n", self._log)
+        smspp_status = res.group(1).replace("\r", "")
+
+        if np.isfinite(self._objective_value):
+            self._status = f"Success ({smspp_status})"
+        else:
+            self._status = f"Failed ({smspp_status})"
+
+        self._lower_bound = np.nan
+        self._upper_bound = np.nan
+
+
+class InvestmentBlockSolver(SMSPPSolverTool):
+    """
+    Class to interact with the InvestmentBlockSolver tool from SMS++, with name "investment_solver".
+    """
+
+    def __init__(
+        self,
+        fp_network: Path | str,
+        configfile: Path | str,
+        fp_out: Path | str = None,
+        out_dir: Path | str = None,
+    ):
+        """
+        Constructor for the InvestmentBlockSolver, with executable file "investment_solver".
+
+        Parameters
+        ----------
+        fp_network : Path | str
+            Path to the SMSpp network to solve.
+        configfile : Path | str
+            Path to the configuration file.
+        fp_out : Path | str, optional
+            Path to the output file, by default None.
+        out_dir : Path | str, optional
+            Path to the output directory, by default None.
+        """
+        self._log = None
+        self._status = None
+        self._objective_value = None
+        self.fp_network = str(Path(fp_network).resolve())
+        self.configfile = str(Path(configfile).resolve())
+        self.configdir = str(Path(configfile).resolve().parent.resolve())
+        self.fp_out = None if fp_out is None else str(Path(out_dir).resolve())
+        self.outdir = (
+            str(Path(fp_out).resolve().parent)
+            if out_dir is None
+            else str(Path(out_dir).resolve())
+        )
+        if not self.configdir.endswith("/"):
+            self.configdir += "/"
+        if not self.outdir.endswith("/"):
+            self.outdir += "/"
+
+    def __repr__(self):
+        return f"InvestmentBlockTestSolver\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tconfigdir={self.configdir}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}\n\tout_dir={self.out_dir}"
+
+    @staticmethod
+    def is_available():
+        """
+        Check if the SMS++ tool is available in the PATH.
+        """
+        return shutil.which("investment_solver") is not None
+
+    def optimize(self, **kwargs):
+        """
+        Run the InvestmentBlockSolver tool.
+
+        Parameters
+        ----------
+        fp_n : str
+            File path to the network file.
+        **kwargs
+            Additional keyword arguments to pass to the function.
+        """
+        if not Path(self.configfile).exists():
+            raise FileNotFoundError(
+                f"Configuration file {self.configfile} does not exist."
+            )
+        if not Path(self.fp_network).exists():
+            raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
+        exec_path = f"investment_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
+        if self.outdir is not None:
+            exec_path += f" -o {self.outdir}"
+        result = subprocess.run(
+            exec_path,
+            capture_output=True,
+            shell=True,
+            cwd=Path(self.fp_network).parent,
+        )
+        self._log = (
+            result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
+        )
+        self.parse_ucblock_solver_log()
+        if result.returncode != 0:
+            raise ValueError(
+                f"Failed to run investment_solver; error log:\n{result.stderr.decode('utf-8')}"
+            )
+        # write output to file, if option passed
+        if self.fp_out is not None:
+            Path(self.fp_out).parent.mkdir(parents=True, exist_ok=True)
+            with open(self.fp_out, "w") as f:
+                f.write(self._log)
+
+        return self
+
+    def parse_ucblock_solver_log(
+        self,
+    ):  # TODO: needs revision to better capture the output
+        """
+        Check the output of the InvestmentBlockSolver.
         It will extract the status, upper bound, lower bound, and objective value from the log.
 
         Parameters

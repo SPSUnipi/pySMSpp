@@ -19,8 +19,12 @@ def get_network(fname=sample_networks[0]):
     return get_datafile(fname)
 
 
+def get_temp_folder():
+    return os.path.join(os.path.dirname(__file__), "temp")
+
+
 def get_temp_file(fname):
-    return os.path.join(os.path.dirname(__file__), "temp", fname)
+    return os.path.join(get_temp_folder(), fname)
 
 
 def check_compare_nc(fp_n1, fp_n2, fp_out=get_temp_file("tmp.txt")):
