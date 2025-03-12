@@ -158,6 +158,20 @@ class Variable:
         dimensions: tuple,
         data: float | list | np.ndarray,
     ):
+        """
+        Initialize a Variable object.
+
+        Parameters
+        ----------
+        name : str
+            The name of the variable
+        var_type : str
+            The type of the variable
+        dimensions : tuple
+            The dimensions of the variable
+        data : float | list | np.ndarray
+            The data of the variable
+        """
         if dimensions is None:
             dimensions = ()
         self.name = name
@@ -187,6 +201,36 @@ class Block:
         blocks: Dict = None,
         **kwargs,
     ):
+        """
+        Initialize a Block object.
+        A block object can be created from a NetCDF file, or, alternatively, from the given attributes, dimensions, variables, and blocks.
+        Moreover, optional additional arguments can be passed to the Block constructor to override the values loaded from files or from the arguments (attributes, dimensions, variables and blocks).
+
+        Example of possible usage:
+        >>> Block()
+        >>> Block(fp="file.nc")
+        >>> Block(attributes={"block_type": "UCBlock"})
+        >>> Block(dimensions={"n": 10})
+        >>> Block(variables={"var1": Variable("var1", "float", None, 0.0)})
+        >>> Block(blocks={"Block_0": Block()})
+        >>> Block(fp="file.nc", attributes={"block_type": "UCBlock"})
+        >>> Block(MinPower=Variable("MinPower", "float", None, 0.0))
+
+        Parameters
+        ----------
+        fp : Path | str (default: "")
+            The path to the NetCDF file to read.
+        attributes : Dict (default: None)
+            The attributes of the block.
+        dimensions : Dict (default: None)
+            The dimensions of the block.
+        variables : Dict (default: None)
+            The variables of the block.
+        blocks : Dict (default: None)
+            The blocks of the block.
+        kwargs : dict
+            The arguments to pass to the Block constructor.
+        """
         self.components = Dict(components.T.to_dict())
         if fp:
             obj = self.from_netcdf(fp)
@@ -210,14 +254,13 @@ class Block:
 
         return (
             f"Block object\n"
-            f"Dimensions: {dim_str}\n"
-            f"Variables: {var_str}\n"
-            f"Attributes: {attr_str}\n"
-            f"Blocks: {block_str}"
+            f"Attributes ({len(self.attributes)}): {attr_str}\n"
+            f"Dimensions ({len(self.dimensions)}): {dim_str}\n"
+            f"Variables ({len(self.variables)}): {var_str}\n"
+            f"Blocks ({len(self.blocks)}): {block_str}"
         )
 
     # Properties
-
     @property
     def attributes(self) -> Dict:
         """Return the attributes of the block."""

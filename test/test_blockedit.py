@@ -69,6 +69,19 @@ def test_fromkwargs():
     assert tb.variables["MinPower"].data == 0
 
 
+def test_block_constructor():
+    kwargs = {
+        "block_type": "ThermalUnitBlock",
+        "MinPower": Variable("MinPower", "float", None, 0.0),
+        "MaxPower": Variable("MaxPower", "float", None, 100.0),
+        "LinearTerm": Variable("LinearTerm", "float", None, 0.3),
+    }
+    tb1 = Block().from_kwargs(**kwargs)
+    tb2 = Block(**kwargs)
+    assert tb1.block_type == tb2.block_type
+    assert tb1.variables["MinPower"].data == tb2.variables["MinPower"].data
+
+
 def test_add_block():
     b = SMSNetwork()
     add_base_ucblock(b)
