@@ -145,6 +145,44 @@ class SMSFileType(IntEnum):
     eConfigFile = 2  # Configuration file
 
 
+class Attribute:
+    name: str
+    value: str | int | float
+
+    def __init__(self, name: str, value: str | int | float):
+        """
+        Initialize an Attribute object.
+
+        Parameters
+        ----------
+        name : str
+            The name of the attribute
+        value : str | int | float
+            The value of the attribute
+        """
+        self.name = name
+        self.value = value
+
+
+class Dimension:
+    name: str
+    value: int
+
+    def __init__(self, name: str, value: int):
+        """
+        Initialize a Dimension object.
+
+        Parameters
+        ----------
+        name : str
+            The name of the dimension
+        value : int
+            The value of the dimension
+        """
+        self.name = name
+        self.value = value
+
+
 class Variable:
     name: str
     var_type: str
