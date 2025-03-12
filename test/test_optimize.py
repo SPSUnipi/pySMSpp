@@ -34,7 +34,7 @@ def test_optimize_example():
         fp_out=fp_out,
     )
 
-    if UCBlockSolver.is_available():
+    if ucs.is_available():
         ucs.optimize()
 
         assert "Success" in ucs.status
@@ -51,7 +51,7 @@ def test_optimize_ucsolver():
     fp_temp = get_temp_file("test_optimize_ucsolver.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
-    if UCBlockSolver.is_available():
+    if UCBlockSolver().is_available():
         result = b.optimize(configfile, fp_temp, fp_out)
 
         assert "Success" in result.status
@@ -84,7 +84,7 @@ def test_optimize_ucsolver_all_components():
     fp_temp = get_temp_file("test_optimize_ucsolver_all_components.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
-    if UCBlockSolver.is_available():
+    if UCBlockSolver().is_available():
         result = b.optimize(configfile, fp_temp, fp_out)
 
         assert "success" in result.status.lower()
@@ -110,7 +110,7 @@ def test_investmentsolvertest():
         fp_out=fp_out,
     )
 
-    if InvestmentBlockTestSolver.is_available():
+    if InvestmentBlockTestSolver().is_available():
         ucs.optimize()
 
         assert "Success" in ucs.status
