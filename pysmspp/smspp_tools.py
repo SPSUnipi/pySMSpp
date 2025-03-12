@@ -76,6 +76,29 @@ class SMSPPSolverTool:
     def __repr__(self):
         return f"{type(self).__name__}\n\t\n\texec_file={self._exec_file}\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}"
 
+    def help(self, print_message=True):
+        """
+        Print the help message of the SMS++ solver tool.
+
+        >>> solver.help()
+
+        Parameters
+        ----------
+        print_message : bool, optional
+            Whether to print the message, by default True.
+
+        Returns
+        -------
+        The help message.
+        """
+        result = subprocess.run(
+            f"{self._exec_file} {self._help_option}", capture_output=True, shell=True
+        )
+        msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
+        if print_message:
+            print(msg)
+        return msg
+
     def optimize(self, **kwargs):
         """
         Run the SMSPP Solver tool.

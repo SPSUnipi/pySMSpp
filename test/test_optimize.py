@@ -23,6 +23,13 @@ RTOL = 1e-4
 ATOL = 1e-2
 
 
+def test_help():
+    ucs = UCBlockSolver()
+    help_msg = ucs.help()
+
+    assert "SMS++ unit commitment solver" in help_msg
+
+
 def test_optimize_example():
     fp_network = get_network()
     fp_out = get_temp_file("test_optimize_example.txt")
