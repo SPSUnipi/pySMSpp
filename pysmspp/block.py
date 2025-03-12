@@ -85,7 +85,7 @@ class SMSConfig:
     def get_templates():
         """Return the list of available templates."""
         dirconfigs = Path(dir_name, "data", "configs")
-        return [f.name for f in dirconfigs.glob("*.txt")]
+        return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
 def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
