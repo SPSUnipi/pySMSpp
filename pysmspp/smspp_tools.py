@@ -402,3 +402,84 @@ class InvestmentBlockSolver(SMSPPSolverTool):
 
         self._lower_bound = np.nan
         self._upper_bound = np.nan
+
+
+class SDDPSolver(SMSPPSolverTool):
+    """
+    Class to interact with the SDDPSolver tool from SMS++, with name "sddp_solver".
+    """
+
+    def __init__(
+        self,
+        fp_network: Path | str = "",
+        configfile: Path | str = "",
+        fp_out: Path | str = None,
+        out_dir: Path | str = None,
+    ):
+        """
+        Constructor for the SDDPSolver, with executable file "sddp_solver".
+
+        Parameters
+        ----------
+        fp_network : Path | str
+            Path to the SMSpp network to solve.
+        configfile : Path | str
+            Path to the configuration file.
+        fp_out : Path | str, optional
+            Path to the output file, by default None.
+        out_dir : Path | str, optional
+            Path to the output directory, by default None.
+        """
+        super().__init__(
+            exec_file="sddp_solver",
+            exec_optimize=self.calculate_executable_call,
+            help_option="-h",
+            fp_network=fp_network,
+            configfile=configfile,
+            fp_out=fp_out,
+        )
+
+    def calculate_executable_call(self):
+        exec_path = (
+            f"sddp_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
+        )
+        if self.outdir is not None:
+            exec_path += f" -o {self.outdir}"
+        return exec_path
+
+    def parse_ucblock_solver_log(
+        self,
+    ):  # TODO: needs revision to better capture the output
+        """
+        Check the output of the InvestmentBlockSolver.
+        It will extract the status, upper bound, lower bound, and objective value from the log.
+
+        Parameters
+        ----------
+        log : str
+            The path to the output file.
+        """
+        if self._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        res = re.search("Solution value: (.*)\n", self._log)
+
+        if not res:  # if success not found
+            self._status = "Failed"
+            self._objective_value = np.nan
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+            return
+
+        self._objective_value = float(res.group(1).replace("\r", ""))
+
+        res = re.search("Solver status: (.*)\n", self._log)
+        smspp_status = res.group(1).replace("\r", "")
+
+        if np.isfinite(self._objective_value):
+            self._status = f"Success ({smspp_status})"
+        else:
+            self._status = f"Failed ({smspp_status})"
+
+        self._lower_bound = np.nan
+        self._upper_bound = np.nan
