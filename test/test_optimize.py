@@ -25,9 +25,13 @@ ATOL = 1e-2
 
 def test_help():
     ucs = UCBlockSolver()
-    help_msg = ucs.help()
 
-    assert "SMS++ unit commitment solver" in help_msg
+    if ucs.is_available():
+        help_msg = ucs.help()
+
+        assert "SMS++ unit commitment solver" in help_msg
+    else:
+        pytest.skip("UCBlockSolver not available in PATH")
 
 
 def test_optimize_example():
@@ -122,4 +126,4 @@ def test_investmentsolvertest():
 
         assert "Success" in ucs.status
     else:
-        pytest.skip("UCBlockSolver not available in PATH")
+        pytest.skip("InvestmentBlockTestSolver not available in PATH")
