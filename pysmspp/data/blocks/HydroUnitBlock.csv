@@ -13,6 +13,7 @@ HydroUnitBlock,MaxFlow,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-N
 HydroUnitBlock,MinFlow,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Minimum volumetric flow rate
 HydroUnitBlock,MaxPower,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Maximum power output
 HydroUnitBlock,MinPower,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Minimum power output
+HydroUnitBlock,ActivePowerCost,Variable,Variable,double,-|NumberArcs,-,,optional,Active power cost of hydro unit
 HydroUnitBlock,PrimaryRho,Variable,Variable,double,NumberReservoirs-NumberArcs,-,,optional,Fraction of primary reserve
 HydroUnitBlock,SecondaryRho,Variable,Variable,double,NumberReservoirs-NumberArcs,-,,optional,Fraction of secondary reserve
 HydroUnitBlock,NumberPieces,Variable,Variable,int,-,-,,required,Number of pieces

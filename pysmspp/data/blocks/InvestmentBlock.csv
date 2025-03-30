@@ -5,6 +5,7 @@ InvestmentBlock,NumAssets,Dimension,Dimension,int,-,-,,required,Number of assets
 InvestmentBlock,NumConstraints,Dimension,Dimension,int,-,-,,optional,Number of linear constraints
 InvestmentBlock,Assets,Variable,Variable,int,NumAssets,-,,required,Asset index in the list of assets subject to investment
 InvestmentBlock,AssetType,Variable,Variable,int,-|NumAssets,-,,required,Type of each asset (0: UnitBlock; 1: NetworkBlock)
+InvestmentBlock,ActivePowerCost,Variable,Variable,int,-|TimeHorizon,-,,required,Active power cost
 InvestmentBlock,Cost,Variable,Variable,double,-|NumAssets,-,,required,Investment cost of each asset
 InvestmentBlock,DisinvestmentCost,Variable,Variable,double,-|NumAssets,-,,required,Disinvestment cost of each asset
 InvestmentBlock,LowerBound,Variable,Variable,double,-|NumAssets,-,,optional,Minimum capacity of each asset
