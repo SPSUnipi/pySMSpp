@@ -1,0 +1,10 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+UCBlockSolution,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+UCBlockSolution,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+UCBlockSolution,TimeHorizon,Dimension,Dimension,int,-,-,,required,Time horizon of the optimization problem
+UCBlockSolution,NumberUnits,Dimension,Dimension,int,-,-,,required,Number of units
+UCBlockSolution,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number of electrical generators
+UCBlockSolution,NumberNodes,Dimension,Dimension,int,-,-,1.0,optional,Number of nodes
+UCBlockSolution,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
+UCBlockSolution,ActivePowerDuals,Variable,Variable,float,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,-,,optional,Dual variable of active power
+UCBlockSolution,UnitBlock_*,Block,Block,UnitBlockSolution,list,-,,optional,Unit Block Solutions
