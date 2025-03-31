@@ -92,7 +92,7 @@ jobs:
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --install-root=$INSTALL_ROOT
+        sudo ./INSTALL.sh --install-root=$INSTALL_ROOT --without-scip
         echo $INSTALL_ROOT >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
@@ -108,7 +108,7 @@ jobs:
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        .\INSTALL.ps1 --install-root=$INSTALL_WINDOWS
+        .\INSTALL.ps1 --install-root=$INSTALL_WINDOWS --without-scip
         echo $INSTALL_WINDOWS\Release >> $GITHUB_PATH
 
     - name: Test package with SMSpp (windows)
