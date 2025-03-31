@@ -69,8 +69,8 @@ jobs:
         # - windows-latest
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
-      SMSPP_WINDOWS: C:\smspp
-      SMSPP_ROOT: ./smspp
+      INSTALL_WINDOWS: "C:"
+      INSTALL_ROOT: "."
     steps:
     - uses: actions/checkout@v4
       with:
@@ -91,16 +91,17 @@ jobs:
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
+        mkdir $INSTALL_ROOT
         chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --install-root=$SMSPP_ROOT
-        echo $SMSPP_ROOT >> $GITHUB_PATH
+        sudo ./INSTALL.sh --install-root=$INSTALL_ROOT
+        echo $INSTALL_ROOT >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
 
     - name: Test package with SMSpp (linux and mac)
       if: runner.os != 'windows'
       run: |
-        pytest
+        pytest --force-smspp
 
     - name: Install SMSpp (windows)
       if: runner.os == 'windows'
@@ -108,10 +109,11 @@ jobs:
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        .\INSTALL.ps1 --install-root=$SMSPP_WINDOWS
-        echo $SMSPP_WINDOWS >> $GITHUB_PATH
+        mkdir $INSTALL_WINDOWS
+        .\INSTALL.ps1 --install-root=$INSTALL_WINDOWS
+        echo $INSTALL_WINDOWS\Release >> $GITHUB_PATH
 
     - name: Test package with SMSpp (windows)
       if: runner.os == 'windows'
       run: |
-        pytest
+        pytest --force-smspp
