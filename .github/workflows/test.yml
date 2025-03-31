@@ -65,12 +65,10 @@ jobs:
         - "3.12"
         os:
         - ubuntu-latest
-        # - macos-latest
-        # - windows-latest
+        - macos-latest
+        - windows-latest
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
-      INSTALL_WINDOWS: "C:"
-      INSTALL_ROOT: "."
     steps:
     - uses: actions/checkout@v4
       with:
@@ -89,12 +87,12 @@ jobs:
     - name: Install SMSpp (linux and mac)
       if: runner.os != 'windows'
       run: |
-        cd ..
+        cd $HOME
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh --without-scip --without-cplex --without-gurobi
-        echo $INSTALL_ROOT >> $GITHUB_PATH
+        echo $HOME/smspp-project >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
 
@@ -107,10 +105,11 @@ jobs:
       if: runner.os == 'windows'
       shell: pwsh
       run: |
+        cd C:\
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        .\INSTALL.ps1 --install-root=$INSTALL_WINDOWS --without-scip --without-cplex --without-gurobi
-        echo $INSTALL_WINDOWS\Release >> $GITHUB_PATH
+        .\INSTALL.ps1 --without-scip --without-cplex --without-gurobi
+        echo C:\smspp-project\Release >> $GITHUB_PATH
 
     - name: Test package with SMSpp (windows)
       if: runner.os == 'windows'
