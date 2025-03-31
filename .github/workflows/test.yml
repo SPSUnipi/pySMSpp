@@ -91,7 +91,6 @@ jobs:
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        mkdir $INSTALL_ROOT
         chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh --install-root=$INSTALL_ROOT
         echo $INSTALL_ROOT >> $GITHUB_PATH
@@ -109,7 +108,6 @@ jobs:
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        mkdir $INSTALL_WINDOWS
         .\INSTALL.ps1 --install-root=$INSTALL_WINDOWS
         echo $INSTALL_WINDOWS\Release >> $GITHUB_PATH
 
