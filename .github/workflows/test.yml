@@ -92,7 +92,7 @@ jobs:
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         chmod +x ./INSTALL.sh
-        ./INSTALL.sh --install-root=$SMSPP_ROOT
+        sudo ./INSTALL.sh --install-root=$SMSPP_ROOT
         echo $SMSPP_ROOT >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
