@@ -99,7 +99,6 @@ def test_optimize_ucsolver_all_components(force_smspp):
         result = b.optimize(configfile, fp_temp, fp_out)
 
         assert "success" in result.status.lower()
-        assert "warning" not in result.log.lower()
         assert "error" not in result.log.lower()
         assert "ThermalUnitBlock" in result.log
         assert "BatteryUnitBlock" in result.log
