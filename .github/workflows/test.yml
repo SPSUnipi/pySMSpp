@@ -53,20 +53,23 @@ jobs:
         pytest
 
     - name: Install SMSpp (windows)
-      if: runner.os == 'windows'
+      if: runner.os == 'windows' && matrix.python-version == '3.12'
       shell: pwsh
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        .\INSTALL.ps1
+        .\INSTALL.ps1 --install-root=C:\smspp
 
     - name: Install SMSpp
+      if: matrix.python-version == '3.12'
       run: |
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
+        chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh
 
     - name: Test package with SMSpp
+      if: matrix.python-version == '3.12'
       run: |
         pytest
 
