@@ -143,6 +143,7 @@ class SMSFileType(IntEnum):
     eProbFile = 0  # Problem file: Block and Configuration
     eBlockFile = 1  # Block file
     eConfigFile = 2  # Configuration file
+    eSolutionFile = 3  # Solution file
 
 
 class Attribute:
