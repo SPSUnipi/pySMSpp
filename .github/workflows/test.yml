@@ -52,6 +52,25 @@ jobs:
       run: |
         pytest
 
+    - name: Install SMSpp (windows)
+      if: runner.os == 'windows'
+      shell: pwsh
+      run: |
+        git clone https://gitlab.com/smspp/smspp-project.git
+        cd smspp-project
+        .\INSTALL.ps1
+
+    - name: Install SMSpp
+      run: |
+        git clone https://gitlab.com/smspp/smspp-project.git
+        cd smspp-project
+        sudo ./INSTALL.sh
+
+    - name: Test package with SMSpp
+      run: |
+        pytest
+
+
     # - name: Test with pytest
     #   run: |
     #     coverage run -m pytest
