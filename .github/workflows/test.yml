@@ -89,10 +89,11 @@ jobs:
     - name: Install SMSpp (linux and mac)
       if: runner.os != 'windows'
       run: |
+        cd ..
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --install-root=$INSTALL_ROOT --without-scip --without-cplex --without-gurobi
+        sudo ./INSTALL.sh --without-scip --without-cplex --without-gurobi
         echo $INSTALL_ROOT >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
