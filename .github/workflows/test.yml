@@ -66,8 +66,8 @@ jobs:
         os:
         - ubuntu-latest
         # See errors in https://github.com/SPSUnipi/pySMSpp/actions/runs/14183022094
-        - macos-latest  # Commented until the following error is fixed "Error: Running Homebrew as root is extremely dangerous and no longer supported."
-        - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
+        # - macos-latest  # Commented until the following error is fixed "Error: Running Homebrew as root is extremely dangerous and no longer supported."
+        # - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
     steps:
