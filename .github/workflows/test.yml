@@ -92,7 +92,7 @@ jobs:
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --without-scip --without-cplex --without-gurobi
+        sudo ./INSTALL.sh --without-scip --without-gurobi
         echo $HOME/smspp-project >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
@@ -109,7 +109,7 @@ jobs:
         cd C:\
         git clone https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        .\INSTALL.ps1 --without-scip --without-cplex --without-gurobi
+        .\INSTALL.ps1 --without-scip --without-gurobi
         echo C:\smspp-project\Release >> $GITHUB_PATH
 
     - name: Test package with SMSpp (windows)
