@@ -94,6 +94,7 @@ jobs:
         chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh --without-scip --without-gurobi
         echo $HOME/smspp-project >> $GITHUB_PATH
+        echo $HOME/smspp-project/build/InvestmentBlock/test >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
 
@@ -111,6 +112,7 @@ jobs:
         cd smspp-project
         .\INSTALL.ps1 --without-scip --without-gurobi
         echo C:\smspp-project\Release >> $GITHUB_PATH
+        echo C:\smspp-project\build\InvestmentBlock\test\Release >> $GITHUB_PATH
 
     - name: Test package with SMSpp (windows)
       if: runner.os == 'windows'
