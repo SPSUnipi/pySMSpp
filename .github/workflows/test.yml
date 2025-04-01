@@ -89,11 +89,11 @@ jobs:
       if: runner.os != 'windows'
       run: |
         cd $HOME
-        git clone https://gitlab.com/smspp/smspp-project.git
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh --without-scip --without-gurobi
-        echo "$HOME/smspp-project" >> $GITHUB_PATH
+        echo "$HOME/smspp-project/bin" >> $GITHUB_PATH
         echo "$HOME/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
@@ -102,10 +102,10 @@ jobs:
       shell: pwsh
       run: |
         cd C:\
-        git clone https://gitlab.com/smspp/smspp-project.git
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         .\INSTALL.ps1 --without-scip --without-gurobi
-        echo "C:\smspp-project\Release" >> $GITHUB_PATH
+        echo "C:\smspp-project\Release\bin" >> $GITHUB_PATH
         echo "C:\smspp-project\build\InvestmentBlock\test\Release" >> $GITHUB_PATH
 
     - name: Test package with SMSpp
