@@ -97,12 +97,6 @@ jobs:
         echo $HOME/smspp-project/build/InvestmentBlock/test >> $GITHUB_PATH
         echo "PATH is now: $PATH"
 
-
-    - name: Test package with SMSpp (linux and mac)
-      if: runner.os != 'windows'
-      run: |
-        pytest --force-smspp
-
     - name: Install SMSpp (windows)
       if: runner.os == 'windows'
       shell: pwsh
@@ -114,7 +108,6 @@ jobs:
         echo C:\smspp-project\Release >> $GITHUB_PATH
         echo C:\smspp-project\build\InvestmentBlock\test\Release >> $GITHUB_PATH
 
-    - name: Test package with SMSpp (windows)
-      if: runner.os == 'windows'
+    - name: Test package with SMSpp
       run: |
         pytest --force-smspp
