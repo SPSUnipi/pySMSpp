@@ -58,6 +58,9 @@ jobs:
     needs:
     - test
     runs-on: ${{ matrix.os }}
+    concurrency:
+      group: "limit-run-time-${{ matrix.os }}"
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +77,44 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Needed for setuptools_scm
+    - name: Retrieve last-run-time
+      id: retrieve
+      uses: actions/cache@v3
+      with:
+        path: .last-run-time
+        key: last-run-time
+        restore-keys: last-run-time
+
+    - name: Check if 1 hour has passed
+      id: check_time
+      run: |
+        CURRENT_TIME=$(date +%s)
+
+        # If the file doesn't exist yet, default to zero so it always runs the first time.
+        if [ -f .last-run-time ]; then
+          LAST_RUN_TIME=$(cat .last-run-time)
+        else
+          LAST_RUN_TIME=0
+        fi
+
+        DIFF=$((CURRENT_TIME - LAST_RUN_TIME))
+        # 3600 seconds = 1 hour
+        if [ $DIFF -lt 3600 ]; then
+          SLEEP_TIME=$((3600 - DIFF))
+          echo "Last run was only $DIFF seconds ago (< 1 hour). Waiting $SLEEP_TIME seconds."
+          sleep $SLEEP_TIME
+        else
+          echo "It has been more than 1 hour. Proceeding."
+        fi
+
+    - name: Update last-run-time
+      run: date +%s > .last-run-time
+
+    - name: Save last-run-time
+      uses: actions/cache@v3
+      with:
+        path: .last-run-time
+        key: last-run-time
 
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v5
