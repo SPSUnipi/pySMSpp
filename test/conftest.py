@@ -2,6 +2,19 @@ from pysmspp import Block, Variable
 import os
 import re
 import numpy as np
+import pytest
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--force-smspp", action="store_true", default=False, help="Force SMS++ tests"
+    )
+
+
+@pytest.fixture
+def force_smspp(request):
+    return request.config.getoption("--force-smspp")
+
 
 # Reads a sample network; microgrid_ALL_4N.nc4 is composed by:
 # on node 0: 2 intermittent, 1 battery, 1 hydro, 1 thermal, and 1 load

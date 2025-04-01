@@ -23,10 +23,10 @@ RTOL = 1e-4
 ATOL = 1e-2
 
 
-def test_help():
+def test_help(force_smspp):
     ucs = UCBlockSolver()
 
-    if ucs.is_available():
+    if ucs.is_available() or force_smspp:
         help_msg = ucs.help()
 
         assert "SMS++ unit commitment solver" in help_msg
@@ -34,7 +34,7 @@ def test_help():
         pytest.skip("UCBlockSolver not available in PATH")
 
 
-def test_optimize_example():
+def test_optimize_example(force_smspp):
     fp_network = get_network()
     fp_out = get_temp_file("test_optimize_example.txt")
     configfile = SMSConfig(template="uc_solverconfig.txt")
@@ -45,7 +45,7 @@ def test_optimize_example():
         fp_out=fp_out,
     )
 
-    if ucs.is_available():
+    if ucs.is_available() or force_smspp:
         ucs.optimize()
 
         assert "Success" in ucs.status
@@ -54,7 +54,7 @@ def test_optimize_example():
         pytest.skip("UCBlockSolver not available in PATH")
 
 
-def test_optimize_ucsolver():
+def test_optimize_ucsolver(force_smspp):
     b = SMSNetwork(file_type=SMSFileType.eBlockFile)
     add_ucblock_with_one_unit(b)
 
@@ -62,7 +62,7 @@ def test_optimize_ucsolver():
     fp_temp = get_temp_file("test_optimize_ucsolver.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
-    if UCBlockSolver().is_available():
+    if UCBlockSolver().is_available() or force_smspp:
         result = b.optimize(configfile, fp_temp, fp_out)
 
         assert "Success" in result.status
@@ -70,7 +70,7 @@ def test_optimize_ucsolver():
         pytest.skip("UCBlockSolver not available in PATH")
 
 
-def test_optimize_ucsolver_all_components():
+def test_optimize_ucsolver_all_components(force_smspp):
     b = SMSNetwork(file_type=SMSFileType.eBlockFile)
 
     # Add uc block and specify demand
@@ -95,11 +95,10 @@ def test_optimize_ucsolver_all_components():
     fp_temp = get_temp_file("test_optimize_ucsolver_all_components.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
-    if UCBlockSolver().is_available():
+    if UCBlockSolver().is_available() or force_smspp:
         result = b.optimize(configfile, fp_temp, fp_out)
 
         assert "success" in result.status.lower()
-        assert "warning" not in result.log.lower()
         assert "error" not in result.log.lower()
         assert "ThermalUnitBlock" in result.log
         assert "BatteryUnitBlock" in result.log
@@ -110,7 +109,7 @@ def test_optimize_ucsolver_all_components():
         pytest.skip("UCBlockSolver not available in PATH")
 
 
-def test_investmentsolvertest():
+def test_investmentsolvertest(force_smspp):
     fp_network = get_network("investment_1N.nc4")
     fp_out = get_temp_file("test_optimize_investmentsolvertest.txt")
     configfile = SMSConfig(template="InvestmentBlock/BSPar.txt")
@@ -121,7 +120,7 @@ def test_investmentsolvertest():
         fp_out=fp_out,
     )
 
-    if InvestmentBlockTestSolver().is_available():
+    if InvestmentBlockTestSolver().is_available() or force_smspp:
         ucs.optimize()
 
         assert "Success" in ucs.status

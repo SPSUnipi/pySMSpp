@@ -4,7 +4,7 @@ BlockSolverConfig  # The name of the configuration
 1 # Number of solvers
 
 # Names of the solvers
-CPXMILPSolver
+HiGHSMILPSolver
 
 1 # Number of ComputeConfigs
 
