@@ -94,7 +94,7 @@ jobs:
         chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh --without-scip --without-gurobi
         echo "PATH=/opt/smspp-project/bin:$PATH" >> $GITHUB_ENV
-        echo "PATH=$HOME/smspp-project/build/InvestmentBlock/test:$PATH" >> $GITHUB_ENV
+        echo "PATH=/opt/smspp-project/build/InvestmentBlock/test:$PATH" >> $GITHUB_ENV
         echo "LD_LIBRARY_PATH=/opt/smspp-project/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
     - name: Install SMSpp (macOS)
