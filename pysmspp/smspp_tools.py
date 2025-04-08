@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess
 import re
 import numpy as np
-import os
+from pysmspp.helpers import subprocess_result_to_log, decode_std
 
 
 class SMSPPSolverTool:
@@ -94,7 +94,7 @@ class SMSPPSolverTool:
         result = subprocess.run(
             f"{self._exec_file} {self._help_option}", capture_output=True, shell=True
         )
-        msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
+        msg = subprocess_result_to_log(result)
         if print_message:
             print(msg)
         return msg
@@ -121,13 +121,11 @@ class SMSPPSolverTool:
             capture_output=True,
             shell=True,
         )
-        self._log = (
-            result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
-        )
+        self._log = subprocess_result_to_log(result)
         self.parse_ucblock_solver_log()
         if result.returncode != 0:
             raise ValueError(
-                f"Failed to run {self._exec_file}; error log:\n{result.stderr.decode('utf-8')}"
+                f"Failed to run {self._exec_file}; error log:\n{decode_std(result.stderr)}"
             )
         # write output to file, if option passed
         if self.fp_out is not None:
