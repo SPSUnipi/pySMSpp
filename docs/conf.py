@@ -3,6 +3,62 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
+import subprocess
+
+
+def _install_smspp():
+    """
+    Clone and install the smspp-project with the desired flags.
+    Modify environment variables as needed for GitHub Actions.
+    """
+    # 1. Clone the repository
+    subprocess.check_call(
+        ["git", "clone", "-b", "develop", "https://gitlab.com/smspp/smspp-project.git"]
+    )
+
+    # 2. cd into it
+    os.chdir("smspp-project")
+
+    # 3. Make INSTALL.sh executable
+    subprocess.check_call(["chmod", "+x", "./INSTALL.sh"])
+
+    # 4. Run INSTALL.sh with the flags you desire
+    subprocess.check_call(
+        [
+            "sudo",
+            "./INSTALL.sh",
+            "--without-scip",
+            "--without-gurobi",
+            "--without-cplex",
+        ]
+    )
+
+    # 5. Update the current process's PATH
+    #
+    # Example: Prepend the SMSPP bin & test paths to the PATH.
+    os.environ["PATH"] = (
+        "/opt/smspp-project/bin:"
+        "/opt/smspp-project/build/InvestmentBlock/test:" + os.environ["PATH"]
+    )
+
+    # 6. Update the current process's LD_LIBRARY_PATH
+    current_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
+    if current_ld_path:
+        os.environ["LD_LIBRARY_PATH"] = f"/opt/smspp-project/lib:{current_ld_path}"
+    else:
+        # if it was not set at all, just assign the path
+        os.environ["LD_LIBRARY_PATH"] = "/opt/smspp-project/lib"
+
+    # 7. cd back to the parent (doc source root, presumably)
+    os.chdir("$HOME")
+
+
+try:
+    _install_smspp()
+except Exception as e:
+    print(f"WARNING: Failed to install smspp-project: {e}")
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
