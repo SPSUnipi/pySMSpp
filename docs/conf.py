@@ -26,7 +26,6 @@ def _install_smspp():
     # 4. Run INSTALL.sh with the flags you desire
     subprocess.check_call(
         [
-            "sudo",
             "./INSTALL.sh",
             "--without-scip",
             "--without-gurobi",
@@ -38,17 +37,17 @@ def _install_smspp():
     #
     # Example: Prepend the SMSPP bin & test paths to the PATH.
     os.environ["PATH"] = (
-        "/opt/smspp-project/bin:"
-        "/opt/smspp-project/build/InvestmentBlock/test:" + os.environ["PATH"]
+        "$HOME/smspp-project/bin:"
+        "$HOME/smspp-project/build/InvestmentBlock/test:" + os.environ["PATH"]
     )
 
     # 6. Update the current process's LD_LIBRARY_PATH
     current_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
     if current_ld_path:
-        os.environ["LD_LIBRARY_PATH"] = f"/opt/smspp-project/lib:{current_ld_path}"
+        os.environ["LD_LIBRARY_PATH"] = f"$HOME/smspp-project/lib:{current_ld_path}"
     else:
         # if it was not set at all, just assign the path
-        os.environ["LD_LIBRARY_PATH"] = "/opt/smspp-project/lib"
+        os.environ["LD_LIBRARY_PATH"] = "$HOME/smspp-project/lib"
 
     # 7. cd back to the parent (doc source root, presumably)
     os.chdir("$HOME")
