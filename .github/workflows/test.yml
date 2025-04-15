@@ -52,13 +52,77 @@ jobs:
       run: |
         pytest
 
-    # - name: Test with pytest
-    #   run: |
-    #     coverage run -m pytest
-    #     coverage xml
-    #     cat coverage.xml
+  test_with_smspp:
+    # Test package build in matrix of OS and Python versions
+    name: Test package with SMSpp
+    needs:
+    - test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        - "3.12"
+        os:
+        - ubuntu-latest
+        # See errors in https://github.com/SPSUnipi/pySMSpp/actions/runs/14183022094
+        # - macos-latest  # Commented until the following error is fixed "Error: Running Homebrew as root is extremely dangerous and no longer supported."
+        # - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
+    env:
+      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
+      MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Needed for setuptools_scm
 
-    # - name: Upload code coverage report
-    #   uses: codecov/codecov-action@v4
-    #   with:
-    #     token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install package and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[dev]
+
+    - name: Install SMSpp (linux)
+      if: runner.os == 'Linux'
+      run: |
+        cd $HOME
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git
+        cd smspp-project
+        chmod +x ./INSTALL.sh
+        sudo ./INSTALL.sh --without-scip --without-gurobi
+        echo "/opt/smspp-project/bin" >> $GITHUB_PATH
+        echo "/opt/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=/opt/smspp-project/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+    - name: Install SMSpp (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        cd $HOME
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git
+        cd smspp-project
+        chmod +x ./INSTALL.sh
+        ./INSTALL.sh --without-scip --without-gurobi
+        echo "$HOME/smspp-project/bin" >> $GITHUB_PATH
+        echo "$HOME/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=$HOME/smspp-project/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+    - name: Install SMSpp (windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        cd C:\
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git
+        cd smspp-project
+        .\INSTALL.ps1 --without-scip --without-gurobi
+        echo "C:\smspp-project\Release\bin" >> $GITHUB_PATH
+        echo "C:\smspp-project\build\InvestmentBlock\test\Release" >> $GITHUB_PATH
+
+    - name: Test package with SMSpp
+      run: |
+        echo "PATH is now: $PATH"
+        echo "LD_LIBRARY_PATH is now: $LD_LIBRARY_PATH"
+        pytest --force-smspp

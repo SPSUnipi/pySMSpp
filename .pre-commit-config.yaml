@@ -12,7 +12,7 @@ repos:
 # Run ruff to lint and format
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.7.2
+  rev: v0.11.4
   hooks:
     # Run the linter.
   - id: ruff
@@ -22,7 +22,7 @@ repos:
 
 # Find common spelling mistakes in comments and docstrings
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.3.0
+  rev: v2.4.1
   hooks:
   - id: codespell
     # Ignore capital case words, e.g. country codes
@@ -46,6 +46,6 @@ repos:
 
 # Remove results from notebooks
 - repo: https://github.com/kynan/nbstripout
-  rev: '0.5.0'  # Use the latest version
+  rev: '0.8.1'  # Use the latest version
   hooks:
   - id: nbstripout
