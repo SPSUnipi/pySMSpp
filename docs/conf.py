@@ -48,14 +48,6 @@ def _install_smspp():
         # if it was not set at all, just assign the path
         os.environ["LD_LIBRARY_PATH"] = "$HOME/smspp-project/lib"
 
-    # 7. cd back to the parent (doc source root, presumably)
-    os.chdir("$HOME")
-
-
-try:
-    _install_smspp()
-except Exception as e:
-    print(f"WARNING: Failed to install smspp-project: {e}")
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -115,3 +107,8 @@ pygments_style = "sphinx"
 todo_include_todos = True
 
 nbsphinx_allow_errors = True
+
+try:
+    _install_smspp()
+except Exception as e:
+    print(f"WARNING: Failed to install smspp-project: {e}")
