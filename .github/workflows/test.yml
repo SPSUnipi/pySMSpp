@@ -70,6 +70,7 @@ jobs:
         # - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
+      MAX_JOBS: 3  # Number of jobs in cmake compilation of SMS++ installation
     steps:
     - uses: actions/checkout@v4
       with:
