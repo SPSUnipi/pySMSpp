@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pysmspp"
-version = "0.0.1"
+version = "0.0.0"
 authors = [
   { name="Unipi developers", email="davide.fioriti@unipi.it" },
 ]
