@@ -29,6 +29,7 @@ def _install_smspp():
             "./INSTALL.sh",
             "--without-scip",
             "--without-gurobi",
+            "--without-cplex",
         ]
     )
 
