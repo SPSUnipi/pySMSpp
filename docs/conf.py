@@ -37,17 +37,23 @@ def _install_smspp():
     #
     # Example: Prepend the SMSPP bin & test paths to the PATH.
     os.environ["PATH"] = (
-        "$HOME/smspp-project/bin:"
-        "$HOME/smspp-project/build/InvestmentBlock/test:" + os.environ["PATH"]
+        "/home/docs/smspp-project/bin:"
+        "/home/docs/smspp-project/build/InvestmentBlock/test:" + os.environ["PATH"]
     )
 
     # 6. Update the current process's LD_LIBRARY_PATH
     current_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
     if current_ld_path:
-        os.environ["LD_LIBRARY_PATH"] = f"$HOME/smspp-project/lib:{current_ld_path}"
+        os.environ["LD_LIBRARY_PATH"] = (
+            f"/home/docs/smspp-project/lib:{current_ld_path}"
+        )
     else:
         # if it was not set at all, just assign the path
-        os.environ["LD_LIBRARY_PATH"] = "$HOME/smspp-project/lib"
+        os.environ["LD_LIBRARY_PATH"] = "/home/docs/smspp-project/lib"
+
+    subprocess.check_call(
+        "ucblock_solver --help", shell=True, capture_output=True, env=os.environ
+    )
 
 
 # -- Project information -----------------------------------------------------

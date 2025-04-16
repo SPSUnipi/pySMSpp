@@ -98,12 +98,14 @@ class SMSPPSolverTool:
         if "READTHEDOCS" in os.environ:
             env = os.environ.copy()
             env["PATH"] = (
-                "$HOME/smspp-project/bin:"
-                "$HOME/smspp-project/build/InvestmentBlock/test:" + env["PATH"]
+                "/home/docs/smspp-project/bin:"
+                "/home/docs/smspp-project/build/InvestmentBlock/test:" + env["PATH"]
             )
 
             # 6. Update the current process's LD_LIBRARY_PATH
-            env["LD_LIBRARY_PATH"] = "$HOME/smspp-project/lib:" + env["LD_LIBRARY_PATH"]
+            env["LD_LIBRARY_PATH"] = "/home/docs/smspp-project/lib:" + env.get(
+                "LD_LIBRARY_PATH", ""
+            )
             print("\n")
             print(env)
             print("\n")
