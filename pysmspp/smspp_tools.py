@@ -76,6 +76,42 @@ class SMSPPSolverTool:
     def __repr__(self):
         return f"{type(self).__name__}\n\t\n\texec_file={self._exec_file}\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}"
 
+    def _subprocess_run(self, command, **kwargs):
+        """
+        Run a subprocess command.
+
+        Parameters
+        ----------
+        command : str
+            The command to run.
+        **kwargs
+            Additional keyword arguments to pass to the subprocess.run function.
+
+        Returns
+        -------
+        result : subprocess.CompletedProcess
+            The result of the subprocess run.
+        """
+        print("\n")
+        print(os.environ)
+        print("\n")
+        if "READTHEDOCS" in os.environ:
+            env = os.environ.copy()
+            env["PATH"] = (
+                "$HOME/smspp-project/bin:"
+                "$HOME/smspp-project/build/InvestmentBlock/test:" + env["PATH"]
+            )
+
+            # 6. Update the current process's LD_LIBRARY_PATH
+            env["LD_LIBRARY_PATH"] = "$HOME/smspp-project/lib:" + env["LD_LIBRARY_PATH"]
+            print("\n")
+            print(env)
+            print("\n")
+            kwargs["env"] = env
+            return subprocess.run(command, **kwargs)
+        else:
+            return subprocess.run(command, **kwargs)
+
     def help(self, print_message=True):
         """
         Print the help message of the SMS++ solver tool.
@@ -91,7 +127,7 @@ class SMSPPSolverTool:
         -------
         The help message.
         """
-        result = subprocess.run(
+        result = self._subprocess_run(
             f"{self._exec_file} {self._help_option}", capture_output=True, shell=True
         )
         msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
@@ -116,7 +152,7 @@ class SMSPPSolverTool:
             )
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
-        result = subprocess.run(
+        result = self._subprocess_run(
             self.calculate_executable_call(),
             capture_output=True,
             shell=True,
