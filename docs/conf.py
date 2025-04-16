@@ -51,9 +51,7 @@ def _install_smspp():
         # if it was not set at all, just assign the path
         os.environ["LD_LIBRARY_PATH"] = "/home/docs/smspp-project/lib"
 
-    subprocess.check_call(
-        "ucblock_solver --help", shell=True, capture_output=True, env=os.environ
-    )
+    subprocess.check_call("ucblock_solver --help", env=os.environ)
 
 
 # -- Project information -----------------------------------------------------
