@@ -14,6 +14,36 @@ build:
     # nodejs: "23"
     # rust: "1.82"
     # golang: "1.23"
+  apt_packages:
+  - build-essential
+  - clang
+  - cmake
+  - cmake-curses-gui
+  - git
+  - curl
+  - xterm
+  - libboost-dev
+  - libboost-system-dev
+  - libboost-timer-dev
+  - libboost-mpi-dev
+  - libboost-random-dev
+  - libomp-dev
+  - libeigen3-dev
+  - libnetcdf-c++4-dev
+  - gfortran
+  - libtbb-dev
+  - coinor-libcoinutils-dev
+  - libbz2-dev
+  - liblapack-dev
+  - libopenblas-dev
+  - zlib1g-dev
+  jobs:
+    post_install:
+    - git clone -b develop https://gitlab.com/smspp/smspp-project.git
+    - cd smspp-project
+    - chmod +x ./INSTALL.sh
+    - ./INSTALL.sh --without-scip --without-gurobi --without-cplex
+    - ls /home/docs/smspp-project/bin
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
