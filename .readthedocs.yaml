@@ -40,6 +40,7 @@ build:
   jobs:
     post_install:
     - |
+      pwd
       git clone -b develop https://gitlab.com/smspp/smspp-project.git
       cd smspp-project
       chmod +x ./INSTALL.sh
@@ -55,6 +56,7 @@ build:
       - |
         pwd
         dir
+        cd docs
         export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/smspp-project/lib"
         export PATH="$PATH:/home/docs/smspp-project/bin"
         export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/HiGHS/lib"
