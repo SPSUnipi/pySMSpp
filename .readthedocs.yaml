@@ -43,7 +43,9 @@ build:
     - cd smspp-project
     - chmod +x ./INSTALL.sh
     - ./INSTALL.sh --without-scip --without-gurobi --without-cplex
-    - ls /home/docs/smspp-project/bin
+    pre_build:
+    - cp /home/docs/smspp-project/bin/* $READTHEDOCS_VIRTUALENV_PATH  # Copy binaries to the working directory
+    - cp /home/docs/smspp-project/lib/* $READTHEDOCS_VIRTUALENV_PATH  # Copy libraries to the working directory
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
