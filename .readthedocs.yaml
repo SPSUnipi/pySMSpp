@@ -39,11 +39,11 @@ build:
   - zlib1g-dev
   jobs:
     post_install:
-    - git clone -b develop https://gitlab.com/smspp/smspp-project.git
-    - cd smspp-project
-    - chmod +x ./INSTALL.sh
-    - ./INSTALL.sh --without-scip --without-gurobi --without-cplex
-    pre_build:
+    - |
+      git clone -b develop https://gitlab.com/smspp/smspp-project.git
+      cd smspp-project
+      chmod +x ./INSTALL.sh
+      ./INSTALL.sh --without-scip --without-gurobi --without-cplex
     - cp /home/docs/smspp-project/bin/* $READTHEDOCS_VIRTUALENV_PATH  # Copy binaries to the working directory
     - cp /home/docs/smspp-project/lib/* $READTHEDOCS_VIRTUALENV_PATH  # Copy libraries to the working directory
 
