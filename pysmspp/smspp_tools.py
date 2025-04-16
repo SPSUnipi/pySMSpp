@@ -96,6 +96,13 @@ class SMSPPSolverTool:
         print(os.environ)
         print("\n")
         if "READTHEDOCS" in os.environ:
+            print("HOME DOCS")
+            print(os.listdir("/home/docs"))
+            print("HOME DOCS SMSPP")
+            print(os.listdir("/home/docs/smspp-project"))
+            print("HOME DOCS SMSPP BIN")
+            print(os.listdir("/home/docs/smspp-project/bin"))
+
             env = os.environ.copy()
             env["PATH"] = (
                 "/home/docs/smspp-project/bin:"
