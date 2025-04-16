@@ -44,11 +44,19 @@ build:
       cd smspp-project
       chmod +x ./INSTALL.sh
       ./INSTALL.sh --without-scip --without-gurobi --without-cplex
-    - cp -r /home/docs/smspp-project/bin/* $READTHEDOCS_REPOSITORY_PATH  # Copy binaries to the working directory
-    - cp -r /home/docs/smspp-project/lib/* $READTHEDOCS_REPOSITORY_PATH  # Copy libraries to the working directory
-    - |
-      cd $READTHEDOCS_REPOSITORY_PATH
-      ./ucblock_solver --help
+      export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/smspp-project/lib"
+      export PATH="$PATH:/home/docs/smspp-project/bin"
+      export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/HiGHS/lib"
+      export PATH="$PATH:/home/docs/HiGHS/bin"
+      ucblock_solver --help
+    build:
+      html:
+      - |
+        export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/smspp-project/lib"
+        export PATH="$PATH:/home/docs/smspp-project/bin"
+        export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/HiGHS/lib"
+        export PATH="$PATH:/home/docs/HiGHS/bin"
+        python -m sphinx -T -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html 
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
