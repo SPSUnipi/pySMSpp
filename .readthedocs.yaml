@@ -49,9 +49,12 @@ build:
       export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/HiGHS/lib"
       export PATH="$PATH:/home/docs/HiGHS/bin"
       ucblock_solver --help
+      cd ..
     build:
       html:
       - |
+        pwd
+        dir
         export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/smspp-project/lib"
         export PATH="$PATH:/home/docs/smspp-project/bin"
         export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/docs/HiGHS/lib"
