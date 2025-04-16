@@ -48,7 +48,7 @@ build:
     - cp -r /home/docs/smspp-project/lib/* $READTHEDOCS_REPOSITORY_PATH  # Copy libraries to the working directory
     - |
       cd $READTHEDOCS_REPOSITORY_PATH
-      ucblock_solver --help
+      ./ucblock_solver --help
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
