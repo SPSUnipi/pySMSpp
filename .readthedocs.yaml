@@ -46,6 +46,7 @@ build:
       ./INSTALL.sh --without-scip --without-gurobi --without-cplex
     - cp -r /home/docs/smspp-project/bin/* $READTHEDOCS_VIRTUALENV_PATH/bin  # Copy binaries to the working directory
     - cp -r /home/docs/smspp-project/lib/* $READTHEDOCS_VIRTUALENV_PATH/lib  # Copy libraries to the working directory
+    - $READTHEDOCS_VIRTUALENV_PATH/bin/ucblock_solver --help  # Check if the binaries are working
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
