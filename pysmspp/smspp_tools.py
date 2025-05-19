@@ -19,6 +19,7 @@ class SMSPPSolverTool:
         fp_network: Path | str = None,
         configfile: Path | str = None,
         fp_out: Path | str = None,
+        fp_log: Path | str = None,
         out_dir: Path | str = None,
     ):
         """
@@ -39,6 +40,8 @@ class SMSPPSolverTool:
             Path to the configuration file, by default None.
         fp_out : Path | str, optional
             Path to the output file, by default None.
+        fp_log : Path | str, optional
+            Path to the log file, by default None.
         out_dir : Path | str, optional
             Path to the output directory, by default None.
         """
@@ -49,11 +52,14 @@ class SMSPPSolverTool:
         self.fp_network = str(Path(fp_network).resolve())
         self.configfile = str(Path(configfile).resolve())
         self.configdir = str(Path(configfile).resolve().parent.resolve())
+        self.fp_log = None if fp_log is None else str(Path(fp_log).resolve())
         self.fp_out = None if fp_out is None else str(Path(fp_out).resolve())
         if out_dir is not None:
             self.outdir = str(Path(out_dir).resolve())
         elif fp_out is not None:
             self.outdir = str(Path(fp_out).resolve().parent)
+        elif fp_log is not None:
+            self.outdir = str(Path(fp_log).resolve().parent)
         else:
             self.outdir = None
         if not self.configdir.endswith("/"):
@@ -130,9 +136,9 @@ class SMSPPSolverTool:
                 f"Failed to run {self._exec_file}; error log:\n{result.stderr.decode('utf-8')}"
             )
         # write output to file, if option passed
-        if self.fp_out is not None:
-            Path(self.fp_out).parent.mkdir(parents=True, exist_ok=True)
-            with open(self.fp_out, "w") as f:
+        if self.fp_log is not None:
+            Path(self.fp_log).parent.mkdir(parents=True, exist_ok=True)
+            with open(self.fp_log, "w") as f:
                 f.write(self._log)
 
         return self
@@ -188,6 +194,7 @@ class UCBlockSolver(SMSPPSolverTool):
         fp_network: Path | str = "",
         configfile: Path | str = "",
         fp_out: Path | str = None,
+        fp_log: Path | str = None,
     ):
         """
         Parameters
@@ -198,6 +205,8 @@ class UCBlockSolver(SMSPPSolverTool):
             Path to the configuration file.
         fp_out : Path | str, optional
             Path to the output file, by default None.
+        fp_log : Path | str, optional
+            Path to the log file, by default None.
         """
         super().__init__(
             exec_file="ucblock_solver",
@@ -206,12 +215,16 @@ class UCBlockSolver(SMSPPSolverTool):
             fp_network=fp_network,
             configfile=configfile,
             fp_out=fp_out,
+            fp_log=fp_log,
         )
 
     def calculate_executable_call(self):
-        return (
+        exec_path = (
             f"ucblock_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
+        if self.fp_out is not None:
+            exec_path += f" -o -O {self.fp_out}"
+        return exec_path
 
     def parse_ucblock_solver_log(self):
         """
@@ -259,7 +272,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         fp_network: Path | str = "",
         configfile: Path | str = "",
         fp_out: Path | str = None,
-        out_dir: Path | str = None,
+        fp_log: Path | str = None,
     ):
         """
         Constructor for the InvestmentBlockTestSolver, with executable file "InvestmentBlock_test".
@@ -272,8 +285,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             Path to the configuration file.
         fp_out : Path | str, optional
             Path to the output file, by default None.
-        out_dir : Path | str, optional
-            Path to the output directory, by default None.
+        fp_log : Path | str, optional
+            Path to the log file, by default None.
         """
         super().__init__(
             exec_file="InvestmentBlock_test",
@@ -282,10 +295,12 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             fp_network=fp_network,
             configfile=configfile,
             fp_out=fp_out,
+            fp_log=fp_log,
         )
 
     def calculate_executable_call(self):
-        return f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile}"
+        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile}"
+        return exec_path
 
     def parse_ucblock_solver_log(
         self,
@@ -335,7 +350,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         fp_network: Path | str = "",
         configfile: Path | str = "",
         fp_out: Path | str = None,
-        out_dir: Path | str = None,
+        fp_log: Path | str = None,
     ):
         """
         Constructor for the InvestmentBlockSolver, with executable file "investment_solver".
@@ -348,8 +363,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             Path to the configuration file.
         fp_out : Path | str, optional
             Path to the output file, by default None.
-        out_dir : Path | str, optional
-            Path to the output directory, by default None.
+        fp_log : Path | str, optional
+            Path to the log file, by default None.
         """
         super().__init__(
             exec_file="investment_solver",
@@ -358,12 +373,13 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             fp_network=fp_network,
             configfile=configfile,
             fp_out=fp_out,
+            fp_log=fp_log,
         )
 
     def calculate_executable_call(self):
         exec_path = f"investment_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
-        if self.outdir is not None:
-            exec_path += f" -o {self.outdir}"
+        if self.fp_out is not None:
+            exec_path += f" -o -O {self.fp_out}"
         return exec_path
 
     def parse_ucblock_solver_log(
@@ -414,7 +430,7 @@ class SDDPSolver(SMSPPSolverTool):
         fp_network: Path | str = "",
         configfile: Path | str = "",
         fp_out: Path | str = None,
-        out_dir: Path | str = None,
+        fp_log: Path | str = None,
     ):
         """
         Constructor for the SDDPSolver, with executable file "sddp_solver".
@@ -427,8 +443,8 @@ class SDDPSolver(SMSPPSolverTool):
             Path to the configuration file.
         fp_out : Path | str, optional
             Path to the output file, by default None.
-        out_dir : Path | str, optional
-            Path to the output directory, by default None.
+        fp_log : Path | str, optional
+            Path to the log file, by default None.
         """
         super().__init__(
             exec_file="sddp_solver",
@@ -437,14 +453,15 @@ class SDDPSolver(SMSPPSolverTool):
             fp_network=fp_network,
             configfile=configfile,
             fp_out=fp_out,
+            fp_log=fp_log,
         )
 
     def calculate_executable_call(self):
         exec_path = (
             f"sddp_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
-        if self.outdir is not None:
-            exec_path += f" -o {self.outdir}"
+        if self.fp_out is not None:
+            exec_path += f" -o -O {self.fp_out}"
         return exec_path
 
     def parse_ucblock_solver_log(

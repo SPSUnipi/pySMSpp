@@ -36,13 +36,13 @@ def test_help(force_smspp):
 
 def test_optimize_example(force_smspp):
     fp_network = get_network()
-    fp_out = get_temp_file("test_optimize_example.txt")
+    fp_log = get_temp_file("test_optimize_example.txt")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
     ucs = UCBlockSolver(
         configfile=str(configfile),
         fp_network=fp_network,
-        fp_out=fp_out,
+        fp_log=fp_log,
     )
 
     if ucs.is_available() or force_smspp:
@@ -58,12 +58,12 @@ def test_optimize_ucsolver(force_smspp):
     b = SMSNetwork(file_type=SMSFileType.eBlockFile)
     add_ucblock_with_one_unit(b)
 
-    fp_out = get_temp_file("test_optimize_ucsolver.txt")
+    fp_log = get_temp_file("test_optimize_ucsolver.txt")
     fp_temp = get_temp_file("test_optimize_ucsolver.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
     if UCBlockSolver().is_available() or force_smspp:
-        result = b.optimize(configfile, fp_temp, fp_out)
+        result = b.optimize(configfile, fp_temp, fp_log)
 
         assert "Success" in result.status
     else:
@@ -91,12 +91,12 @@ def test_optimize_ucsolver_all_components(force_smspp):
     # Add slack unit block
     add_sub_to_ucblock(b)
 
-    fp_out = get_temp_file("test_optimize_ucsolver_all_components.txt")
+    fp_log = get_temp_file("test_optimize_ucsolver_all_components.txt")
     fp_temp = get_temp_file("test_optimize_ucsolver_all_components.nc")
     configfile = SMSConfig(template="uc_solverconfig.txt")
 
     if UCBlockSolver().is_available() or force_smspp:
-        result = b.optimize(configfile, fp_temp, fp_out)
+        result = b.optimize(configfile, fp_temp, fp_log)
 
         assert "success" in result.status.lower()
         assert "error" not in result.log.lower()
@@ -111,13 +111,13 @@ def test_optimize_ucsolver_all_components(force_smspp):
 
 def test_investmentsolvertest(force_smspp):
     fp_network = get_network("investment_1N.nc4")
-    fp_out = get_temp_file("test_optimize_investmentsolvertest.txt")
+    fp_log = get_temp_file("test_optimize_investmentsolvertest.txt")
     configfile = SMSConfig(template="InvestmentBlock/BSPar.txt")
 
     ucs = InvestmentBlockTestSolver(
         configfile=str(configfile),
         fp_network=fp_network,
-        fp_out=fp_out,
+        fp_log=fp_log,
     )
 
     if InvestmentBlockTestSolver().is_available() or force_smspp:
@@ -126,3 +126,6 @@ def test_investmentsolvertest(force_smspp):
         assert "Success" in ucs.status
     else:
         pytest.skip("InvestmentBlockTestSolver not available in PATH")
+
+
+test_optimize_example(True)
