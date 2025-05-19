@@ -29,7 +29,10 @@ def test_help(force_smspp):
     if ucs.is_available() or force_smspp:
         help_msg = ucs.help()
 
-        assert "SMS++ unit commitment solver" in help_msg
+        assert (
+            "SMS++ unit commitment solver" in help_msg
+            or "SMS++ UCBlock solver" in help_msg
+        )
     else:
         pytest.skip("UCBlockSolver not available in PATH")
 
@@ -126,6 +129,3 @@ def test_investmentsolvertest(force_smspp):
         assert "Success" in ucs.status
     else:
         pytest.skip("InvestmentBlockTestSolver not available in PATH")
-
-
-test_optimize_example(True)
