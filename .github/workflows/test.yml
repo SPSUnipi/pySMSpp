@@ -64,10 +64,10 @@ jobs:
         python-version:
         - "3.12"
         os:
-        - ubuntu-latest
+        # - ubuntu-latest
         # See errors in https://github.com/SPSUnipi/pySMSpp/actions/runs/14183022094
         # - macos-latest  # Commented until the following error is fixed "Error: Running Homebrew as root is extremely dangerous and no longer supported."
-        # - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
+        - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
       MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
@@ -75,6 +75,11 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Needed for setuptools_scm
+    - name: Set up MSVC VS2022 (windows)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        vs-version: 2022
 
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v5
