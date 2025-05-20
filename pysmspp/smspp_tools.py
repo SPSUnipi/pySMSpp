@@ -20,7 +20,6 @@ class SMSPPSolverTool:
         configfile: Path | str = None,
         fp_out: Path | str = None,
         fp_log: Path | str = None,
-        out_dir: Path | str = None,
     ):
         """
         Constructor for an abstract SMSPPSolverTool.
@@ -42,30 +41,18 @@ class SMSPPSolverTool:
             Path to the output file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
-        out_dir : Path | str, optional
-            Path to the output directory, by default None.
         """
         self._exec_file = exec_file
         self._exec_optimize = exec_optimize
         self._help_option = help_option
 
         self.fp_network = str(Path(fp_network).resolve())
-        self.configfile = str(Path(configfile).resolve())
         self.configdir = str(Path(configfile).resolve().parent.resolve())
+        self.configfile = str(Path(configfile).resolve().name)
         self.fp_log = None if fp_log is None else str(Path(fp_log).resolve())
         self.fp_out = None if fp_out is None else str(Path(fp_out).resolve())
-        if out_dir is not None:
-            self.outdir = str(Path(out_dir).resolve())
-        elif fp_out is not None:
-            self.outdir = str(Path(fp_out).resolve().parent)
-        elif fp_log is not None:
-            self.outdir = str(Path(fp_log).resolve().parent)
-        else:
-            self.outdir = None
         if not self.configdir.endswith("/"):
             self.configdir += "/"
-        if self.outdir is not None and not self.outdir.endswith("/"):
-            self.outdir += "/"
 
         self._status = None
         self._log = None
@@ -116,7 +103,7 @@ class SMSPPSolverTool:
         **kwargs
             Additional keyword arguments to pass to the function.
         """
-        if not Path(self.configfile).exists():
+        if not Path(Path(self.configdir).joinpath(self.configfile)).exists():
             raise FileNotFoundError(
                 f"Configuration file {self.configfile} does not exist."
             )
@@ -299,7 +286,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         )
 
     def calculate_executable_call(self):
-        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile}"
+        configpath = str(Path(self.configdir).joinpath(self.configfile))
+        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {configpath}"
         return exec_path
 
     def parse_ucblock_solver_log(
