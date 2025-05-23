@@ -286,8 +286,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         )
 
     def calculate_executable_call(self):
-        configpath = str(Path(self.configdir).joinpath(self.configfile))
-        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {configpath}"
+        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile} -v -o"
         return exec_path
 
     def parse_ucblock_solver_log(
