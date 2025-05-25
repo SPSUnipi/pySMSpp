@@ -676,6 +676,7 @@ class SMSNetwork(Block):
         self,
         configfile: SMSConfig | Path | str,
         fp_temp: Path | str = "temp.nc",
+        fp_log: Path | str = None,
         fp_out: Path | str = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
         inner_block_name: str = "Block_0",
@@ -690,6 +691,8 @@ class SMSNetwork(Block):
             The configuration file. If a path is provided, it is first parsed into a SMSConfig object.
         fp_temp : Path | str (default: "temp.nc")
             The path to the temporary file.
+        fp_log : Path | str (default: None)
+            The path to the log file.
         fp_out : Path | str (default: None)
             The path to the output file.
         smspp_tool : str (default: "auto")
@@ -722,6 +725,7 @@ class SMSNetwork(Block):
                         configfile=str(configfile),
                         fp_network=fp_temp,
                         fp_out=fp_out,
+                        fp_log=fp_log,
                         **kwargs,
                     )
                 case _:

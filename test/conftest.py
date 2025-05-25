@@ -40,7 +40,7 @@ def get_temp_file(fname):
     return os.path.join(get_temp_folder(), fname)
 
 
-def check_compare_nc(fp_n1, fp_n2, fp_out=get_temp_file("tmp.txt")):
+def check_compare_nc(fp_n1, fp_n2, fp_log=get_temp_file("tmp.txt")):
     """
     Utility function to compare two netCDF files and check if they are the same.
 
@@ -50,18 +50,18 @@ def check_compare_nc(fp_n1, fp_n2, fp_out=get_temp_file("tmp.txt")):
         File path to the first netCDF file.
     fp_n2 : str
         File path to the second netCDF file.
-    fp_out : str (optional)
-        File path to the output file.
+    fp_log : str (optional)
+        File path to the log file.
     """
     os.system(
-        f"ncompare {fp_n1} {fp_n2} --only-diffs --show-attributes --file-text {fp_out}"
+        f"ncompare {fp_n1} {fp_n2} --only-diffs --show-attributes --file-text {fp_log}"
     )
 
     # ensure file exists
-    assert os.path.isfile(fp_out)
+    assert os.path.isfile(fp_log)
 
     # read the file
-    with open(fp_out, "r") as f:
+    with open(fp_log, "r") as f:
         lines = f.read()
 
     # check that the flag items are the same are True
