@@ -120,7 +120,7 @@ jobs:
       shell: pwsh
       run: |
         cd C:\
-        git clone -b install_ps1 https://gitlab.com/davide-f/smspp-project.git
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex
         echo "C:\smspp-project\Release\bin" >> $GITHUB_PATH
