@@ -122,7 +122,7 @@ jobs:
         cd C:\
         git clone -b develop https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
-        .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex
+        .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex -nonInteractive
         echo "C:\smspp-project\Release\bin" >> $GITHUB_PATH
         echo "C:\smspp-project\build\InvestmentBlock\test\Release" >> $GITHUB_PATH
 
