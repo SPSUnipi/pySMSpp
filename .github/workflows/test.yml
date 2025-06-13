@@ -95,7 +95,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         cd $HOME
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
         cd smspp-project
         chmod +x ./INSTALL.sh
         sudo ./INSTALL.sh --without-scip --without-gurobi --without-cplex
@@ -107,7 +107,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         cd $HOME
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
         cd smspp-project
         chmod +x ./INSTALL.sh
         ./INSTALL.sh --without-scip --without-gurobi --without-cplex
@@ -120,7 +120,7 @@ jobs:
       shell: pwsh
       run: |
         cd C:\
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git
+        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
         cd smspp-project
         .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex -nonInteractive
         echo "C:\smspp-project\build\Release\bin" >> $GITHUB_PATH
