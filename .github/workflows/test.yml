@@ -123,18 +123,20 @@ jobs:
         git clone -b develop https://gitlab.com/smspp/smspp-project.git
         cd smspp-project
         .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex -nonInteractive
+        echo "C:\smspp-project\build\Release\bin" >> $GITHUB_PATH
         echo "C:\smspp-project\Release\bin" >> $GITHUB_PATH
         echo "C:\smspp-project\build\InvestmentBlock\test\Release" >> $GITHUB_PATH
 
     - name: "test outputs"
       run: |
-        echo "PATH is now: %PATH%"
+        echo "PATH is now: $GITHUB_PATH"
+        echo "PATH is now: $PATH"
         echo "DIR SMS++"
         dir C:\smspp-project
-        echo "DIR SMS++ Release"
-        dir C:\smspp-project\Release
         echo "DIR SMS++ build"
         dir C:\smspp-project\build
+        echo "DIR SMS++ Release"
+        dir C:\smspp-project\Release
         ucblock_solver.exe
 
     - name: Test package with SMSpp
