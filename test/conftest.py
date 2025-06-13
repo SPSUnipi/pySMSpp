@@ -16,11 +16,11 @@ def force_smspp(request):
     return request.config.getoption("--force-smspp")
 
 
-# Reads a sample network; microgrid_ALL_4N.nc4 is composed by:
-# on node 0: 2 intermittent, 1 battery, 1 hydro, 1 thermal, and 1 load
+# Reads a sample network; microgrid_ALLbutStore_1N_optimized.nc4 is composed by:
+# on node 0: 2 intermittent, 1 battery (StorageUnit), 1 hydro (StorageUnit), 1 thermal, and 1 load
 # on nodes 1-3: 1 load each
 sample_networks = [
-    "microgrid_ALL_4N.nc4",
+    "microgrid_ALLbutStore_1N.nc4",
 ]
 
 
