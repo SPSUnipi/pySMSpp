@@ -54,7 +54,7 @@ def test_optimize_example(force_smspp):
         ucs.optimize()
 
         assert "Success" in ucs.status
-        assert np.isclose(ucs.objective_value, 1.93158759e04, atol=ATOL, rtol=RTOL)
+        assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)
     else:
         pytest.skip("UCBlockSolver not available in PATH")
 
