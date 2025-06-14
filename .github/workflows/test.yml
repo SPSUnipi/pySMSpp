@@ -80,7 +80,6 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         vsversion: 2022
-        toolset: '14.42'
 
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v5
@@ -121,7 +120,7 @@ jobs:
       shell: pwsh
       run: |
         cd C:\
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
+        git clone -b test_win https://gitlab.com/davide-f/smspp-project.git --recurse-submodules
         cd smspp-project
         .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex -nonInteractive
         echo "C:\smspp-project\build\Release\bin" >> $GITHUB_PATH
