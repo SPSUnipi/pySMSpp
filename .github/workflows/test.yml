@@ -64,7 +64,7 @@ jobs:
         python-version:
         - "3.12"
         os:
-        # - ubuntu-latest
+        - ubuntu-latest
         # See errors in https://github.com/SPSUnipi/pySMSpp/actions/runs/14183022094
         # - macos-latest  # Commented until the following error is fixed "Error: Running Homebrew as root is extremely dangerous and no longer supported."
         - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
@@ -128,6 +128,8 @@ jobs:
         echo "C:\smspp-project\build\InvestmentBlock\test\Release" >> $GITHUB_PATH
 
     - name: "test outputs"
+      if: runner.os == 'Windows'
+      shell: pwsh
       run: |
         echo "PATH is now: $GITHUB_PATH"
         echo "PATH is now: $PATH"
@@ -135,8 +137,8 @@ jobs:
         dir C:\smspp-project
         echo "DIR SMS++ build"
         dir C:\smspp-project\build
-        echo "DIR SMS++ Release"
-        dir C:\smspp-project\Release
+        echo "DIR SMS++ Release bin"
+        dir C:\smspp-project\Release\bin
         ucblock_solver.exe
 
     - name: Test package with SMSpp
