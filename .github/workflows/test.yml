@@ -64,8 +64,8 @@ jobs:
         python-version:
         - "3.12"
         os:
-        # - ubuntu-latest
-        # - macos-latest
+        - ubuntu-latest
+        - macos-latest
         - windows-latest
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
@@ -97,7 +97,7 @@ jobs:
         git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
         cd smspp-project
         chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --without-scip --without-gurobi --without-cplex
+        sudo ./INSTALL.sh --without-scip --without-gurobi
         echo "/opt/smspp-project/bin" >> $GITHUB_PATH
         echo "/opt/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=/opt/smspp-project/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
@@ -109,7 +109,7 @@ jobs:
         git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
         cd smspp-project
         chmod +x ./INSTALL.sh
-        ./INSTALL.sh --without-scip --without-gurobi --without-cplex
+        ./INSTALL.sh --without-scip --without-gurobi
         echo "$HOME/smspp-project/bin" >> $GITHUB_PATH
         echo "$HOME/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=$HOME/smspp-project/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
@@ -121,18 +121,19 @@ jobs:
         cd C:\
         git clone -b test_win https://gitlab.com/davide-f/smspp-project.git --recurse-submodules
         cd smspp-project
+        .\INSTALL.ps1 -withoutScip -withoutGurobi -nonInteractive
         echo "C:\smspp-project\Release\bin;C:\smspp-project\build\InvestmentBlock\test\Release;" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Print environment variables
+    - name: Print environment variables (Not Windows)
+      if: runner.os != 'Windows'
+      run: |
+        echo "PATH: $PATH"
+
+    - name: Print environment variables (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
         echo "PATH: $env:PATH"
-
-    - name: Print environment variables
-      if: runner.os != 'Windows'
-      run: |
-        echo "PATH: $PATH"
 
     - name: Test package with SMSpp
       run: |
