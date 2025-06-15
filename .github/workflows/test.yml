@@ -43,10 +43,10 @@ jobs:
 
     - name: "test outputs"
       run: |
-        echo "PATH is now: $PATH"
-        echo "LD_LIBRARY_PATH is now: $LD_LIBRARY_PATH"
-        echo "GITHUB_PATH is now: $GITHUB_PATH"
-        echo "GITHUB_ENV is now: $GITHUB_ENV"
+        echo "PATH is now: $env:PATH"
+        echo "LD_LIBRARY_PATH is now: $env:LD_LIBRARY_PATH"
+        echo "GITHUB_PATH is now: $env:GITHUB_PATH"
+        echo "GITHUB_ENV is now: $env:GITHUB_ENV"
 
     - name: "test outputs"
       run: |
@@ -54,10 +54,10 @@ jobs:
 
     - name: print PATH
       run: |
-        echo "PATH is now: $PATH"
-        echo "LD_LIBRARY_PATH is now: $LD_LIBRARY_PATH"
-        echo "GITHUB_PATH is now: $GITHUB_PATH"
-        echo "GITHUB_ENV is now: $GITHUB_ENV"
+        echo "PATH is now: $env:PATH"
+        echo "LD_LIBRARY_PATH is now: $env:LD_LIBRARY_PATH"
+        echo "GITHUB_PATH is now: $env:GITHUB_PATH"
+        echo "GITHUB_ENV is now: $env:GITHUB_ENV"
 
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v5
