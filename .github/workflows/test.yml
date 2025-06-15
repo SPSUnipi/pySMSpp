@@ -65,9 +65,8 @@ jobs:
         - "3.12"
         os:
         - ubuntu-latest
-        # See errors in https://github.com/SPSUnipi/pySMSpp/actions/runs/14183022094
-        # - macos-latest  # Commented until the following error is fixed "Error: Running Homebrew as root is extremely dangerous and no longer supported."
-        - windows-latest # Commented until the following error is fixed "You cannot call a method on a null-valued expression."
+        - macos-latest
+        - windows-latest
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
       MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
@@ -123,26 +122,9 @@ jobs:
         git clone -b test_win https://gitlab.com/davide-f/smspp-project.git --recurse-submodules
         cd smspp-project
         .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex -nonInteractive
-        echo "C:\smspp-project\build\Release\bin" >> $GITHUB_PATH
-        echo "C:\smspp-project\Release\bin" >> $GITHUB_PATH
-        echo "C:\smspp-project\build\InvestmentBlock\test\Release" >> $GITHUB_PATH
-
-    - name: "test outputs"
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        echo "PATH is now: $GITHUB_PATH"
-        echo "PATH is now: $PATH"
-        echo "DIR SMS++"
-        dir C:\smspp-project
-        echo "DIR SMS++ build"
-        dir C:\smspp-project\build
-        echo "DIR SMS++ Release bin"
-        dir C:\smspp-project\Release\bin
-        ucblock_solver.exe
+        echo "C:\smspp-project\Release\bin;" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "C:\smspp-project\build\InvestmentBlock\test\Release;" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Test package with SMSpp
       run: |
-        echo "PATH is now: $PATH"
-        echo "LD_LIBRARY_PATH is now: $LD_LIBRARY_PATH"
         pytest --force-smspp
