@@ -25,7 +25,7 @@ RTOL = 1e-4
 ATOL = 1e-2
 
 
-def test_help(force_smspp):
+def test_help_ucblocksolver(force_smspp):
     ucs = UCBlockSolver()
 
     if ucs.is_available() or force_smspp:
@@ -35,6 +35,17 @@ def test_help(force_smspp):
             "SMS++ unit commitment solver" in help_msg
             or "SMS++ UCBlock solver" in help_msg
         )
+    else:
+        pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_help_investmentblocktestsolver(force_smspp):
+    ibts = InvestmentBlockTestSolver()
+
+    if ibts.is_available() or force_smspp:
+        help_msg = ibts.help()
+
+        assert "SMS++ investment solver" in help_msg
     else:
         pytest.skip("UCBlockSolver not available in PATH")
 
@@ -114,6 +125,10 @@ def test_optimize_ucsolver_all_components(force_smspp):
         pytest.skip("UCBlockSolver not available in PATH")
 
 
+@pytest.mark.skipif(
+    "cplex" not in os.environ["PATH"],
+    reason="Skipping test when cplex is not available",
+)
 def test_investmentsolvertest(force_smspp):
     fp_network = get_network("investment_1N.nc4")
     fp_log = get_temp_file("test_optimize_investmentsolvertest.txt")
