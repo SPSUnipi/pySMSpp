@@ -6,7 +6,8 @@ on:
   pull_request:
     branches: [main]
   schedule:
-  - cron: "0 5 * * TUE"
+  - cron: "0 6 * * 1,4"
+  workflow_dispatch:
 
 # Cancel any in-progress runs when a new run is triggered
 concurrency:
@@ -63,10 +64,7 @@ jobs:
       matrix:
         python-version:
         - "3.12"
-        os:
-        - ubuntu-latest
-        - macos-latest
-        - windows-latest
+        os: ${{ ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["ubuntu", "macos", "windows"]')) || fromJson('["ubuntu", "macos"]') }}
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
       MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
