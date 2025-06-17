@@ -58,7 +58,7 @@ jobs:
     name: Test package with SMSpp
     needs:
     - test
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
