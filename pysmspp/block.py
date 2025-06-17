@@ -1,5 +1,10 @@
 from pysmspp.components import Dict
-from pysmspp.smspp_tools import UCBlockSolver, SMSPPSolverTool
+from pysmspp.smspp_tools import (
+    SMSPPSolverTool,
+    UCBlockSolver,
+    InvestmentBlockTestSolver,
+    InvestmentBlockSolver,
+)
 from enum import IntEnum
 
 import netCDF4 as nc
@@ -695,8 +700,9 @@ class SMSNetwork(Block):
             The path to the log file.
         fp_out : Path | str (default: None)
             The path to the output file.
-        smspp_tool : str (default: "auto")
-            The optimization mode. Supported values:
+        smspp_tool : SMSPPSolverTool | str (default: "auto")
+            The optimization mode. It supports a SMSPPSolverTool or string-based values.
+            If string value is passed, the supported values are:
 
             - "auto": Automatically select the optimization mode by the type of the inner block.
               If UCBlock, then it selects UCBlockSolver.
@@ -707,29 +713,45 @@ class SMSNetwork(Block):
         kwargs : dict
             The arguments to pass to the optimization function.
         """
-        if not isinstance(configfile, SMSConfig):
-            configfile = SMSConfig(configfile)
+
+        # Map block type to default solver (for 'auto' mode)
+        default_solver_map = {
+            "UCBlock": "UCBlockSolver",
+            "InvestmentBlock": "InvestmentBlockTestSolver",
+            "SDDPBlock": "InvestmentBlockSolver",
+        }
+
+        # Map solver names to actual solver classes
+        solver_factory = {
+            "UCBlockSolver": UCBlockSolver,
+            "InvestmentBlockTestSolver": InvestmentBlockTestSolver,
+            "InvestmentBlockSolver": InvestmentBlockSolver,
+        }
+
+        if isinstance(smspp_solver, str) and smspp_solver == "auto":
+            ib = self.blocks[inner_block_name]
+            try:
+                smspp_solver = default_solver_map[ib.block_type]
+            except KeyError:
+                raise ValueError(
+                    f'"auto" smspp_solver option not supported for block type {ib.block_type}.'
+                )
+        # Instantiate solver
         if isinstance(smspp_solver, str):
-            if smspp_solver == "auto":
-                ib = self.blocks[inner_block_name]
-                match ib.block_type:
-                    case "UCBlock":
-                        smspp_solver = "UCBlockSolver"
-                    case _:
-                        raise ValueError(
-                            f'"auto" smspp_solver option not yet type not supported with block type {ib.type}.'
-                        )
-            match smspp_solver:
-                case "UCBlockSolver":
-                    smspp_solver = UCBlockSolver(
-                        configfile=str(configfile),
-                        fp_network=fp_temp,
-                        fp_out=fp_out,
-                        fp_log=fp_log,
-                        **kwargs,
-                    )
-                case _:
-                    raise ValueError(f"SMS++ tool {smspp_solver} not supported.")
+            try:
+                solver_class = solver_factory[smspp_solver]
+            except KeyError:
+                raise ValueError(f"SMS++ tool {smspp_solver} not supported.")
+
+            if not isinstance(configfile, SMSConfig):
+                configfile = SMSConfig(configfile)
+            smspp_solver = solver_class(
+                configfile=str(configfile),
+                fp_network=fp_temp,
+                fp_out=fp_out,
+                fp_log=fp_log,
+                **kwargs,
+            )
 
         self.to_netcdf(fp_temp, force=True)
         return smspp_solver.optimize(**kwargs)
