@@ -95,7 +95,7 @@ jobs:
         git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
         cd smspp-project
         chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --without-scip --without-gurobi
+        sudo ./INSTALL.sh --without-scip --without-gurobi --without-cplex
         echo "/opt/ibm/ILOG/CPLEX_Studio/cplex/bin/x86-64_linux" >> $GITHUB_PATH
         echo "/opt/smspp-project/bin" >> $GITHUB_PATH
         echo "/opt/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH

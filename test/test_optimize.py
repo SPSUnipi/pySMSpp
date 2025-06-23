@@ -125,10 +125,6 @@ def test_optimize_ucsolver_all_components(force_smspp):
         pytest.skip("UCBlockSolver not available in PATH")
 
 
-@pytest.mark.skipif(
-    "cplex" not in os.environ["PATH"],
-    reason="Skipping test when cplex is not available",
-)
 def test_investmentsolvertest(force_smspp):
     fp_network = get_network("investment_1N.nc4")
     fp_log = get_temp_file("test_optimize_investmentsolvertest.txt")
