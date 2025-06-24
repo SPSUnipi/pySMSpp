@@ -4,6 +4,7 @@ import subprocess
 import re
 import numpy as np
 import os
+import time
 
 
 class SMSPPSolverTool:
@@ -62,6 +63,9 @@ class SMSPPSolverTool:
         self._lower_bound = None
         self._upper_bound = None
         self._solution = None
+        self._subprocess_time = None
+        self._solution_time = None
+        self._computational_time = None
 
     def calculate_executable_call(self):
         """
@@ -114,11 +118,15 @@ class SMSPPSolverTool:
             )
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
+
+        start_time = time.time()
         result = subprocess.run(
             self.calculate_executable_call(),
             capture_output=True,
             shell=True,
         )
+        self._subprocess_time = time.time() - start_time
+
         self._log = (
             result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
         )
@@ -134,6 +142,7 @@ class SMSPPSolverTool:
                 f.write(self._log)
 
         # sets the solution object
+        start_solution_time = time.time()
         if self.fp_solution is not None:
             if Path(self.fp_solution).exists():
                 self._solution = SMSNetwork(self.fp_solution)
@@ -143,6 +152,8 @@ class SMSPPSolverTool:
                 )
         else:
             self._solution = None
+        self._solution_time = time.time() - start_solution_time
+        self._computational_time = time.time() - start_time
 
         return self
 
@@ -194,6 +205,33 @@ class SMSPPSolverTool:
         classes if applicable.
         """
         return self._solution
+
+    @property
+    def subprocess_time(self):
+        """
+        Returns the time taken to run the subprocess in seconds.
+        This is a placeholder method and should be implemented in derived
+        classes if applicable.
+        """
+        return self._subprocess_time
+
+    @property
+    def solution_time(self):
+        """
+        Returns the time taken to parse the solution in seconds.
+        This is a placeholder method and should be implemented in derived
+        classes if applicable.
+        """
+        return self._solution_time
+
+    @property
+    def computational_time(self):
+        """
+        Returns the total computational time of the optimization in seconds.
+        This is a placeholder method and should be implemented in derived
+        classes if applicable.
+        """
+        return self._computational_time
 
 
 class UCBlockSolver(SMSPPSolverTool):
