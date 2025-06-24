@@ -136,8 +136,7 @@ class SMSPPSolverTool:
         # sets the solution object
         if self.fp_solution is not None:
             if Path(self.fp_solution).exists():
-                with open(self.fp_solution, "r") as f:
-                    self._solution = SMSNetwork(self.fp_network)
+                self._solution = SMSNetwork(self.fp_solution)
             else:
                 raise FileNotFoundError(
                     f"solution file {self.fp_solution} does not exist."
