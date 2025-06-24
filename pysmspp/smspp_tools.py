@@ -59,6 +59,7 @@ class SMSPPSolverTool:
         self._objective_value = None
         self._lower_bound = None
         self._upper_bound = None
+        self._solution = None
 
     def calculate_executable_call(self):
         """
@@ -103,6 +104,8 @@ class SMSPPSolverTool:
         **kwargs
             Additional keyword arguments to pass to the function.
         """
+        from pysmspp import SMSNetwork
+
         if not Path(Path(self.configdir).joinpath(self.configfile)).exists():
             raise FileNotFoundError(
                 f"Configuration file {self.configfile} does not exist."
@@ -127,6 +130,16 @@ class SMSPPSolverTool:
             Path(self.fp_log).parent.mkdir(parents=True, exist_ok=True)
             with open(self.fp_log, "w") as f:
                 f.write(self._log)
+
+        # sets the solution object
+        if self.fp_out is not None:
+            if Path(self.fp_out).exists():
+                with open(self.fp_out, "r") as f:
+                    self._solution = SMSNetwork(self.fp_network)
+            else:
+                raise FileNotFoundError(f"Output file {self.fp_out} does not exist.")
+        else:
+            self._solution = None
 
         return self
 
@@ -169,6 +182,15 @@ class SMSPPSolverTool:
     @property
     def upper_bound(self):
         return self._upper_bound
+
+    @property
+    def solution(self):
+        """
+        Returns the solution of the optimization problem.
+        This is a placeholder method and should be implemented in derived
+        classes if applicable.
+        """
+        return self._solution
 
 
 class UCBlockSolver(SMSPPSolverTool):
