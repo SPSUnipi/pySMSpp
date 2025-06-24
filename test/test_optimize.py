@@ -178,5 +178,6 @@ def test_create_solution(force_smspp):
         result = b.optimize(configfile, fp_temp, fp_log, fp_out)
         assert "success" in result.status.lower()
         assert path_out.exists()
+        assert result.solution is not None
     else:
         pytest.skip("Impossible to export a solution object")
