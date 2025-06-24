@@ -682,7 +682,7 @@ class SMSNetwork(Block):
         configfile: SMSConfig | Path | str,
         fp_temp: Path | str = "temp.nc",
         fp_log: Path | str = None,
-        fp_out: Path | str = None,
+        fp_solution: Path | str = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
         inner_block_name: str = "Block_0",
         **kwargs,
@@ -698,8 +698,8 @@ class SMSNetwork(Block):
             The path to the temporary file.
         fp_log : Path | str (default: None)
             The path to the log file.
-        fp_out : Path | str (default: None)
-            The path to the output file.
+        fp_solution : Path | str (default: None)
+            The path to the solution file.
         smspp_tool : SMSPPSolverTool | str (default: "auto")
             The optimization mode. It supports a SMSPPSolverTool or string-based values.
             If string value is passed, the supported values are:
@@ -748,7 +748,7 @@ class SMSNetwork(Block):
             smspp_solver = solver_class(
                 configfile=str(configfile),
                 fp_network=fp_temp,
-                fp_out=fp_out,
+                fp_solution=fp_solution,
                 fp_log=fp_log,
                 **kwargs,
             )

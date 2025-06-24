@@ -18,7 +18,7 @@ class SMSPPSolverTool:
         help_option: str = "-h",
         fp_network: Path | str = None,
         configfile: Path | str = None,
-        fp_out: Path | str = None,
+        fp_solution: Path | str = None,
         fp_log: Path | str = None,
     ):
         """
@@ -37,8 +37,8 @@ class SMSPPSolverTool:
             Path to the SMSpp network to solve, by default None.
         configfile : Path | str, optional
             Path to the configuration file, by default None.
-        fp_out : Path | str, optional
-            Path to the output file, by default None.
+        fp_solution : Path | str, optional
+            Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
         """
@@ -50,7 +50,9 @@ class SMSPPSolverTool:
         self.configdir = str(Path(configfile).resolve().parent.resolve())
         self.configfile = str(Path(configfile).resolve().name)
         self.fp_log = None if fp_log is None else str(Path(fp_log).resolve())
-        self.fp_out = None if fp_out is None else str(Path(fp_out).resolve())
+        self.fp_solution = (
+            None if fp_solution is None else str(Path(fp_solution).resolve())
+        )
         if not self.configdir.endswith("/"):
             self.configdir += "/"
 
@@ -68,7 +70,7 @@ class SMSPPSolverTool:
         self._exec_optimize()
 
     def __repr__(self):
-        return f"{type(self).__name__}\n\t\n\texec_file={self._exec_file}\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_out={self.fp_out}"
+        return f"{type(self).__name__}\n\t\n\texec_file={self._exec_file}\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_solution={self.fp_solution}"
 
     def help(self, print_message=True):
         """
@@ -132,12 +134,14 @@ class SMSPPSolverTool:
                 f.write(self._log)
 
         # sets the solution object
-        if self.fp_out is not None:
-            if Path(self.fp_out).exists():
-                with open(self.fp_out, "r") as f:
+        if self.fp_solution is not None:
+            if Path(self.fp_solution).exists():
+                with open(self.fp_solution, "r") as f:
                     self._solution = SMSNetwork(self.fp_network)
             else:
-                raise FileNotFoundError(f"Output file {self.fp_out} does not exist.")
+                raise FileNotFoundError(
+                    f"solution file {self.fp_solution} does not exist."
+                )
         else:
             self._solution = None
 
@@ -157,7 +161,7 @@ class SMSPPSolverTool:
         Parameters
         ----------
         log : str
-            The path to the output file.
+            The path to the solution file.
         """
         raise NotImplementedError(
             "Method parse_ucblock_solver_log must be implemented in the derived class."
@@ -202,7 +206,7 @@ class UCBlockSolver(SMSPPSolverTool):
         self,
         fp_network: Path | str = "",
         configfile: Path | str = "",
-        fp_out: Path | str = None,
+        fp_solution: Path | str = None,
         fp_log: Path | str = None,
     ):
         """
@@ -212,8 +216,8 @@ class UCBlockSolver(SMSPPSolverTool):
             Path to the SMSpp network to solve.
         configfile : Path | str
             Path to the configuration file.
-        fp_out : Path | str, optional
-            Path to the output file, by default None.
+        fp_solution : Path | str, optional
+            Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
         """
@@ -223,7 +227,7 @@ class UCBlockSolver(SMSPPSolverTool):
             help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
-            fp_out=fp_out,
+            fp_solution=fp_solution,
             fp_log=fp_log,
         )
 
@@ -231,8 +235,8 @@ class UCBlockSolver(SMSPPSolverTool):
         exec_path = (
             f"ucblock_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
-        if self.fp_out is not None:
-            exec_path += f" -o -O {self.fp_out}"
+        if self.fp_solution is not None:
+            exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
     def parse_ucblock_solver_log(self):
@@ -243,7 +247,7 @@ class UCBlockSolver(SMSPPSolverTool):
         Parameters
         ----------
         log : str
-            The path to the output file.
+            The path to the solution file.
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
@@ -280,7 +284,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         self,
         fp_network: Path | str = "",
         configfile: Path | str = "",
-        fp_out: Path | str = None,
+        fp_solution: Path | str = None,
         fp_log: Path | str = None,
     ):
         """
@@ -292,8 +296,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             Path to the SMSpp network to solve.
         configfile : Path | str
             Path to the configuration file.
-        fp_out : Path | str, optional
-            Path to the output file, by default None.
+        fp_solution : Path | str, optional
+            Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
         """
@@ -303,14 +307,14 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
-            fp_out=fp_out,
+            fp_solution=fp_solution,
             fp_log=fp_log,
         )
 
     def calculate_executable_call(self):
         exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile} -v -o"
-        if self.fp_out is not None:
-            exec_path += f" -O {self.fp_out}"
+        if self.fp_solution is not None:
+            exec_path += f" -O {self.fp_solution}"
         return exec_path
 
     def parse_ucblock_solver_log(
@@ -323,7 +327,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         Parameters
         ----------
         log : str
-            The path to the output file.
+            The path to the solution file.
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
@@ -360,7 +364,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         self,
         fp_network: Path | str = "",
         configfile: Path | str = "",
-        fp_out: Path | str = None,
+        fp_solution: Path | str = None,
         fp_log: Path | str = None,
     ):
         """
@@ -372,8 +376,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             Path to the SMSpp network to solve.
         configfile : Path | str
             Path to the configuration file.
-        fp_out : Path | str, optional
-            Path to the output file, by default None.
+        fp_solution : Path | str, optional
+            Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
         """
@@ -383,14 +387,14 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
-            fp_out=fp_out,
+            fp_solution=fp_solution,
             fp_log=fp_log,
         )
 
     def calculate_executable_call(self):
         exec_path = f"investment_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
-        if self.fp_out is not None:
-            exec_path += f" -o -O {self.fp_out}"
+        if self.fp_solution is not None:
+            exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
     def parse_ucblock_solver_log(
@@ -403,7 +407,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         Parameters
         ----------
         log : str
-            The path to the output file.
+            The path to the solution file.
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
@@ -440,7 +444,7 @@ class SDDPSolver(SMSPPSolverTool):
         self,
         fp_network: Path | str = "",
         configfile: Path | str = "",
-        fp_out: Path | str = None,
+        fp_solution: Path | str = None,
         fp_log: Path | str = None,
     ):
         """
@@ -452,8 +456,8 @@ class SDDPSolver(SMSPPSolverTool):
             Path to the SMSpp network to solve.
         configfile : Path | str
             Path to the configuration file.
-        fp_out : Path | str, optional
-            Path to the output file, by default None.
+        fp_solution : Path | str, optional
+            Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
         """
@@ -463,7 +467,7 @@ class SDDPSolver(SMSPPSolverTool):
             help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
-            fp_out=fp_out,
+            fp_solution=fp_solution,
             fp_log=fp_log,
         )
 
@@ -471,8 +475,8 @@ class SDDPSolver(SMSPPSolverTool):
         exec_path = (
             f"sddp_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
-        if self.fp_out is not None:
-            exec_path += f" -o -O {self.fp_out}"
+        if self.fp_solution is not None:
+            exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
     def parse_ucblock_solver_log(
@@ -485,7 +489,7 @@ class SDDPSolver(SMSPPSolverTool):
         Parameters
         ----------
         log : str
-            The path to the output file.
+            The path to the solution file.
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
