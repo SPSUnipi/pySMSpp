@@ -1,0 +1,95 @@
+name: Publish Python 🐍 distribution 📦 to PyPI
+
+on: push
+
+jobs:
+  build:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  install_and_test:
+    name: Install and test build distribution
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Install package and dependencies
+      run: |
+        python -m pip install uv
+        uv pip install --compile --system "$(ls dist/*.whl)[dev]"
+    - name: Test package
+      run: |
+        import pysmspp
+        pysmspp.SMSNetwork()
+      shell: python
+
+  release:
+    name: Create Release
+    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    needs:
+    - install_and_test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+          # by default, it uses a depth of 1
+          # this fetches all history so that we can read each commit
+        fetch-depth: 0
+    - name: Generate Changelog
+      run: .github/workflows/release_message.sh > release_message.md
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: release_message.md
+
+  publish-to-pypi:
+    name: >-
+      Publish Python 🐍 distribution 📦 to PyPI
+    needs:
+    - release
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pySMSpp  # Replace <package-name> with your PyPI project name
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
