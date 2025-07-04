@@ -67,7 +67,7 @@ jobs:
           # this fetches all history so that we can read each commit
         fetch-depth: 0
     - name: Generate Changelog
-      run: .github/workflows/release_message.sh > release_message.md
+      run: .github/release_message.sh > release_message.md
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
