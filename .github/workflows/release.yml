@@ -49,10 +49,10 @@ jobs:
         python -m pip install uv
         uv pip install --compile --system "$(ls dist/*.whl)[dev]"
     - name: Test package
+      shell: python
       run: |
         import pysmspp
         pysmspp.SMSNetwork()
-      shell: python
 
   release:
     name: Create Release
