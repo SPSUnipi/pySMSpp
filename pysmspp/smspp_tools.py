@@ -369,7 +369,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         if self._log is None:
             raise ValueError("Optimization was not launched.")
 
-        res = re.search("Solution value: (.*)\n", self._log)
+        res = re.search(r"Fi\* = (.*)\n", self._log)
 
         if not res:  # if success not found
             self._status = "Failed"
