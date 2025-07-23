@@ -120,6 +120,7 @@ class SMSPPSolverTool:
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
 
         start_time = time.time()
+        print(self.calculate_executable_call())
         result = subprocess.run(
             self.calculate_executable_call(),
             capture_output=True,
