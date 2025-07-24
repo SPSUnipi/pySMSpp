@@ -51,7 +51,7 @@ def test_help_investmentblocktestsolver(force_smspp):
 def test_optimize_example(force_smspp):
     fp_network = get_network()
     fp_log = get_temp_file("test_optimize_example.txt")
-    configfile = SMSConfig(template="uc_solverconfig.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
 
     ucs = UCBlockSolver(
         configfile=str(configfile),
@@ -74,7 +74,7 @@ def test_optimize_ucsolver(force_smspp):
 
     fp_log = get_temp_file("test_optimize_ucsolver.txt")
     fp_temp = get_temp_file("test_optimize_ucsolver.nc")
-    configfile = SMSConfig(template="uc_solverconfig.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
 
     if UCBlockSolver().is_available() or force_smspp:
         result = b.optimize(configfile, fp_temp, fp_log)
@@ -107,10 +107,10 @@ def test_optimize_ucsolver_all_components(force_smspp):
 
     fp_log = get_temp_file("test_optimize_ucsolver_all_components.txt")
     fp_temp = get_temp_file("test_optimize_ucsolver_all_components.nc")
-    configfile = SMSConfig(template="uc_solverconfig.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
 
     if UCBlockSolver().is_available() or force_smspp:
-        result = b.optimize(configfile, fp_temp, fp_log)
+        result = b.optimize(configfile, fp_temp, fp_log, log_executable_call=True)
 
         assert "success" in result.status.lower()
         assert "error" not in result.log.lower()

@@ -173,4 +173,3 @@ test/temp*
 # SMS and pypsa files
 *.nc
 *.txt
-!uc_solverconfig_grb.txt
