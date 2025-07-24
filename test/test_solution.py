@@ -60,7 +60,7 @@ def test_create_solution(force_smspp):
     fp_log = get_temp_file("test_optimize_ucsolver_all_components_solution.txt")
     fp_temp = get_temp_file("test_optimize_ucsolver_all_components_solution_network.nc")
     fp_solution = get_temp_file("test_optimize_ucsolver_all_components_solution.nc")
-    configfile = SMSConfig(template="uc_solverconfig.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
 
     path_out = Path(fp_solution).resolve()
     if path_out.exists():

@@ -99,14 +99,14 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, **kwargs):
+    def optimize(self, log_executable_call=False, **kwargs):
         """
         Run the SMSPP Solver tool.
 
         Parameters
         ----------
-        fp_n : str
-            File path to the network file.
+        log_executable_call : bool
+            When true, the
         **kwargs
             Additional keyword arguments to pass to the function.
         """
@@ -120,6 +120,8 @@ class SMSPPSolverTool:
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
 
         start_time = time.time()
+        if log_executable_call:
+            print("Executing command:\n" + self.calculate_executable_call() + "\n")
         result = subprocess.run(
             self.calculate_executable_call(),
             capture_output=True,
@@ -245,6 +247,7 @@ class UCBlockSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        **kwargs,
     ):
         """
         Parameters
@@ -323,6 +326,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        **kwargs,
     ):
         """
         Constructor for the InvestmentBlockTestSolver, with executable file "InvestmentBlock_test".
@@ -403,6 +407,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        **kwargs,
     ):
         """
         Constructor for the InvestmentBlockSolver, with executable file "investment_solver".
@@ -483,6 +488,7 @@ class SDDPSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        **kwargs,
     ):
         """
         Constructor for the SDDPSolver, with executable file "sddp_solver".
