@@ -591,7 +591,6 @@ class Block:
             return self.add_block(name, *args, block_type=component_name, **kwargs)
         else:
             raise ValueError(f"Class {component_name} not supported.")
-            return self
 
     # Utilities
 
