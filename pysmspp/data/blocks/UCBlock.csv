@@ -16,6 +16,7 @@ UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Minimum
 UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Maximum power flow of lines
 UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines,Siemens,,optional,Susceptance of lines
 UCBlock,LineResistance,Variable,Variable,double,-|NumberLines,Ohm,,optional,Resistance of lines
+UCBlock,Efficiency,Variable,Variable,double,-|NumberLines,Ohm,,optional,Efficiency of lines; functional only for HVDC lines (default 1.0)
 UCBlock,NetworkCost,Variable,Variable,double,-|NumberLines,€/MWh,,optional,Marginal cost of the network flows
 UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
 UCBlock,UnitBlock_*,Block,Group,UnitBlock,list,-.-,,optional,Unit blocks
