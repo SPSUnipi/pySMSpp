@@ -581,18 +581,17 @@ class Block:
         Returns the object being created: Attribute, Dimension, Variable, or Block.
         """
         component_nctype = self.components[component_name]["nctype"]
-        match component_nctype:
-            case "Attribute":
-                return self.add_attribute(name, *args, **kwargs)
-            case "Dimension":
-                return self.add_dimension(name, *args, **kwargs)
-            case "Variable":
-                return self.add_variable(name, *args, **kwargs)
-            case "Block":
-                return self.add_block(name, *args, block_type=component_name, **kwargs)
-            case _:
-                raise ValueError(f"Class {component_name} not supported.")
-        return self
+        if component_nctype == "Attribute":
+            return self.add_attribute(name, *args, **kwargs)
+        elif component_nctype == "Dimension":
+            return self.add_dimension(name, *args, **kwargs)
+        elif component_nctype == "Variable":
+            return self.add_variable(name, *args, **kwargs)
+        elif component_nctype == "Block":
+            return self.add_block(name, *args, block_type=component_name, **kwargs)
+        else:
+            raise ValueError(f"Class {component_name} not supported.")
+            return self
 
     # Utilities
 
