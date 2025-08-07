@@ -7,16 +7,19 @@ UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number 
 UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1.0,optional,Number of nodes
 UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
 UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs
+UCBlock,NumberBranches,Dimension,Dimension,int,-,-,,optional,Number of hyperarcs when hyperarcs are used
 UCBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,optional,Number of reservoirs
 UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces of the power flow function
 UCBlock,GeneratorNode,Variable,Variable,int,-|NumberElectricalGenerators,-,,optional,List of buses of connection by unit
 UCBlock,StartLine,Variable,Variable,int,-|NumberLines,-,,optional,Start buses of lines
-UCBlock,EndLine,Variable,Variable,int,-|NumberLines,-,,optional,End buses of lines
+UCBlock,EndLine,Variable,Variable,int,-|NumberLines|NumberBranches,-,,optional,End buses of lines
 UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Minimum power flow of lines
 UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Maximum power flow of lines
 UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines,Siemens,,optional,Susceptance of lines
 UCBlock,LineResistance,Variable,Variable,double,-|NumberLines,Ohm,,optional,Resistance of lines
-UCBlock,Efficiency,Variable,Variable,double,-|NumberLines,Ohm,,optional,Efficiency of lines; functional only for HVDC lines (default 1.0)
+UCBlock,Efficiency,Variable,Variable,double,-|NumberLines|NumberBranches,Ohm,,optional,Efficiency of lines or hyperarc branches; functional only for HVDC lines (default 1.0)
+UCBlock,LineName,Variable,Variable,str,-|NumberLines,str,,optional,Name of the line
+UCBlock,HyperArcID,Variable,Variable,double,-|NumberBranches,MW,,optional,Hyperarch ID of each branch: it is the line id corresponding to the branch being added
 UCBlock,NetworkCost,Variable,Variable,double,-|NumberLines,€/MWh,,optional,Marginal cost of the network flows
 UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
 UCBlock,UnitBlock_*,Block,Group,UnitBlock,list,-.-,,optional,Unit blocks
