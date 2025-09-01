@@ -29,7 +29,7 @@ ComputeConfig # exact type of the ComputeConfig object
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-24 # number of integer parameters
+23 # number of integer parameters
 
 # now all the integer parameters
 intDoEasy  0      # do easy components for (some) LagBFunction
@@ -49,7 +49,6 @@ inttSPar1   0     # long-term t-strategy (0 = none, 4 = soft, 8 = hard, 12 = bal
 intMaxNrEvls 2    # maximum number of function evaluations at each iteration
 intMPName  8      # MP solver: 0 = QPP, 7 = Cplex/Gurobi with quadratic stabilization
                   # + 8 = check for duplicate linearizations
-intPushCostToOwner 0 # whether sub-Block Objective are changed
 
 # QPPenalty's parameters :- - - - - - - - - - - - - - - - - - - - - - - - - -
 
