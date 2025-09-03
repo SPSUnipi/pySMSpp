@@ -16,3 +16,8 @@ BatteryUnitBlock,MaxSecondaryPower,Variable,Variable,double,-|TimeHorizon,-,,opt
 BatteryUnitBlock,InitialStorage,Variable,Variable,double,-|TimeHorizon,-,,optional,Initial storage
 BatteryUnitBlock,Cost,Variable,Variable,double,-|TimeHorizon,-,,optional,Initial primary power
 BatteryUnitBlock,Kappa,Variable,Variable,double,-,-,,optional,Capacity expansion parameter
+BatteryUnitBlock,BatteryInvestmentCost,Variable,Variable,double,-,-,,optional,Capacity expansion parameter
+BatteryUnitBlock,ConverterInvestmentCost,Variable,Variable,double,-,-,,optional,Investment cost of the converter
+BatteryUnitBlock,BatteryMaxCapacityDesign,Variable,Variable,double,-,-,,optional,Investment cost of the energy storage
+BatteryUnitBlock,ConverterMaxCapacityDesign,Variable,Variable,double,-,-,,optional,Maximum capacity of the installed capacity of the converter
+BatteryUnitBlock,BatteryMaxCapacityDesign,Variable,Variable,double,-,-,,optional,Maximum capacity of the installed capacity of the energy storage

@@ -7,3 +7,5 @@ IntermittentUnitBlock,ActivePowerCost,Variable,Variable,double,-|TimeHorizon,-,,
 IntermittentUnitBlock,InertiaPower,Variable,Variable,double,-,MW,,optional,Initial power output of the unit
 IntermittentUnitBlock,Gamma,Variable,Variable,double,-,-,,optional,Uncertainty in output power
 IntermittentUnitBlock,Kappa,Variable,Variable,double,-,-,,optional,Capacity expansion parameter
+IntermittentUnitBlock,InvestmentCost,Variable,Variable,double,-,-,,optional,Investment cost of the unit
+IntermittentUnitBlock,MaxCapacityDesign,Variable,Variable,double,-,-,,optional,Maximum installed capacity of the unit
