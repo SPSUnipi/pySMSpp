@@ -134,3 +134,17 @@ def test_investment_block():
     print(b)
     assert b.blocks["InvestmentBlock"].block_type == "InvestmentBlock"
     assert b.blocks["InvestmentBlock"].blocks["InnerBlock"].block_type == "UCBlock"
+
+
+def test_add_line_branches():
+    n_branches = 2
+    n_lines = 1
+    n_nodes = 2
+    b = SMSNetwork()
+    add_base_ucblock(b, n_nodes=n_nodes)
+    b.add("Dimension", "NumberLines", n_lines)
+    b.add("Dimension", "NumberBranches", n_branches)
+    v = Variable("StartLine", "int", ("NumberBranches",), list(range(n_branches)))
+
+    b.blocks["Block_0"].add("Variable", "StartLine", v)
+    assert len(b.blocks["Block_0"].variables["StartLine"].data) == n_branches
