@@ -91,37 +91,24 @@ jobs:
     - name: Install SMSpp (linux)
       if: runner.os == 'Linux'
       run: |
-        cd $HOME
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
-        cd smspp-project
-        chmod +x ./INSTALL.sh
-        sudo ./INSTALL.sh --without-scip --without-gurobi --without-cplex
-        echo "/opt/ibm/ILOG/CPLEX_Studio/cplex/bin/x86-64_linux" >> $GITHUB_PATH
+        curl -s https://gitlab.com/smspp/smspp-project/-/raw/develop/INSTALL.sh | sudo bash -s -- --without-scip --without-gurobi --without-cplex
         echo "/opt/smspp-project/bin" >> $GITHUB_PATH
-        echo "/opt/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
-        echo "LD_LIBRARY_PATH=/opt/smspp-project/lib:/opt/ibm/ILOG/CPLEX_Studio/cplex/lib/x86-64_linux:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=/opt/smspp-project/lib:/opt/HiGHS/lib:/opt/StOpt/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
     - name: Install SMSpp (macOS)
       if: runner.os == 'macOS'
       run: |
-        cd $HOME
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
-        cd smspp-project
-        chmod +x ./INSTALL.sh
-        ./INSTALL.sh --without-scip --without-gurobi --without-cplex
+        curl -s https://gitlab.com/smspp/smspp-project/-/raw/develop/INSTALL.sh | bash -s -- --without-scip --without-gurobi --without-cplex
         echo "$HOME/smspp-project/bin" >> $GITHUB_PATH
-        echo "$HOME/smspp-project/build/InvestmentBlock/test" >> $GITHUB_PATH
         echo "DYLD_LIBRARY_PATH=$HOME/smspp-project/lib:$HOME/HiGHS/lib:$HOME/StOpt/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
 
     - name: Install SMSpp (windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        cd C:\
-        git clone -b develop https://gitlab.com/smspp/smspp-project.git --recurse-submodules
-        cd smspp-project
-        .\INSTALL.ps1 -withoutScip -withoutGurobi -withoutCplex -nonInteractive
-        echo "C:\smspp-project\bin;C:\smspp-project\build\InvestmentBlock\test\Release;C:\HiGHS\bin;C:\vcpkg\installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        & ([scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://gitlab.com/smspp/smspp-project/-/raw/develop/INSTALL.ps1'))) -withoutScip -withoutGurobi -withoutCplex
+        echo "C:\smspp-project\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "C:\smspp-project\lib;C:\StOpt\lib;C:\smspp-project\build\vcpkg_installed\x64-windows\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Print environment variables (Not Windows)
       if: runner.os != 'Windows'
