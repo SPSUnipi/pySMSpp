@@ -70,7 +70,7 @@ intRstAlg  2      # parameter to handle the reset of the algorithm
 # now all the double parameters
 dblRelAcc  1e-4   # relative accuracy required to solution
 dblNZEps   1e-4   # stopping parameter: threshold to declare 0 the || residual ||
-dbltStar   -100   # stopping parameter: multiplied to || residual || to estimate gap
+dbltStar   100   # stopping parameter: multiplied to || residual || to estimate gap
 dblBPar5   4      # first parameter for dynamic max n. of items per iteration
 dblm1      -0.30  # a NS is possible if (~) Fi( Lambda1 ) >= Fi( Lambda ) + | m1 | v*
 dblm2      0.90   # a SS is possible if Fi( Lambda1 ) <= Fi( Lambda ) + ( 1 - m2 ) v*
@@ -85,7 +85,8 @@ dbltInit   1e+0   # initial value for t
 dbltSPar2  1e-2   # parameter for the long-term t-strategy
 dblCtOff   0.01   # cut-off factor for pricing in MinQuad
 
-0 # number of string parameters
+1 # number of string parameters
+strOutputFile inv.lp
 
 # now all the string parameters
 #str_LagBF_BSCfg	LPBSCfg.txt   # BlockSolverConfig for the LagBFunctions
