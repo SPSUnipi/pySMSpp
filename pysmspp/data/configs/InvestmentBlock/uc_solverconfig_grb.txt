@@ -19,8 +19,8 @@ intLogVerb 1
 dblAAccSol 1e-04
 dblMaxTime 3600
 
-1                  # Number of string parameters
-strOutputFile uc_output.lp
+0                  # Number of string parameters
+# strOutputFile uc_output.lp
 
 0  # Number of vector-of-int parameters
 0  # Number of vector-of-double parameters

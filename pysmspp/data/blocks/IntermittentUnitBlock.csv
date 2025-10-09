@@ -9,3 +9,4 @@ IntermittentUnitBlock,Gamma,Variable,Variable,double,-,-,,optional,Uncertainty i
 IntermittentUnitBlock,Kappa,Variable,Variable,double,-,-,,optional,Capacity expansion parameter
 IntermittentUnitBlock,InvestmentCost,Variable,Variable,double,-,-,,optional,Investment cost of the unit
 IntermittentUnitBlock,MaxCapacityDesign,Variable,Variable,double,-,-,,optional,Maximum installed capacity of the unit
+IntermittentUnitBlock,MinCapacityDesign,Variable,Variable,double,-,-,,optional,Minimum installed capacity of the unit

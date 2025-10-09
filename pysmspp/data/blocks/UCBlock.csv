@@ -4,7 +4,7 @@ UCBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
 UCBlock,TimeHorizon,Dimension,Dimension,int,-,-,,required,Time horizon of the optimization problem
 UCBlock,NumberUnits,Dimension,Dimension,int,-,-,,required,Number of units
 UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number of electrical generators
-UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1.0,optional,Number of nodes
+UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1,optional,Number of nodes
 UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
 UCBlock,NumberBranches,Dimension,Dimension,int,-,-,,optional,"Number of branches: when hyperarcs are used, this is the number of hyperarc branches and it is higher than NumberLines"
 UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs

@@ -1,31 +1,35 @@
-BlockSolverConfig  # The name of the configuration
+BlockSolverConfig # The name of the configuration
 
-1 # The configuration is "differential"
-1 # Number of solvers
+1  # The BlockSolverConfig is "differential"
+1  # The number of Solvers
 
-# Names of the solvers
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
 GRBMILPSolver
 
-1 # Number of ComputeConfigs
+1  # The number of ComputeConfigs
 
-# ------ ComputeConfig 0 ------
-ComputeConfig      # Type of the object
-1                  # Not differential
+# now all the ComputeConfigs
+# 1st --------------------------------------
+ComputeConfig  # Type of the object
+1  # differential
 
-1  # Number of integer parameters
-intLogVerb 1
+3  # Number of integer parameters
+intLogVerb 0
+Method 2
+Crossover 0
 
-2  # Number of double parameters
-dblAAccSol 1e-04
-dblMaxTime 3600
+0  # Number of double parameters
+#dblAAccSol 1e-08
+#dblRAccSol 1e-08
+#dblMaxTime 20000
 
-1                  # Number of string parameters
-strOutputFile uc_output.lp
+0  # Number of string parameters
+# strOutputFile uc_lp.lp
 
-0  # Number of vector-of-int parameters
-0  # Number of vector-of-double parameters
-0  # Number of vector-of-string parameters
+0 # number of vector-of-int parameters
+0 # number of vector-of-double parameters
+0 # number of vector-of-string parameters
 
-# Extra configuration
+# Pointer to the "extra" Configuration
 * # [none]
-# -----------------------------
+# 1st END ----------------------------------

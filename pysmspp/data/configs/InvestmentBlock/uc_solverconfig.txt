@@ -13,9 +13,10 @@ HiGHSMILPSolver
 ComputeConfig  # Type of the object
 1  # differential
 
-2  # Number of integer parameters
+3  # Number of integer parameters
 intLogVerb 0
-intRelaxIntVars 1
+Method 2
+Crossover 0
 
 0  # Number of double parameters
 #dblAAccSol 1e-08
@@ -23,7 +24,7 @@ intRelaxIntVars 1
 #dblMaxTime 20000
 
 0  # Number of string parameters
-#strOutputFile uc_lp.lp
+# strOutputFile uc_lp.lp
 
 0 # number of vector-of-int parameters
 0 # number of vector-of-double parameters
