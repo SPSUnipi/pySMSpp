@@ -1,0 +1,8 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+DesignNetworkBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+DesignNetworkBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+DesignNetworkBlock,NumberDesignLines,Dimension,Dimension,int,-,-,,required,Number of lines subject to investment
+DesignNetworkBlock,InvestmentCost,Variable,Variable,double,NumberDesignLines,-,,required,Asset index in the list of assets subject to investment
+DesignNetworkBlock,MinCapacityDesign,Variable,Variable,double,NumberDesignLines,-,,required,UpperBound
+DesignNetworkBlock,MaxCapacityDesign,Variable,Variable,double,NumberDesignLines,-,,required,LowerBound
+DesignNetworkBlock,DesignLines,Variable,Variable,int,NumberDesignLines,-,,required,Array with index of the required lines
