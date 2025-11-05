@@ -85,8 +85,8 @@ dbltInit   1e+0   # initial value for t
 dbltSPar2  1e-2   # parameter for the long-term t-strategy
 dblCtOff   0.01   # cut-off factor for pricing in MinQuad
 
-1 # number of string parameters
-strOutputFile inv.lp
+0 # number of string parameters
+# strOutputFile inv.lp
 
 # now all the string parameters
 #str_LagBF_BSCfg	LPBSCfg.txt   # BlockSolverConfig for the LagBFunctions
