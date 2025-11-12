@@ -39,7 +39,6 @@ dev = [
     "pre-commit",
     "ncompare",
     "mypy",
-    "h5py<=3.14"
 ]
 docs=[
     "numpydoc",
