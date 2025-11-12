@@ -13,10 +13,9 @@ HiGHSMILPSolver
 ComputeConfig  # Type of the object
 1  # differential
 
-3  # Number of integer parameters
+2  # Number of integer parameters
 intLogVerb 0
-Method 2
-Crossover 0
+intRelaxIntVars 1
 
 0  # Number of double parameters
 #dblAAccSol 1e-08
