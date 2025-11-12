@@ -24,3 +24,4 @@ UCBlock,NetworkCost,Variable,Variable,double,-|NumberLines,€/MWh,,optional,Mar
 UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
 UCBlock,UnitBlock_*,Block,Group,UnitBlock,list,-.-,,optional,Unit blocks
 UCBlock,NetworkBlock_*,Block,Group,NetworkBlock,list,-.-,,optional,Network blocks
+UCBlock,DesignNetworkBlock,Block,Group,DesignNetworkBlock,list,-.-,,optional,DesignNetworkBlock
