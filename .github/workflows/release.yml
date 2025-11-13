@@ -8,11 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@v5
+    - uses: actions/setup-python@v6
       with:
-        python-version: "3.13"
+        python-version: '3.13'
     - name: Install pypa/build
       run: >-
         python3 -m
@@ -22,7 +21,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: python-package-distributions
         path: dist/
@@ -34,11 +33,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
-        python-version: "3.x"
+        python-version: "3.13"
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:
@@ -61,7 +60,7 @@ jobs:
     - install_and_test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
           # by default, it uses a depth of 1
           # this fetches all history so that we can read each commit
