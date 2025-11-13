@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          # - "3.13"
+        - "3.13"
         - "3.12"
         - "3.11"
         - "3.10"
@@ -63,8 +63,8 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-        - "3.12"
-        os: ${{ ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["ubuntu", "macos", "windows"]')) || fromJson('["ubuntu", "macos"]') }}
+        - "3.13"
+        os: ${{ ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["ubuntu", "macos", "windows"]')) || fromJson('["ubuntu"]') }}
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
       MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
