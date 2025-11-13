@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          # - "3.13"
+        - "3.13"
         - "3.12"
         - "3.11"
         - "3.10"
@@ -35,12 +35,12 @@ jobs:
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0 # Needed for setuptools_scm
 
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -63,13 +63,13 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-        - "3.12"
-        os: ${{ ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["ubuntu", "macos", "windows"]')) || fromJson('["ubuntu", "macos"]') }}
+        - "3.13"
+        os: ${{ ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["ubuntu", "macos", "windows"]')) || fromJson('["ubuntu"]') }}
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
       MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0 # Needed for setuptools_scm
     - name: Set up MSVC VS2022 (windows)
@@ -79,7 +79,7 @@ jobs:
         vsversion: 2022
 
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 
