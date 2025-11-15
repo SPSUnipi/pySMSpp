@@ -26,6 +26,7 @@ dependencies = [
     "pandas>=0.24",
     "netcdf4",
     "pathlib",
+    "psutil",
 ]
 
 [project.urls]

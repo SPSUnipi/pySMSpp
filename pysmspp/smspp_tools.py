@@ -5,6 +5,7 @@ import re
 import numpy as np
 import os
 import time
+import psutil
 
 
 class SMSPPSolverTool:
@@ -99,14 +100,16 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, log_executable_call=False, **kwargs):
+    def optimize(self, log_executable_call=False, tracking_period=0.001, **kwargs):
         """
         Run the SMSPP Solver tool.
 
         Parameters
         ----------
         log_executable_call : bool
-            When true, the
+            When true, the executable call is printed to the console.
+        tracking_period : float
+            Delay in seconds between resource usage tracking samples.
         **kwargs
             Additional keyword arguments to pass to the function.
         """
@@ -119,23 +122,82 @@ class SMSPPSolverTool:
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
 
+        command = self.calculate_executable_call()
+
         start_time = time.time()
         if log_executable_call:
-            print("Executing command:\n" + self.calculate_executable_call() + "\n")
-        result = subprocess.run(
-            self.calculate_executable_call(),
-            capture_output=True,
+            print(f"Executing command:\n{command}\n")
+
+        process = psutil.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
             shell=True,
         )
+
+        def _get_msg_from_process(proc, timeout, log_executable_call=False):
+            # communicate with process
+            try:
+                stdout, stderr = proc.communicate(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                return ""
+
+            # print if requested
+            if log_executable_call:
+                print(stdout)
+            return stdout
+
+        self._log = ""
+
+        peak_memory = 0
+        peak_cpu = 0
+
+        while process.poll() is None:
+            # capture resource usage
+            mem = process.memory_info().rss
+            cpu = process.cpu_percent()
+
+            # track the peak utilization of the process
+            if mem > peak_memory:
+                peak_memory = mem
+            if cpu > peak_cpu:
+                peak_cpu = cpu
+
+            # read from process without stopping it
+            msg = _get_msg_from_process(process, tracking_period, log_executable_call)
+
+            self._log += msg
+
+        # finalize logging
+
+        self._log += _get_msg_from_process(
+            process, tracking_period, log_executable_call
+        )
+
+        # add memory info to logging
         self._subprocess_time = time.time() - start_time
 
-        self._log = (
-            result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
-        )
+        msg = f"\nPeak CPU Usage: {peak_cpu:.2f} %"
+        msg += f"\nPeak Memory Usage: {peak_memory / (1024**2):.2f} MB"
+        msg += f"\nTotal Time: {self._subprocess_time:.2f} seconds\n"
+
+        self._log += msg
+        if log_executable_call:
+            print(msg)
+
+        # ensure process is terminated
+        process.kill()
+        stdout, stderr = process.communicate()
+
+        if len(stderr) > 0:
+            self._log += "\nERROR LOG:\n" + stderr
+            print("\nERROR LOG:\n" + stderr)
+
         self.parse_ucblock_solver_log()
-        if result.returncode != 0:
+        if process.returncode != 0:
             raise ValueError(
-                f"Failed to run {self._exec_file}; error log:\n{result.stderr.decode('utf-8')}"
+                f"Failed to run {self._exec_file}; error log:\n{stderr.decode('utf-8')}"
             )
         # write output to file, if option passed
         if self.fp_log is not None:
