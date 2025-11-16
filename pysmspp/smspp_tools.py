@@ -140,15 +140,19 @@ class SMSPPSolverTool:
 
         def _get_msg_from_pipe(pipe, log_executable_call=False, buffer=4096):
             msg = ""
-            if len(select.select([pipe], [], [], 0)[0]) == 1:
-                # read a line
-                msg = os.read(pipe.fileno(), buffer).decode("utf-8")
+            while len(select.select([pipe], [], [], 0)[0]) == 1:
+                # read the buffer
+                msg_temp = os.read(pipe.fileno(), buffer).decode("utf-8")
+                if len(msg_temp) == 0:
+                    break
+                msg += msg_temp
             # print if requested
             if log_executable_call and len(msg) > 0:
                 print(msg)
             return msg
 
         self._log = ""
+        log_error = ""
 
         peak_memory = 0
         peak_cpu = 0
@@ -172,15 +176,20 @@ class SMSPPSolverTool:
                     pass
 
             # read from process without stopping it
-            msg = _get_msg_from_pipe(process.stdout, log_executable_call)
-            msg += _get_msg_from_pipe(process.stderr, log_executable_call)
+            msg_out = _get_msg_from_pipe(process.stdout, log_executable_call)
+            msg_err = _get_msg_from_pipe(process.stderr, log_executable_call)
 
-            self._log += msg
+            self._log += msg_out + msg_err
+            log_error += msg_err
 
             time.sleep(tracking_period)
 
         # finalize logging
         self._log += _get_msg_from_pipe(process.stdout, log_executable_call)
+        msg_err = _get_msg_from_pipe(process.stderr, log_executable_call)
+
+        self._log += msg_err
+        log_error += msg_err
 
         # add memory info to logging
         self._subprocess_time = time.time() - start_time
@@ -193,17 +202,13 @@ class SMSPPSolverTool:
         if log_executable_call:
             print(msg)
 
-        stdout, stderr = process.communicate()
-
-        if len(stderr) > 0:
-            self._log += "\nERROR LOG:\n" + stderr
-            print("\nERROR LOG:\n" + stderr)
-
         self.parse_ucblock_solver_log()
+
         if process.returncode != 0:
             raise ValueError(
-                f"Failed to run {self._exec_file}; error log:\n{stderr.decode('utf-8')}"
+                f"Failed to run {self._exec_file}; error log:\n{log_error}"
             )
+
         # write output to file, if option passed
         if self.fp_log is not None:
             Path(self.fp_log).parent.mkdir(parents=True, exist_ok=True)
