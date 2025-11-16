@@ -6,6 +6,7 @@ import numpy as np
 import os
 import time
 import psutil
+import select
 
 
 class SMSPPSolverTool:
@@ -135,50 +136,56 @@ class SMSPPSolverTool:
             text=True,
             shell=True,
         )
+        process.cpu_percent()  # initialize cpu percent calculation
 
-        def _get_msg_from_process(proc, timeout, log_executable_call=False):
-            # communicate with process
-            try:
-                stdout, stderr = proc.communicate(timeout=timeout)
-            except subprocess.TimeoutExpired:
-                return ""
-
+        def _get_msg_from_pipe(pipe, log_executable_call=False, buffer=4096):
+            msg = ""
+            if len(select.select([pipe], [], [], 0)[0]) == 1:
+                # read a line
+                msg = os.read(pipe.fileno(), buffer).decode("utf-8")
             # print if requested
-            if log_executable_call:
-                print(stdout)
-            return stdout
+            if log_executable_call and len(msg) > 0:
+                print(msg)
+            return msg
 
         self._log = ""
 
         peak_memory = 0
         peak_cpu = 0
 
-        while process.poll() is None:
-            # capture resource usage
-            mem = process.memory_info().rss
-            cpu = process.cpu_percent()
+        loop = True
+        while loop:
+            if process.poll() is not None:
+                loop = False
+            else:
+                try:
+                    # capture resource usage when process is active
+                    mem = process.memory_info().rss
+                    cpu = process.cpu_percent()
 
-            # track the peak utilization of the process
-            if mem > peak_memory:
-                peak_memory = mem
-            if cpu > peak_cpu:
-                peak_cpu = cpu
+                    # track the peak utilization of the process
+                    if mem > peak_memory:
+                        peak_memory = mem
+                    if cpu > peak_cpu:
+                        peak_cpu = cpu
+                except psutil.NoSuchProcess:
+                    pass
 
             # read from process without stopping it
-            msg = _get_msg_from_process(process, tracking_period, log_executable_call)
+            msg = _get_msg_from_pipe(process.stdout, log_executable_call)
+            msg += _get_msg_from_pipe(process.stderr, log_executable_call)
 
             self._log += msg
 
-        # finalize logging
+            time.sleep(tracking_period)
 
-        self._log += _get_msg_from_process(
-            process, tracking_period, log_executable_call
-        )
+        # finalize logging
+        self._log += _get_msg_from_pipe(process.stdout, log_executable_call)
 
         # add memory info to logging
         self._subprocess_time = time.time() - start_time
 
-        msg = f"\nPeak CPU Usage: {peak_cpu:.2f} %"
+        msg = f"Peak CPU Usage: {peak_cpu:.2f} %"
         msg += f"\nPeak Memory Usage: {peak_memory / (1024**2):.2f} MB"
         msg += f"\nTotal Time: {self._subprocess_time:.2f} seconds\n"
 
@@ -186,8 +193,6 @@ class SMSPPSolverTool:
         if log_executable_call:
             print(msg)
 
-        # ensure process is terminated
-        process.kill()
         stdout, stderr = process.communicate()
 
         if len(stderr) > 0:
