@@ -101,14 +101,14 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, log_executable_call=False, tracking_period=0.1, **kwargs):
+    def optimize(self, logging=False, tracking_period=0.1, **kwargs):
         """
         Run the SMSPP Solver tool.
 
         Parameters
         ----------
-        log_executable_call : bool
-            When true, the executable call is printed to the console.
+        logging : bool
+            When true, logging is provided, including the executable call.
         tracking_period : float
             Delay in seconds between resource usage tracking samples.
         **kwargs
@@ -126,7 +126,7 @@ class SMSPPSolverTool:
         command = self.calculate_executable_call()
 
         start_time = time.time()
-        if log_executable_call:
+        if logging:
             print(f"Executing command:\n{command}\n")
 
         process = psutil.Popen(
@@ -138,7 +138,7 @@ class SMSPPSolverTool:
         )
         process.cpu_percent()  # initialize cpu percent calculation
 
-        def _get_msg_from_pipe(pipe, log_executable_call=False, buffer=4096):
+        def _get_msg_from_pipe(pipe, logging=False, buffer=4096):
             msg = ""
             while len(select.select([pipe], [], [], 0)[0]) == 1:
                 # read the buffer
@@ -147,7 +147,7 @@ class SMSPPSolverTool:
                     break
                 msg += msg_temp
             # print if requested
-            if log_executable_call and len(msg) > 0:
+            if logging and len(msg) > 0:
                 print(msg)
             return msg
 
@@ -176,8 +176,8 @@ class SMSPPSolverTool:
                     pass
 
             # read from process without stopping it
-            msg_out = _get_msg_from_pipe(process.stdout, log_executable_call)
-            msg_err = _get_msg_from_pipe(process.stderr, log_executable_call)
+            msg_out = _get_msg_from_pipe(process.stdout, logging)
+            msg_err = _get_msg_from_pipe(process.stderr, logging)
 
             self._log += msg_out + msg_err
             log_error += msg_err
@@ -185,8 +185,8 @@ class SMSPPSolverTool:
             time.sleep(tracking_period)
 
         # finalize logging
-        self._log += _get_msg_from_pipe(process.stdout, log_executable_call)
-        msg_err = _get_msg_from_pipe(process.stderr, log_executable_call)
+        self._log += _get_msg_from_pipe(process.stdout, logging)
+        msg_err = _get_msg_from_pipe(process.stderr, logging)
 
         self._log += msg_err
         log_error += msg_err
@@ -199,7 +199,7 @@ class SMSPPSolverTool:
         msg += f"\nTotal Time: {self._subprocess_time:.2f} seconds\n"
 
         self._log += msg
-        if log_executable_call:
+        if logging:
             print(msg)
 
         self.parse_ucblock_solver_log()
