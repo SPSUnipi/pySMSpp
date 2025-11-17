@@ -60,7 +60,7 @@ def test_optimize_example(force_smspp):
     )
 
     if ucs.is_available() or force_smspp:
-        ucs.optimize()
+        ucs.optimize(logging=False)
 
         assert "Success" in ucs.status
         assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)

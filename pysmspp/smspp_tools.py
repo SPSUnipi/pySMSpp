@@ -101,7 +101,7 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, logging=False, tracking_period=0.1, **kwargs):
+    def optimize(self, logging=True, tracking_period=0.1, **kwargs):
         """
         Run the SMSPP Solver tool.
 
