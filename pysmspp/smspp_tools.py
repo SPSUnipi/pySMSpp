@@ -5,6 +5,8 @@ import re
 import numpy as np
 import os
 import time
+import psutil
+import select
 
 
 class SMSPPSolverTool:
@@ -99,14 +101,16 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, log_executable_call=False, **kwargs):
+    def optimize(self, logging=False, tracking_period=0.1, **kwargs):
         """
         Run the SMSPP Solver tool.
 
         Parameters
         ----------
-        log_executable_call : bool
-            When true, the
+        logging : bool
+            When true, logging is provided, including the executable call.
+        tracking_period : float
+            Delay in seconds between resource usage tracking samples.
         **kwargs
             Additional keyword arguments to pass to the function.
         """
@@ -119,24 +123,92 @@ class SMSPPSolverTool:
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
 
+        command = self.calculate_executable_call()
+
         start_time = time.time()
-        if log_executable_call:
-            print("Executing command:\n" + self.calculate_executable_call() + "\n")
-        result = subprocess.run(
-            self.calculate_executable_call(),
-            capture_output=True,
+        if logging:
+            print(f"Executing command:\n{command}\n")
+
+        process = psutil.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
             shell=True,
         )
+        process.cpu_percent()  # initialize cpu percent calculation
+
+        def _get_msg_from_pipe(pipe, logging=False, buffer=4096):
+            msg = ""
+            while len(select.select([pipe], [], [], 0)[0]) == 1:
+                # read the buffer
+                msg_temp = os.read(pipe.fileno(), buffer).decode("utf-8")
+                if len(msg_temp) == 0:
+                    break
+                msg += msg_temp
+            # print if requested
+            if logging and len(msg) > 0:
+                print(msg)
+            return msg
+
+        self._log = ""
+        log_error = ""
+
+        peak_memory = 0
+        peak_cpu = 0
+
+        loop = True
+        while loop:
+            if process.poll() is not None:
+                loop = False
+            else:
+                try:
+                    # capture resource usage when process is active
+                    mem = process.memory_info().rss
+                    cpu = process.cpu_percent()
+
+                    # track the peak utilization of the process
+                    if mem > peak_memory:
+                        peak_memory = mem
+                    if cpu > peak_cpu:
+                        peak_cpu = cpu
+                except psutil.NoSuchProcess:
+                    pass
+
+            # read from process without stopping it
+            msg_out = _get_msg_from_pipe(process.stdout, logging)
+            msg_err = _get_msg_from_pipe(process.stderr, logging)
+
+            self._log += msg_out + msg_err
+            log_error += msg_err
+
+            time.sleep(tracking_period)
+
+        # finalize logging
+        self._log += _get_msg_from_pipe(process.stdout, logging)
+        msg_err = _get_msg_from_pipe(process.stderr, logging)
+
+        self._log += msg_err
+        log_error += msg_err
+
+        # add memory info to logging
         self._subprocess_time = time.time() - start_time
 
-        self._log = (
-            result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
-        )
+        msg = f"Peak CPU Usage: {peak_cpu:.2f} %"
+        msg += f"\nPeak Memory Usage: {peak_memory / (1024**2):.2f} MB"
+        msg += f"\nTotal Time: {self._subprocess_time:.2f} seconds\n"
+
+        self._log += msg
+        if logging:
+            print(msg)
+
         self.parse_ucblock_solver_log()
-        if result.returncode != 0:
+
+        if process.returncode != 0:
             raise ValueError(
-                f"Failed to run {self._exec_file}; error log:\n{result.stderr.decode('utf-8')}"
+                f"Failed to run {self._exec_file}; error log:\n{log_error}"
             )
+
         # write output to file, if option passed
         if self.fp_log is not None:
             Path(self.fp_log).parent.mkdir(parents=True, exist_ok=True)
