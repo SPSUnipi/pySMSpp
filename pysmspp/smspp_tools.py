@@ -6,7 +6,6 @@ import numpy as np
 import os
 import time
 import psutil
-import select
 
 
 class SMSPPSolverTool:
@@ -140,7 +139,7 @@ class SMSPPSolverTool:
 
         def _get_msg_from_pipe(pipe, logging=False, buffer=4096):
             msg = ""
-            while len(select.select([pipe], [], [], 0)[0]) == 1:
+            for i in range(10_000):  # avoid infinite loops
                 # read the buffer
                 msg_temp = os.read(pipe.fileno(), buffer).decode("utf-8")
                 if len(msg_temp) == 0:
