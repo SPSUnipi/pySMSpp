@@ -108,6 +108,7 @@ jobs:
       run: |
         & ([scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://gitlab.com/smspp/smspp-project/-/raw/develop/INSTALL.ps1'))) -withoutScip -withoutGurobi -withoutCplex
         echo "C:\smspp-project\bin;C:\smspp-project\lib;C:\StOpt\lib;C:\smspp-project\build\vcpkg_installed\x64-windows\lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        dir C:\smspp-project\bin
 
     - name: Print environment variables (Not Windows)
       if: runner.os != 'Windows'
