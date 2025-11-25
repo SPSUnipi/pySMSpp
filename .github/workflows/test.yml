@@ -56,8 +56,8 @@ jobs:
   test_with_smspp:
     # Test package build in matrix of OS and Python versions
     name: Test package with SMSpp
-    # needs:
-    # - test
+    needs:
+    - test
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
