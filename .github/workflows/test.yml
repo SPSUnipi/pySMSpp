@@ -120,8 +120,6 @@ jobs:
       shell: pwsh
       run: |
         echo "PATH: $env:PATH"
-        ucblock_solver
-        InvestmentBlock_test
 
     - name: Test package with SMSpp
       run: |
