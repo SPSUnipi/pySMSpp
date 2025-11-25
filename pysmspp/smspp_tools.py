@@ -205,7 +205,7 @@ class SMSPPSolverTool:
 
         if process.returncode != 0:
             raise ValueError(
-                f"Failed to run {self._exec_file}; error log:\n{log_error}"
+                f"Failed to run {self._exec_file} with error log:\n{log_error}\n\nFull log:\n{self._log}"
             )
 
         # write output to file, if option passed
