@@ -6,6 +6,7 @@ InvestmentBlock,NumConstraints,Dimension,Dimension,int,-,-,,optional,Number of l
 InvestmentBlock,Assets,Variable,Variable,int,NumAssets,-,,required,Asset index in the list of assets subject to investment
 InvestmentBlock,AssetType,Variable,Variable,int,-|NumAssets,-,,required,Type of each asset (0: UnitBlock; 1: NetworkBlock)
 InvestmentBlock,Cost,Variable,Variable,double,-|NumAssets,-,,required,Investment cost of each asset
+InvestmentBlock,InvestmentCost,Variable,Variable,double,-|NumAssets,-,,required,Investment cost of each asset
 InvestmentBlock,DisinvestmentCost,Variable,Variable,double,-|NumAssets,-,,required,Disinvestment cost of each asset
 InvestmentBlock,LowerBound,Variable,Variable,double,-|NumAssets,-,,optional,Minimum capacity of each asset
 InvestmentBlock,UpperBound,Variable,Variable,double,-|NumAssets,-,,optional,Maximum capacity of each asset

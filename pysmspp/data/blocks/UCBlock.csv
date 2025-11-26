@@ -7,6 +7,7 @@ UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number 
 UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1,optional,Number of nodes
 UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
 UCBlock,NumberBranches,Dimension,Dimension,int,-,-,,optional,"Number of branches: when hyperarcs are used, this is the number of hyperarc branches and it is higher than NumberLines"
+UCBlock,NumberNetworks,Dimension,Dimension,int,-,-,,optional,"Number of networks in the problem; if not provided it is taken as TimeHorizon"
 UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs
 UCBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,optional,Number of reservoirs
 UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces of the power flow function
