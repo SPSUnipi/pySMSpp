@@ -1,0 +1,13 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+StochasticBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+StochasticBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+StochasticBlock,NumberDataMappings,Dimension,Dimension,int,-,-,,required,Number of data mappings
+StochasticBlock,SetSize_dim,Dimension,Dimension,int,-,-,,required,Auxiliary dimension for SetSize
+StochasticBlock,SetElements_dim,Dimension,Dimension,int,-,-,,required,Auxiliary dimension for SetElements
+StochasticBlock,FunctionName,Variable,Variable,str,-|NumberDataMappings,-,,required,Name of the mapping function for each data mapping
+StochasticBlock,DataType,Variable,Variable,str,-|NumberDataMappings,-,,required,Type of the data mapped
+StochasticBlock,Caller,Variable,Variable,str,-|NumberDataMappings,-,,optional,Name of the caller
+StochasticBlock,SetSize,Variable,Variable,int,-|SetSize_dim,-,,required,Size of each mapped set
+StochasticBlock,SetElements,Variable,Variable,int,-|SetElements_dim,-,,required,Elements of the mapped sets
+StochasticBlock,AbstractPath,Block,Group,AbstractPath,list,-,-,required,Abstract paths describing stochastic structure
+StochasticBlock,Block,Block,Group,Block,list,-,-,required,Deterministic referenced block

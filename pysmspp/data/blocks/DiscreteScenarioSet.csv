@@ -1,0 +1,7 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+DiscreteScenarioSet,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+DiscreteScenarioSet,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+DiscreteScenarioSet,NumberScenarios,Dimension,Dimension,int,-,-,,required,Number of scenarios
+DiscreteScenarioSet,ScenarioSize,Dimension,Dimension,int,-,-,,required,Size of each scenario
+DiscreteScenarioSet,Scenarios,Variable,Variable,double,NumberScenarios-ScenarioSize,-,,required,Scenario values matrix
+DiscreteScenarioSet,PoolWeights,Variable,Variable,double,NumberScenarios,-,,optional,Probability weight per scenario
