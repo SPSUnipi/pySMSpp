@@ -12,7 +12,7 @@ repos:
 # Run ruff to lint and format
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.14.3
+  rev: v0.14.7
   hooks:
     # Run the linter.
   - id: ruff
@@ -46,6 +46,6 @@ repos:
 
 # Remove results from notebooks
 - repo: https://github.com/kynan/nbstripout
-  rev: '0.8.1'  # Use the latest version
+  rev: '0.8.2'  # Use the latest version
   hooks:
   - id: nbstripout
