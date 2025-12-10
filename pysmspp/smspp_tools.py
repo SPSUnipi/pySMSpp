@@ -135,16 +135,21 @@ class SMSPPSolverTool:
             text=True,
             shell=True,
         )
+        os.set_blocking(process.stdout.fileno(), False)  # set non-blocking read
+        os.set_blocking(process.stderr.fileno(), False)  # set non-blocking read
         process.cpu_percent()  # initialize cpu percent calculation
 
         def _get_msg_from_pipe(pipe, logging=False, buffer=4096):
             msg = ""
             for i in range(10_000):  # avoid infinite loops
                 # read the buffer
-                msg_temp = os.read(pipe.fileno(), buffer).decode("utf-8")
-                if len(msg_temp) == 0:
+                try:
+                    msg_temp = os.read(pipe.fileno(), buffer).decode("utf-8")
+                    if len(msg_temp) == 0:
+                        break
+                    msg += msg_temp
+                except BlockingIOError:
                     break
-                msg += msg_temp
             # print if requested
             if logging and len(msg) > 0:
                 print(msg)
