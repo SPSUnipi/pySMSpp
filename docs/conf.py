@@ -11,8 +11,8 @@ project = "pySMSpp"
 author = "Davide Fioriti"
 
 
-# version = 'v0.0.1'
-# release = 'v0.0.1'
+# version = 'v0.0.2'
+# release = 'v0.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
