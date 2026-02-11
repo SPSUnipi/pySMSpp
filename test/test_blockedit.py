@@ -1,3 +1,4 @@
+import os
 from pysmspp import SMSNetwork, Block, Variable
 from conftest import (
     add_base_ucblock,
@@ -7,6 +8,9 @@ from conftest import (
     add_hub_to_ucblock,
     add_iub_to_ucblock,
     build_base_investmentblock,
+    check_compare_nc,
+    get_datafile,
+    get_temp_file,
 )
 
 
@@ -148,3 +152,172 @@ def test_add_line_branches():
 
     b.blocks["Block_0"].add("Variable", "StartLine", v)
     assert len(b.blocks["Block_0"].variables["StartLine"].data) == n_branches
+
+
+def test_tssb():
+    import numpy as np
+
+    fp_test_tssb = get_temp_file("test_tssb.nc")
+    fp_benchmark_tssb = get_datafile("TSSB_EC_CO_Test_TUB_simple.nc4")
+    fp_log_tssb = get_temp_file("tmp_tssb.txt")
+
+    if os.path.exists(fp_test_tssb):
+        os.remove(fp_test_tssb)
+
+    sn = SMSNetwork()
+
+    ScenarioSize = 48  # For DiscreteScenarioSet
+    NumberScenarios = 9  # For DiscreteScenarioSet
+    NumberDataMappings = NumberScenarios  # for StochasticBlock
+
+    PathDim = 5  # for AbstractPath
+    TotalLength = 10  # for AbstractPath
+
+    SizeDim_perScenario = 2  # for StochBlock
+    SizeElements_perScenario = 4  # for StochBlock
+    PathDim2 = 9  # for AbstractPath in StochasticBlock
+
+    sn.add(
+        "TwoStageStochasticBlock",
+        "Block_0",
+        NumberScenarios=NumberScenarios,
+        DiscreteScenarioSet=Block(
+            block_type="DiscreteScenarioSet",
+            ScenarioSize=ScenarioSize,
+            NumberScenarios=NumberScenarios,
+            PoolWeights=Variable(
+                "PoolWeights",
+                "double",
+                ("NumberScenarios",),
+                np.ones(NumberScenarios) / NumberScenarios,
+            ),
+            Scenarios=Variable(
+                "Scenarios",
+                "double",
+                ("NumberScenarios", "ScenarioSize"),
+                np.ones((NumberScenarios, ScenarioSize), dtype=np.float64),
+            ),
+        ),
+        StaticAbstractPath=Block(
+            block_type="StaticAbstractPath",
+            PathDim=PathDim,
+            TotalLength=TotalLength,
+            PathElementIndices=Variable(
+                "PathElementIndices",
+                "u4",
+                ("TotalLength",),
+                np.zeros(TotalLength),  # ignored missing values (masked array)
+            ),
+            PathGroupIndices=Variable(
+                "PathGroupIndices",
+                "str",
+                ("TotalLength",),
+                np.array(
+                    [
+                        "0",
+                        "x_thermal",
+                        "1",
+                        "x_intermittent",
+                        "2",
+                        "x_battery",
+                        "2",
+                        "x_converter",
+                        "3",
+                        "x_intermittent",
+                    ],
+                    dtype="object",
+                ),
+            ),
+            PathNodeTypes=Variable(
+                "PathGroupIndices",
+                "c",
+                ("TotalLength",),
+                np.tile(["B", "V"], TotalLength // 2),
+            ),
+            PathRangeIndices=Variable(
+                "PathGroupIndices",
+                "u4",
+                ("TotalLength",),
+                np.ones(TotalLength),  # ignored missing values
+            ),
+            PathStart=Variable(
+                "PathGroupIndices",
+                "u4",
+                ("PathDim",),
+                list(range(0, TotalLength, 2)),  # ignored missing values
+            ),
+        ),
+        StochasticBlock=Block(
+            block_type="StochasticBlock",
+            NumberDataMappings=NumberDataMappings,
+            SetSize_dim=SizeDim_perScenario * NumberDataMappings,
+            SetElements_dim=SizeElements_perScenario * NumberDataMappings,
+            FunctionName=Variable(
+                "FunctionName",
+                "str",
+                ("NumberDataMappings",),
+                np.repeat(
+                    np.array(["UCBlock::set_active_power_demand"], dtype="object"),
+                    NumberDataMappings,
+                ),
+            ),
+            Caller=Variable(
+                "Caller",
+                "c",
+                ("NumberDataMappings",),
+                np.repeat(["B"], NumberDataMappings),
+            ),
+            DataType=Variable(
+                "DataType",
+                "c",
+                ("NumberDataMappings",),
+                np.repeat(["D"], NumberDataMappings),
+            ),
+            SetSize=Variable(
+                "SetSize",
+                "u4",
+                ("SetSize_dim",),
+                np.zeros(SizeDim_perScenario * NumberDataMappings),
+            ),
+            SetElements=Variable(
+                "SetElements",
+                "u4",
+                ("SetElements_dim",),
+                np.zeros(SizeElements_perScenario * NumberDataMappings),
+            ),
+            AbstractPath=Block(
+                block_type="AbstractPath",
+                PathDim=PathDim2,
+                TotalLength=0,  # Unlimited
+                PathElementIndices=Variable(
+                    "PathElementIndices",
+                    "u4",
+                    ("TotalLength",),
+                    [],  # ignored missing values (masked array)
+                ),
+                PathGroupIndices=Variable(
+                    "PathGroupIndices",
+                    "str",
+                    ("TotalLength",),
+                    np.array([], dtype="object"),
+                ),
+                PathNodeTypes=Variable("PathGroupIndices", "c", ("TotalLength",), []),
+                PathRangeIndices=Variable(
+                    "PathGroupIndices",
+                    "u4",
+                    ("TotalLength",),
+                    [],  # ignored missing values
+                ),
+                PathStart=Variable(
+                    "PathGroupIndices",
+                    "u4",
+                    ("PathDim",),
+                    np.repeat([0], PathDim2),  # ignored missing values
+                ),
+            ),
+        ),
+    )
+
+    sn.to_netcdf(fp_test_tssb)
+
+    check_compare_nc(fp_test_tssb, fp_benchmark_tssb, fp_log_tssb)
