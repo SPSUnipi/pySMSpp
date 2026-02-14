@@ -625,7 +625,7 @@ class Block:
 
     def print_tree(
         self,
-        name: str = "Block",
+        name: str = None,
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
@@ -642,7 +642,8 @@ class Block:
         Parameters
         ----------
         name : str, optional
-            The name of the block (default: "Block").
+            The name of the block. If not provided, uses the block_type if available,
+            otherwise defaults to "Block".
         show_dimensions : bool, optional
             Whether to display dimensions (default: False).
         show_variables : bool, optional
@@ -660,19 +661,32 @@ class Block:
         --------
         >>> from pysmspp import Block
         >>> block = Block(fp="network.nc4")
-        >>> block.print_tree("MyNetwork")
-        MyNetwork [BlockType]
+        >>> block.print_tree()  # Uses block_type as name
+        UCBlock [UCBlock]
         └── Block_0 [UCBlock]
             ├── UnitBlock_0 [ThermalUnitBlock]
             └── UnitBlock_1 [BatteryUnitBlock]
 
-        >>> block.print_tree("MyNetwork", show_dimensions=True, show_variables=True)
-        MyNetwork [BlockType]
+        >>> block.print_tree("MyNetwork")  # Uses custom name
+        MyNetwork [UCBlock]
+        └── Block_0 [UCBlock]
+            ...
+
+        >>> block.print_tree(show_dimensions=True, show_variables=True)
+        UCBlock [UCBlock]
           Dimensions: n=10, m=5
           Variables: var1, var2, var3
         └── Block_0 [UCBlock]
             ...
         """
+        # Determine the name to use
+        if name is None:
+            # Use block_type if available, otherwise default to "Block"
+            if hasattr(self, "block_type") and self.block_type:
+                name = self.block_type
+            else:
+                name = "Block"
+        
         # Get block type
         block_type = "Unknown"
         if hasattr(self, "block_type") and self.block_type:
@@ -783,6 +797,62 @@ class SMSNetwork(Block):
             dimensions=blk.dimensions,
             variables=blk.variables,
             blocks=blk.blocks,
+        )
+
+    def print_tree(
+        self,
+        name: str = None,
+        show_dimensions: bool = False,
+        show_variables: bool = False,
+        show_attributes: bool = False,
+        _indent: str = "",
+        _is_last: bool = True,
+        _is_root: bool = True,
+    ) -> None:
+        """
+        Print a tree representation of the SMSNetwork structure.
+
+        This method overrides Block.print_tree() to use "SMSNetwork" as the default name.
+
+        Parameters
+        ----------
+        name : str, optional
+            The name of the network. If not provided, defaults to "SMSNetwork".
+        show_dimensions : bool, optional
+            Whether to display dimensions (default: False).
+        show_variables : bool, optional
+            Whether to display variables (default: False).
+        show_attributes : bool, optional
+            Whether to display attributes (default: False).
+        _indent : str, optional
+            Internal parameter for indentation (default: "").
+        _is_last : bool, optional
+            Internal parameter to track if this is the last child (default: True).
+        _is_root : bool, optional
+            Internal parameter to track if this is the root node (default: True).
+
+        Examples
+        --------
+        >>> from pysmspp import SMSNetwork
+        >>> net = SMSNetwork(fp="network.nc4")
+        >>> net.print_tree()  # Uses "SMSNetwork" as default name
+        SMSNetwork [Unknown]
+        └── Block_0 [UCBlock]
+            ...
+        """
+        # Use "SMSNetwork" as default name for SMSNetwork objects
+        if name is None:
+            name = "SMSNetwork"
+        
+        # Call parent class method
+        super().print_tree(
+            name=name,
+            show_dimensions=show_dimensions,
+            show_variables=show_variables,
+            show_attributes=show_attributes,
+            _indent=_indent,
+            _is_last=_is_last,
+            _is_root=_is_root,
         )
 
     def optimize(

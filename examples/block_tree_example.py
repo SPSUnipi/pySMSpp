@@ -1,15 +1,15 @@
 """
-Example demonstrating the print_block_tree utility function and Block.print_tree() method.
+Example demonstrating the Block.print_tree() method.
 
 This script shows how to visualize the hierarchical structure of blocks
-in a SMS++ network using both the standalone function and the instance method.
+in a SMS++ network using the instance method.
 """
 
 import pysmspp
 
-# Example 1: Using the Block.print_tree() method
+# Example 1: Using the Block.print_tree() method without arguments
 print("=" * 70)
-print("Example 1: Using Block.print_tree() method")
+print("Example 1: Using Block.print_tree() without arguments")
 print("=" * 70)
 
 # Create a simple network with nested blocks
@@ -42,8 +42,8 @@ ucblock.blocks["UnitBlock_1"] = battery
 
 network.blocks["Block_0"] = ucblock
 
-# Display the basic tree structure using the method
-print("\nBasic tree (blocks only) - using method:")
+# Display the basic tree structure using the method - uses block_type as name
+print("\nBasic tree (blocks only) - uses block_type as default name:")
 print("-" * 70)
 network.print_tree()
 
@@ -53,27 +53,21 @@ print("Example 2: Tree with custom name")
 print("=" * 70)
 network.print_tree("ExampleNetwork")
 
-# Example 3: Using standalone function
+# Example 3: Show dimensions using method
 print("\n" + "=" * 70)
-print("Example 3: Using standalone print_block_tree() function")
-print("=" * 70)
-pysmspp.print_block_tree(network, "ExampleNetwork")
-
-# Example 4: Show dimensions using method
-print("\n" + "=" * 70)
-print("Example 4: Tree with dimensions (using method)")
+print("Example 3: Tree with dimensions")
 print("=" * 70)
 network.print_tree(show_dimensions=True)
 
-# Example 5: Show variables
+# Example 4: Show variables
 print("\n" + "=" * 70)
-print("Example 5: Tree with variables (using method)")
+print("Example 4: Tree with variables")
 print("=" * 70)
 network.print_tree(show_variables=True)
 
-# Example 6: Show all details using method
+# Example 5: Show all details using method
 print("\n" + "=" * 70)
-print("Example 6: Full tree with all details (using method)")
+print("Example 5: Full tree with all details")
 print("=" * 70)
 network.print_tree(
     show_dimensions=True,
@@ -81,15 +75,15 @@ network.print_tree(
     show_attributes=True,
 )
 
-# Example 6: Load from a file (if test data is available)
+# Example 6: Load from a file and test SMSNetwork default name
 print("\n" + "=" * 70)
-print("Example 7: Tree from a NetCDF file")
+print("Example 6: SMSNetwork from file - uses 'SMSNetwork' as default")
 print("=" * 70)
 try:
     # Try to load a sample network from test data
     fp = "test/test_data/microgrid_ALLbutStore_1N.nc4"
     net = pysmspp.SMSNetwork(fp)
-    # Using the method without name parameter
+    # Using the method without name parameter - defaults to "SMSNetwork"
     net.print_tree(show_dimensions=True, show_variables=True)
 except FileNotFoundError:
     print("Sample network file not found. Skipping this example.")
@@ -99,7 +93,7 @@ print("\n" + "=" * 70)
 print("Examples complete!")
 print("=" * 70)
 print("\nNote: The block.print_tree() method can be called in multiple ways:")
-print("      - block.print_tree() - Uses default name 'Block'")
+print("      - block.print_tree() - Uses block_type as name (or 'Block' if no type)")
 print("      - block.print_tree('CustomName') - Uses custom name")
 print("      - block.print_tree(show_dimensions=True) - With options")
-print("      - print_block_tree(block, 'Name') - Standalone function also available")
+print("      - For SMSNetwork: net.print_tree() defaults to 'SMSNetwork'")

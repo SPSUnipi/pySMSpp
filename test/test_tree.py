@@ -28,7 +28,7 @@ def test_print_block_tree_basic():
     block = pysmspp.Block()
     block.block_type = "TestBlock"
 
-    output = capture_print_output(pysmspp.print_block_tree, block, "MyBlock")
+    output = capture_print_output(block.print_tree, "MyBlock")
 
     assert "MyBlock" in output
     assert "[TestBlock]" in output
@@ -48,7 +48,7 @@ def test_print_block_tree_with_nested_blocks():
     parent.blocks["Child1"] = child1
     parent.blocks["Child2"] = child2
 
-    output = capture_print_output(pysmspp.print_block_tree, parent, "Parent")
+    output = capture_print_output(parent.print_tree, "Parent")
 
     # Check structure
     assert "Parent [ParentBlock]" in output
@@ -67,7 +67,7 @@ def test_print_block_tree_with_dimensions():
     block.add_dimension("m", 5)
 
     output = capture_print_output(
-        pysmspp.print_block_tree, block, "MyBlock", show_dimensions=True
+        block.print_tree, "MyBlock", show_dimensions=True
     )
 
     assert "MyBlock [TestBlock]" in output
@@ -84,7 +84,7 @@ def test_print_block_tree_with_variables():
     block.add_variable("var2", "int", (), 2)
 
     output = capture_print_output(
-        pysmspp.print_block_tree, block, "MyBlock", show_variables=True
+        block.print_tree, "MyBlock", show_variables=True
     )
 
     assert "MyBlock [TestBlock]" in output
@@ -101,7 +101,7 @@ def test_print_block_tree_with_attributes():
     block.add_attribute("attr2", 42)
 
     output = capture_print_output(
-        pysmspp.print_block_tree, block, "MyBlock", show_attributes=True
+        block.print_tree, "MyBlock", show_attributes=True
     )
 
     assert "MyBlock [TestBlock]" in output
@@ -125,8 +125,7 @@ def test_print_block_tree_with_all_options():
     block.blocks["Child"] = child
 
     output = capture_print_output(
-        pysmspp.print_block_tree,
-        block,
+        block.print_tree,
         "MyBlock",
         show_dimensions=True,
         show_variables=True,
@@ -152,7 +151,7 @@ def test_print_block_tree_sample_network():
     fp = get_network()
     net = pysmspp.SMSNetwork(fp)
 
-    output = capture_print_output(pysmspp.print_block_tree, net, "TestNetwork")
+    output = capture_print_output(net.print_tree, "TestNetwork")
 
     # Check that the network structure is printed
     assert "TestNetwork" in output
@@ -173,7 +172,7 @@ def test_print_block_tree_ucblock():
     b.blocks["Block_0"].add("BatteryUnitBlock", "UnitBlock_1", block=bub)
 
     output = capture_print_output(
-        pysmspp.print_block_tree, b, "UCNetwork", show_dimensions=True
+        b.print_tree, "UCNetwork", show_dimensions=True
     )
 
     # Check structure
@@ -197,7 +196,7 @@ def test_print_block_tree_many_variables():
         block.add_variable(f"var{i}", "float", (), float(i))
 
     output = capture_print_output(
-        pysmspp.print_block_tree, block, "MyBlock", show_variables=True
+        block.print_tree, "MyBlock", show_variables=True
     )
 
     assert "Variables:" in output
@@ -216,7 +215,7 @@ def test_print_block_tree_many_attributes():
         block.add_attribute(f"attr{i}", i)
 
     output = capture_print_output(
-        pysmspp.print_block_tree, block, "MyBlock", show_attributes=True
+        block.print_tree, "MyBlock", show_attributes=True
     )
 
     assert "Attributes:" in output
@@ -229,7 +228,7 @@ def test_print_block_tree_empty_block():
     """Test tree printing with an empty block."""
     block = pysmspp.Block()
 
-    output = capture_print_output(pysmspp.print_block_tree, block, "EmptyBlock")
+    output = capture_print_output(block.print_tree, "EmptyBlock")
 
     assert "EmptyBlock" in output
     assert "[Unknown]" in output  # No type set
@@ -253,7 +252,7 @@ def test_print_block_tree_deeply_nested():
     level1.blocks["L2"] = level2
     root.blocks["L1"] = level1
 
-    output = capture_print_output(pysmspp.print_block_tree, root, "Root")
+    output = capture_print_output(root.print_tree, "Root")
 
     # Check all levels are present
     assert "Root [Level0]" in output
@@ -303,30 +302,8 @@ def test_block_print_tree_method_with_options():
     assert "attr1=value1" in output
 
 
-def test_block_method_and_function_equivalence():
-    """Test that the method and function produce the same output."""
-    block = pysmspp.Block()
-    block.block_type = "TestBlock"
-    block.add_dimension("n", 10)
-
-    child = pysmspp.Block()
-    child.block_type = "ChildBlock"
-    block.blocks["Child"] = child
-
-    # Call via method
-    output_method = capture_print_output(block.print_tree, "Test", show_dimensions=True)
-
-    # Call via function
-    output_function = capture_print_output(
-        pysmspp.print_block_tree, block, "Test", show_dimensions=True
-    )
-
-    # Both should produce identical output
-    assert output_method == output_function
-
-
 def test_block_print_tree_no_arguments():
-    """Test Block.print_tree() method without any arguments."""
+    """Test Block.print_tree() method without any arguments - uses block_type as name."""
     block = pysmspp.Block()
     block.block_type = "TestBlock"
     block.add_dimension("n", 10)
@@ -335,10 +312,10 @@ def test_block_print_tree_no_arguments():
     child.block_type = "ChildBlock"
     block.blocks["Child"] = child
 
-    # Call without any arguments - should use default name "Block"
+    # Call without any arguments - should use block_type as name
     output = capture_print_output(block.print_tree)
 
-    assert "Block [TestBlock]" in output
+    assert "TestBlock [TestBlock]" in output  # Now uses block_type as name
     assert "Child [ChildBlock]" in output
     # Should NOT have dimensions since show_dimensions defaults to False
     assert "Dimensions:" not in output
@@ -353,6 +330,19 @@ def test_block_print_tree_with_kwargs_only():
     # Call with kwargs only, no name argument
     output = capture_print_output(block.print_tree, show_dimensions=True)
 
-    assert "Block [TestBlock]" in output
+    assert "TestBlock [TestBlock]" in output  # Now uses block_type as name
     assert "Dimensions:" in output
     assert "n=10" in output
+
+
+def test_smsnetwork_default_name():
+    """Test SMSNetwork.print_tree() uses 'SMSNetwork' as default name."""
+    fp = get_network()
+    net = pysmspp.SMSNetwork(fp)
+
+    # Call without name argument
+    output = capture_print_output(net.print_tree)
+
+    # Should use "SMSNetwork" as default name
+    assert "SMSNetwork [Unknown]" in output or "SMSNetwork [" in output
+    assert "Block_0" in output
