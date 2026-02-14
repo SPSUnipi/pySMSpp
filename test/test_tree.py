@@ -323,3 +323,36 @@ def test_block_method_and_function_equivalence():
 
     # Both should produce identical output
     assert output_method == output_function
+
+
+def test_block_print_tree_no_arguments():
+    """Test Block.print_tree() method without any arguments."""
+    block = pysmspp.Block()
+    block.block_type = "TestBlock"
+    block.add_dimension("n", 10)
+
+    child = pysmspp.Block()
+    child.block_type = "ChildBlock"
+    block.blocks["Child"] = child
+
+    # Call without any arguments - should use default name "Block"
+    output = capture_print_output(block.print_tree)
+
+    assert "Block [TestBlock]" in output
+    assert "Child [ChildBlock]" in output
+    # Should NOT have dimensions since show_dimensions defaults to False
+    assert "Dimensions:" not in output
+
+
+def test_block_print_tree_with_kwargs_only():
+    """Test Block.print_tree() method with only keyword arguments."""
+    block = pysmspp.Block()
+    block.block_type = "TestBlock"
+    block.add_dimension("n", 10)
+
+    # Call with kwargs only, no name argument
+    output = capture_print_output(block.print_tree, show_dimensions=True)
+
+    assert "Block [TestBlock]" in output
+    assert "Dimensions:" in output
+    assert "n=10" in output
