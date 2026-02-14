@@ -7,7 +7,6 @@ from conftest import (
     add_base_ucblock,
     build_base_tub,
     build_base_bub,
-    build_base_hub,
 )
 import pysmspp
 
