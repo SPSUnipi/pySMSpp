@@ -265,3 +265,61 @@ def test_print_block_tree_deeply_nested():
     lines = output.split("\n")
     # Level 3 should have more indentation than level 2
     assert any("L3" in line and "    " in line for line in lines)
+
+
+def test_block_print_tree_method():
+    """Test the Block.print_tree() method."""
+    block = pysmspp.Block()
+    block.block_type = "TestBlock"
+
+    output = capture_print_output(block.print_tree, "MyBlock")
+
+    assert "MyBlock" in output
+    assert "[TestBlock]" in output
+
+
+def test_block_print_tree_method_with_options():
+    """Test Block.print_tree() method with all options."""
+    block = pysmspp.Block()
+    block.block_type = "TestBlock"
+    block.add_dimension("n", 10)
+    block.add_variable("var1", "float", (), 1.0)
+    block.add_attribute("attr1", "value1")
+
+    output = capture_print_output(
+        block.print_tree,
+        "MyBlock",
+        show_dimensions=True,
+        show_variables=True,
+        show_attributes=True,
+    )
+
+    assert "MyBlock [TestBlock]" in output
+    assert "Dimensions:" in output
+    assert "n=10" in output
+    assert "Variables:" in output
+    assert "var1" in output
+    assert "Attributes:" in output
+    assert "attr1=value1" in output
+
+
+def test_block_method_and_function_equivalence():
+    """Test that the method and function produce the same output."""
+    block = pysmspp.Block()
+    block.block_type = "TestBlock"
+    block.add_dimension("n", 10)
+
+    child = pysmspp.Block()
+    child.block_type = "ChildBlock"
+    block.blocks["Child"] = child
+
+    # Call via method
+    output_method = capture_print_output(block.print_tree, "Test", show_dimensions=True)
+
+    # Call via function
+    output_function = capture_print_output(
+        pysmspp.print_block_tree, block, "Test", show_dimensions=True
+    )
+
+    # Both should produce identical output
+    assert output_method == output_function
