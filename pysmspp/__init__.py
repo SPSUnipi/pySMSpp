@@ -12,3 +12,6 @@ from pysmspp.smspp_tools import (
     UCBlockSolver as UCBlockSolver,
     InvestmentBlockTestSolver as InvestmentBlockTestSolver,
 )
+from pysmspp.helpers import (
+    print_block_tree as print_block_tree,
+)
