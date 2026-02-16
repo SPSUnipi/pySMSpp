@@ -660,7 +660,7 @@ def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -
     ...     print("SMS++ is installed and available")
     ... else:
     ...     print("SMS++ is not available")
-    
+
     >>> # Check multiple solvers
     >>> if pysmspp.is_smspp_installed([pysmspp.UCBlockSolver, pysmspp.InvestmentBlockTestSolver]):
     ...     print("Both solvers are available")

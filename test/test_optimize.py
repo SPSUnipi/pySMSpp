@@ -145,16 +145,20 @@ def test_investmentsolvertest(force_smspp):
 def test_is_smspp_installed(force_smspp):
     """Test the is_smspp_installed() function."""
     from pysmspp import is_smspp_installed, UCBlockSolver, InvestmentBlockTestSolver
-    
+
     # The function should return a boolean
     result = is_smspp_installed()
     assert isinstance(result, bool)
-    
+
     # Test with multiple solvers
     result_multi = is_smspp_installed([UCBlockSolver, InvestmentBlockTestSolver])
     assert isinstance(result_multi, bool)
-    
+
     # When force_smspp is True, is_smspp_installed must return True
     if force_smspp:
-        assert result is True, "is_smspp_installed should return True when --force-smspp is set"
-        assert result_multi is True, "is_smspp_installed should return True for all solvers when --force-smspp is set"
+        assert result is True, (
+            "is_smspp_installed should return True when --force-smspp is set"
+        )
+        assert result_multi is True, (
+            "is_smspp_installed should return True for all solvers when --force-smspp is set"
+        )
