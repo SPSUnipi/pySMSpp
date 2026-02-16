@@ -52,6 +52,7 @@ docs=[
     "scikit-learn",
     "ipython",
     "ipykernel",
+    "docutils<0.22",
 ]
 
 [tool.setuptools]
