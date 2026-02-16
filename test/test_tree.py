@@ -57,9 +57,9 @@ def test_print_tree_display_options():
     )
 
     assert "MyBlock [TestBlock]" in output
-    assert "Dimensions:" in output and "n=10" in output
-    assert "Variables:" in output and "var1" in output
-    assert "Attributes:" in output and "attr1=value1" in output
+    assert "Dimensions (1):" in output and "n=10" in output
+    assert "Variables (1):" in output and "var1" in output
+    assert "Attributes (1):" in output and "attr1=value1" in output
 
 
 def test_print_tree_truncation():
@@ -91,7 +91,7 @@ def test_print_tree_default_naming():
     # SMSNetwork uses "SMSNetwork" as default
     net = pysmspp.SMSNetwork(get_network())
     output = capture_print_output(net.print_tree)
-    assert "SMSNetwork [" in output
+    assert "SMSNetwork [SMSNetwork]" in output
 
 
 def test_print_tree_real_network():
@@ -110,4 +110,4 @@ def test_print_tree_real_network():
     assert "Block_0 [UCBlock]" in output
     assert "UnitBlock_0 [ThermalUnitBlock]" in output
     assert "UnitBlock_1 [BatteryUnitBlock]" in output
-    assert "Dimensions:" in output
+    assert "Dimensions (5):" in output

@@ -674,8 +674,8 @@ class Block:
 
         >>> block.print_tree(show_dimensions=True, show_variables=True)
         UCBlock [UCBlock]
-          Dimensions: n=10, m=5
-          Variables: var1, var2, var3
+          Dimensions (2): n=10, m=5
+          Variables (3): var1, var2, var3
         └── Block_0 [UCBlock]
             ...
         """
@@ -708,7 +708,7 @@ class Block:
                 f"{key}={value}" for key, value in self.dimensions.items()
             )
             detail_indent = child_indent if not _is_root else "  "
-            print(f"{detail_indent}Dimensions: {dims_str}")
+            print(f"{detail_indent}Dimensions ({len(self.dimensions)}): {dims_str}")
 
         # Print variables if requested
         if show_variables and self.variables:
@@ -718,7 +718,7 @@ class Block:
             else:
                 vars_str = ", ".join(vars_list[:5]) + f", ... ({len(vars_list)} total)"
             detail_indent = child_indent if not _is_root else "  "
-            print(f"{detail_indent}Variables: {vars_str}")
+            print(f"{detail_indent}Variables ({len(self.variables)}): {vars_str}")
 
         # Print attributes if requested (exclude 'type' since it's shown in brackets)
         if show_attributes and self.attributes:
@@ -730,7 +730,7 @@ class Block:
                 else:
                     attrs_str = ", ".join(attrs_list) + f", ... ({len(attrs)} total)"
                 detail_indent = child_indent if not _is_root else "  "
-                print(f"{detail_indent}Attributes: {attrs_str}")
+                print(f"{detail_indent}Attributes ({len(attrs)}): {attrs_str}")
 
         # Recursively print sub-blocks
         if self.blocks:
@@ -812,7 +812,8 @@ class SMSNetwork(Block):
         """
         Print a tree representation of the SMSNetwork structure.
 
-        This method overrides Block.print_tree() to use "SMSNetwork" as the default name.
+        This method overrides Block.print_tree() to use "SMSNetwork" as the default name
+        and block type.
 
         Parameters
         ----------
@@ -836,24 +837,71 @@ class SMSNetwork(Block):
         >>> from pysmspp import SMSNetwork
         >>> net = SMSNetwork(fp="network.nc4")
         >>> net.print_tree()  # Uses "SMSNetwork" as default name
-        SMSNetwork [Unknown]
+        SMSNetwork [SMSNetwork]
         └── Block_0 [UCBlock]
             ...
         """
-        # Use "SMSNetwork" as default name for SMSNetwork objects
+        # Determine the name to use
         if name is None:
             name = "SMSNetwork"
 
-        # Call parent class method
-        super().print_tree(
-            name=name,
-            show_dimensions=show_dimensions,
-            show_variables=show_variables,
-            show_attributes=show_attributes,
-            _indent=_indent,
-            _is_last=_is_last,
-            _is_root=_is_root,
-        )
+        # For SMSNetwork, use "SMSNetwork" as the block type instead of "Unknown"
+        block_type = "SMSNetwork"
+
+        # Print the current block
+        if _is_root:
+            # Root level - no connector
+            print(f"{name} [{block_type}]")
+            child_indent = ""
+        else:
+            connector = "└── " if _is_last else "├── "
+            print(f"{_indent}{connector}{name} [{block_type}]")
+            child_indent = _indent + ("    " if _is_last else "│   ")
+
+        # Print dimensions if requested
+        if show_dimensions and self.dimensions:
+            dims_str = ", ".join(
+                f"{key}={value}" for key, value in self.dimensions.items()
+            )
+            detail_indent = child_indent if not _is_root else "  "
+            print(f"{detail_indent}Dimensions ({len(self.dimensions)}): {dims_str}")
+
+        # Print variables if requested
+        if show_variables and self.variables:
+            vars_list = list(self.variables.keys())
+            if len(vars_list) <= 5:
+                vars_str = ", ".join(vars_list)
+            else:
+                vars_str = ", ".join(vars_list[:5]) + f", ... ({len(vars_list)} total)"
+            detail_indent = child_indent if not _is_root else "  "
+            print(f"{detail_indent}Variables ({len(self.variables)}): {vars_str}")
+
+        # Print attributes if requested (exclude 'type' since it's shown in brackets)
+        if show_attributes and self.attributes:
+            attrs = {k: v for k, v in self.attributes.items() if k != "type"}
+            if attrs:
+                attrs_list = [f"{k}={v}" for k, v in list(attrs.items())[:5]]
+                if len(attrs) <= 5:
+                    attrs_str = ", ".join(attrs_list)
+                else:
+                    attrs_str = ", ".join(attrs_list) + f", ... ({len(attrs)} total)"
+                detail_indent = child_indent if not _is_root else "  "
+                print(f"{detail_indent}Attributes ({len(attrs)}): {attrs_str}")
+
+        # Recursively print sub-blocks
+        if self.blocks:
+            sub_blocks = list(self.blocks.items())
+            for i, (sub_name, sub_block) in enumerate(sub_blocks):
+                is_last_child = i == len(sub_blocks) - 1
+                sub_block.print_tree(
+                    sub_name,
+                    show_dimensions,
+                    show_variables,
+                    show_attributes,
+                    child_indent,
+                    is_last_child,
+                    False,
+                )
 
     def optimize(
         self,
