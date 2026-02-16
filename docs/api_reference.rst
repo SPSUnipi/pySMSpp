@@ -16,13 +16,6 @@ smspp_tools
     :members:
 
 
-helpers
--------------------------------
-
-.. automodule:: pysmspp.helpers
-    :members:
-
-
 components
 -------------------------------
 
