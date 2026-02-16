@@ -777,6 +777,25 @@ class SMSNetwork(Block):
         return f"SMSNetwork Object\n{super().__repr__()}"
 
     @property
+    def block_type(self) -> str:
+        """Return the type of the block. For SMSNetwork, always returns 'SMSNetwork'."""
+        if "type" in self.attributes:
+            return self.attributes["type"]
+        return "SMSNetwork"
+
+    @block_type.setter
+    def block_type(self, block_type: str):
+        """
+        Set the type of the block.
+
+        Parameters
+        ----------
+        block_type : str
+            The type of the block.
+        """
+        self.attributes["type"] = block_type
+
+    @property
     def file_type(self) -> SMSFileType:
         """Return the file type of the SMS file."""
         return SMSFileType(self._attributes["SMS++_file_type"])
@@ -812,8 +831,7 @@ class SMSNetwork(Block):
         """
         Print a tree representation of the SMSNetwork structure.
 
-        This method overrides Block.print_tree() to use "SMSNetwork" as the default name
-        and block type.
+        This method overrides Block.print_tree() to use "SMSNetwork" as the default name.
 
         Parameters
         ----------
@@ -845,32 +863,16 @@ class SMSNetwork(Block):
         if name is None:
             name = "SMSNetwork"
 
-        # Temporarily set block_type to "SMSNetwork" to display it correctly
-        # Save the original block_type if it exists
-        original_type = self.attributes.get("type")
-        try:
-            # Set temporary block_type for display purposes
-            self.attributes["type"] = "SMSNetwork"
-
-            # Call parent class method
-            super().print_tree(
-                name=name,
-                show_dimensions=show_dimensions,
-                show_variables=show_variables,
-                show_attributes=show_attributes,
-                _indent=_indent,
-                _is_last=_is_last,
-                _is_root=_is_root,
-            )
-        finally:
-            # Restore the original block_type
-            if original_type is None:
-                # If there was no original type, remove it
-                if "type" in self.attributes:
-                    del self.attributes["type"]
-            else:
-                # Otherwise restore the original value
-                self.attributes["type"] = original_type
+        # Call parent class method (block_type property will return "SMSNetwork")
+        super().print_tree(
+            name=name,
+            show_dimensions=show_dimensions,
+            show_variables=show_variables,
+            show_attributes=show_attributes,
+            _indent=_indent,
+            _is_last=_is_last,
+            _is_root=_is_root,
+        )
 
     def optimize(
         self,
