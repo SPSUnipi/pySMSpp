@@ -154,7 +154,11 @@ def test_is_smspp_installed(force_smspp):
     result_multi = is_smspp_installed([UCBlockSolver, InvestmentBlockTestSolver])
     assert isinstance(result_multi, bool)
     
-    # When force_smspp is True, we verify the function still returns a valid boolean
+    # When force_smspp is True, is_smspp_installed must return True
+    if force_smspp:
+        assert result is True, "is_smspp_installed should return True when --force-smspp is set"
+        assert result_multi is True, "is_smspp_installed should return True for all solvers when --force-smspp is set"
+    
     # When SMS++ is actually available, result should be True
     if UCBlockSolver().is_available():
         assert result is True, "is_smspp_installed should return True when UCBlockSolver is available"
