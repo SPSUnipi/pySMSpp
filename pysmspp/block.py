@@ -778,7 +778,7 @@ class SMSNetwork(Block):
 
     @property
     def block_type(self) -> str:
-        """Return the type of the block. For SMSNetwork, always returns 'SMSNetwork'."""
+        """Return the type of the block. For SMSNetwork, defaults to 'SMSNetwork' if not explicitly set."""
         if "type" in self.attributes:
             return self.attributes["type"]
         return "SMSNetwork"
