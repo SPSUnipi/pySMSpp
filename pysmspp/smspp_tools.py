@@ -639,7 +639,7 @@ class SDDPSolver(SMSPPSolverTool):
 def is_smspp_available() -> bool:
     """
     Check if SMS++ is available by verifying that the ucblock_solver executable
-    can be found and executed without error.
+    can be found in the PATH.
 
     Returns
     -------
@@ -654,19 +654,5 @@ def is_smspp_available() -> bool:
     ... else:
     ...     print("SMS++ is not available")
     """
-    # Check if ucblock_solver is in PATH
-    if shutil.which("ucblock_solver") is None:
-        return False
-
-    # Try to run ucblock_solver with help option to verify it works
-    try:
-        result = subprocess.run(
-            ["ucblock_solver", "-h"],
-            capture_output=True,
-            timeout=5,
-            check=False,
-        )
-        # If the command runs without error (returncode 0 or help message output), it's available
-        return result.returncode == 0
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        return False
+    # Use UCBlockSolver's is_available method to check if ucblock_solver is in PATH
+    return UCBlockSolver().is_available()
