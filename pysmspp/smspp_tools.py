@@ -634,3 +634,36 @@ class SDDPSolver(SMSPPSolverTool):
 
         self._lower_bound = np.nan
         self._upper_bound = np.nan
+
+
+def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -> bool:
+    """
+    Check if SMS++ is installed by verifying that the specified solver executables
+    can be found in the PATH.
+
+    Parameters
+    ----------
+    solvers : list[type[SMSPPSolverTool]], optional
+        List of solver classes to check. Defaults to [UCBlockSolver].
+        Available solvers: UCBlockSolver, InvestmentBlockTestSolver,
+        InvestmentBlockSolver, SDDPSolver.
+
+    Returns
+    -------
+    bool
+        True if all specified SMS++ solvers are installed, False otherwise.
+
+    Examples
+    --------
+    >>> import pysmspp
+    >>> if pysmspp.is_smspp_installed():
+    ...     print("SMS++ is installed and available")
+    ... else:
+    ...     print("SMS++ is not available")
+
+    >>> # Check multiple solvers
+    >>> if pysmspp.is_smspp_installed([pysmspp.UCBlockSolver, pysmspp.InvestmentBlockTestSolver]):
+    ...     print("Both solvers are available")
+    """
+    # Check if all specified solvers are available
+    return all(solver().is_available() for solver in solvers)
