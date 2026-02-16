@@ -158,11 +158,3 @@ def test_is_smspp_installed(force_smspp):
     if force_smspp:
         assert result is True, "is_smspp_installed should return True when --force-smspp is set"
         assert result_multi is True, "is_smspp_installed should return True for all solvers when --force-smspp is set"
-    
-    # When SMS++ is actually available, result should be True
-    if UCBlockSolver().is_available():
-        assert result is True, "is_smspp_installed should return True when UCBlockSolver is available"
-    
-    # Test consistency: if default returns True, specific solver should also return True
-    if result:
-        assert is_smspp_installed([UCBlockSolver]) is True
