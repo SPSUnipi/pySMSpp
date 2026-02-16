@@ -142,15 +142,23 @@ def test_investmentsolvertest(force_smspp):
         pytest.skip("InvestmentBlockTestSolver not available in PATH")
 
 
-def test_is_smspp_available():
-    """Test the is_smspp_available() function."""
-    from pysmspp import is_smspp_available
+def test_is_smspp_installed(force_smspp):
+    """Test the is_smspp_installed() function."""
+    from pysmspp import is_smspp_installed, UCBlockSolver, InvestmentBlockTestSolver
     
     # The function should return a boolean
-    result = is_smspp_available()
+    result = is_smspp_installed()
     assert isinstance(result, bool)
     
-    # If ucblock_solver is available, result should be True
-    # Otherwise it should be False
-    # We can't assert the exact value as it depends on the environment
-    # But we can verify the function is callable and returns a bool
+    # Test with multiple solvers
+    result_multi = is_smspp_installed([UCBlockSolver, InvestmentBlockTestSolver])
+    assert isinstance(result_multi, bool)
+    
+    # When force_smspp is True, we verify the function still returns a valid boolean
+    # When SMS++ is actually available, result should be True
+    if UCBlockSolver().is_available():
+        assert result is True, "is_smspp_installed should return True when UCBlockSolver is available"
+    
+    # Test consistency: if default returns True, specific solver should also return True
+    if result:
+        assert is_smspp_installed([UCBlockSolver]) is True

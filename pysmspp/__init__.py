@@ -11,5 +11,5 @@ from pysmspp.smspp_tools import (
     SMSPPSolverTool as SMSPPSolverTool,
     UCBlockSolver as UCBlockSolver,
     InvestmentBlockTestSolver as InvestmentBlockTestSolver,
-    is_smspp_available as is_smspp_available,
+    is_smspp_installed as is_smspp_installed,
 )
