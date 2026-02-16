@@ -6,4 +6,4 @@ dependencies:
 - smspp-project
 - pip
 - pip:
-  - -e .[dev,docs]
+  - -e ..[dev,docs]
