@@ -778,22 +778,33 @@ class SMSNetwork(Block):
 
     @property
     def block_type(self) -> str:
-        """Return the type of the block. For SMSNetwork, defaults to 'SMSNetwork' if not explicitly set."""
+        """
+        Return the type of the block.
+
+        For SMSNetwork objects, this property overrides the parent Block class behavior.
+        If the 'type' attribute is explicitly set, it returns that value.
+        Otherwise, it defaults to 'SMSNetwork' instead of None (unlike Block which returns None).
+
+        Returns
+        -------
+        str
+            The block type, defaulting to 'SMSNetwork' if not explicitly set.
+        """
         if "type" in self.attributes:
             return self.attributes["type"]
         return "SMSNetwork"
 
     @block_type.setter
-    def block_type(self, block_type: str):
+    def block_type(self, value: str):
         """
         Set the type of the block.
 
         Parameters
         ----------
-        block_type : str
+        value : str
             The type of the block.
         """
-        self.attributes["type"] = block_type
+        self.attributes["type"] = value
 
     @property
     def file_type(self) -> SMSFileType:
