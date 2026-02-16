@@ -140,3 +140,17 @@ def test_investmentsolvertest(force_smspp):
         assert "success" in ucs.status.lower()
     else:
         pytest.skip("InvestmentBlockTestSolver not available in PATH")
+
+
+def test_is_smspp_available():
+    """Test the is_smspp_available() function."""
+    from pysmspp import is_smspp_available
+    
+    # The function should return a boolean
+    result = is_smspp_available()
+    assert isinstance(result, bool)
+    
+    # If ucblock_solver is available, result should be True
+    # Otherwise it should be False
+    # We can't assert the exact value as it depends on the environment
+    # But we can verify the function is callable and returns a bool

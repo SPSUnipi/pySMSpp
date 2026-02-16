@@ -634,3 +634,39 @@ class SDDPSolver(SMSPPSolverTool):
 
         self._lower_bound = np.nan
         self._upper_bound = np.nan
+
+
+def is_smspp_available() -> bool:
+    """
+    Check if SMS++ is available by verifying that the ucblock_solver executable
+    can be found and executed without error.
+
+    Returns
+    -------
+    bool
+        True if SMS++ (ucblock_solver) is available, False otherwise.
+
+    Examples
+    --------
+    >>> import pysmspp
+    >>> if pysmspp.is_smspp_available():
+    ...     print("SMS++ is installed and available")
+    ... else:
+    ...     print("SMS++ is not available")
+    """
+    # Check if ucblock_solver is in PATH
+    if shutil.which("ucblock_solver") is None:
+        return False
+
+    # Try to run ucblock_solver with help option to verify it works
+    try:
+        result = subprocess.run(
+            ["ucblock_solver", "-h"],
+            capture_output=True,
+            timeout=5,
+            check=False,
+        )
+        # If the command runs without error (returncode 0 or help message output), it's available
+        return result.returncode == 0
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        return False
