@@ -66,9 +66,7 @@ def test_print_block_tree_with_dimensions():
     block.add_dimension("n", 10)
     block.add_dimension("m", 5)
 
-    output = capture_print_output(
-        block.print_tree, "MyBlock", show_dimensions=True
-    )
+    output = capture_print_output(block.print_tree, "MyBlock", show_dimensions=True)
 
     assert "MyBlock [TestBlock]" in output
     assert "Dimensions:" in output
@@ -83,9 +81,7 @@ def test_print_block_tree_with_variables():
     block.add_variable("var1", "float", (), 1.0)
     block.add_variable("var2", "int", (), 2)
 
-    output = capture_print_output(
-        block.print_tree, "MyBlock", show_variables=True
-    )
+    output = capture_print_output(block.print_tree, "MyBlock", show_variables=True)
 
     assert "MyBlock [TestBlock]" in output
     assert "Variables:" in output
@@ -100,9 +96,7 @@ def test_print_block_tree_with_attributes():
     block.add_attribute("attr1", "value1")
     block.add_attribute("attr2", 42)
 
-    output = capture_print_output(
-        block.print_tree, "MyBlock", show_attributes=True
-    )
+    output = capture_print_output(block.print_tree, "MyBlock", show_attributes=True)
 
     assert "MyBlock [TestBlock]" in output
     assert "Attributes:" in output
@@ -171,9 +165,7 @@ def test_print_block_tree_ucblock():
     bub = build_base_bub()
     b.blocks["Block_0"].add("BatteryUnitBlock", "UnitBlock_1", block=bub)
 
-    output = capture_print_output(
-        b.print_tree, "UCNetwork", show_dimensions=True
-    )
+    output = capture_print_output(b.print_tree, "UCNetwork", show_dimensions=True)
 
     # Check structure
     assert "UCNetwork" in output
@@ -195,9 +187,7 @@ def test_print_block_tree_many_variables():
     for i in range(10):
         block.add_variable(f"var{i}", "float", (), float(i))
 
-    output = capture_print_output(
-        block.print_tree, "MyBlock", show_variables=True
-    )
+    output = capture_print_output(block.print_tree, "MyBlock", show_variables=True)
 
     assert "Variables:" in output
     assert "var0" in output
@@ -214,9 +204,7 @@ def test_print_block_tree_many_attributes():
     for i in range(10):
         block.add_attribute(f"attr{i}", i)
 
-    output = capture_print_output(
-        block.print_tree, "MyBlock", show_attributes=True
-    )
+    output = capture_print_output(block.print_tree, "MyBlock", show_attributes=True)
 
     assert "Attributes:" in output
     assert "attr0" in output

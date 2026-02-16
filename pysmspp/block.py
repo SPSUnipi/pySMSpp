@@ -686,7 +686,7 @@ class Block:
                 name = self.block_type
             else:
                 name = "Block"
-        
+
         # Get block type
         block_type = "Unknown"
         if hasattr(self, "block_type") and self.block_type:
@@ -843,7 +843,7 @@ class SMSNetwork(Block):
         # Use "SMSNetwork" as default name for SMSNetwork objects
         if name is None:
             name = "SMSNetwork"
-        
+
         # Call parent class method
         super().print_tree(
             name=name,
