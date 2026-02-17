@@ -102,7 +102,7 @@ class SMSConfig:
         return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
-def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
+def get_attr_field(block_type: str, attr_name: str, field: str = None):
     """
     Return the attribute value or field from block configuration.
 
@@ -118,7 +118,7 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
     Returns
     -------
     str or pandas.Series
-        The requested field value or entire attribute row.
+        The requested field value (str) or entire attribute row (pandas.Series).
     """
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
@@ -668,9 +668,10 @@ class Block:
 
         Returns
         -------
-        The removed component object.
+        Attribute, Dimension, Variable, or Block
+            The removed component object.
         """
-        self.static(component_name).pop(name)
+        return self.static(component_name).pop(name)
 
     def static(self, component_name: str) -> Dict:
         """

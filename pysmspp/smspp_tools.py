@@ -72,10 +72,12 @@ class SMSPPSolverTool:
         """
         Calculate the executable call to run the solver tool.
 
-        Returns
-        -------
-        str or None
-            The command string to execute the solver, or None if not implemented.
+        This method is meant to be overridden by subclasses. The base class
+        implementation calls the function provided during initialization.
+
+        Notes
+        -----
+        Subclasses override this method to return solver-specific command strings.
         """
         self._exec_optimize()
 
