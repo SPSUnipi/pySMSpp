@@ -11,13 +11,13 @@ A sample SMS++ network can be created with the following code. After python impo
 
 .. code:: python
 
-    from pysmspp import SMSNetwork, Variable, Block, SMSFileType
+    from pysmspp import SMSNetwork, Variable, Block, SMSFileType, SMSConfig
     import numpy as np
 
     sn = SMSNetwork(file_type=SMSFileType.eBlockFile)
 
-After an empty network is created, we can populate it by blocks. In particular, it is critical to add a first inner block that describes
-the type of model is going to be optimized. In this case, we are adding a ``UCBlock`` suitable for unit commitment problems, see the `UCBlock SMS documentation <https://gitlab.com/smspp/ucblock>`__ block, which is block that describes a unit commitment problems. In particular, we specify 24 time steps (one day) and a constant demand of 50kW for each time step. The block is added to the network with the following code:
+After an empty network is created, we can populate it with blocks. In particular, it is critical to add a first inner block that describes
+the type of model to be optimized. In this case, we are adding a ``UCBlock`` suitable for unit commitment problems, see the `UCBlock SMS documentation <https://gitlab.com/smspp/ucblock>`__ for details. A ``UCBlock`` is a block that describes unit commitment problems. In particular, we specify 24 time steps (one day) and a constant demand of 50kW for each time step. The block is added to the network with the following code:
 
 .. code:: python
 
