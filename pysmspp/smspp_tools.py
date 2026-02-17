@@ -16,7 +16,6 @@ class SMSPPSolverTool:
     def __init__(
         self,
         exec_file: str = "",
-        exec_optimize=None,
         help_option: str = "-h",
         fp_network: Path | str = None,
         configfile: Path | str = None,
@@ -30,9 +29,6 @@ class SMSPPSolverTool:
         ----------
         exec_file : str
             The name of the executable file.
-        exec_optimize : function
-            The function to run the optimization.
-            It takes as input the SMSPPSolverTool instance and returns the executable path to run the tool.
         help_option : str, optional
             The option to display the help message, by default "-h".
         fp_network : Path | str, optional
@@ -45,7 +41,6 @@ class SMSPPSolverTool:
             Path to the log file, by default None.
         """
         self._exec_file = exec_file
-        self._exec_optimize = exec_optimize
         self._help_option = help_option
 
         self.fp_network = str(Path(fp_network).resolve())
@@ -79,7 +74,9 @@ class SMSPPSolverTool:
         -----
         Subclasses override this method to return solver-specific command strings.
         """
-        self._exec_optimize()
+        raise NotImplementedError(
+            "Method calculate_executable_call must be implemented in the derived class."
+        )
 
     def __repr__(self):
         """
@@ -354,8 +351,6 @@ class UCBlockSolver(SMSPPSolverTool):
         """
         super().__init__(
             exec_file="ucblock_solver",
-            exec_optimize=self.calculate_executable_call,
-            help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
             fp_solution=fp_solution,
@@ -443,8 +438,6 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         """
         super().__init__(
             exec_file="InvestmentBlock_test",
-            exec_optimize=self.calculate_executable_call,
-            help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
             fp_solution=fp_solution,
@@ -532,8 +525,6 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         """
         super().__init__(
             exec_file="investment_solver",
-            exec_optimize=self.calculate_executable_call,
-            help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
             fp_solution=fp_solution,
@@ -621,8 +612,6 @@ class SDDPSolver(SMSPPSolverTool):
         """
         super().__init__(
             exec_file="sddp_solver",
-            exec_optimize=self.calculate_executable_call,
-            help_option="-h",
             fp_network=fp_network,
             configfile=configfile,
             fp_solution=fp_solution,
