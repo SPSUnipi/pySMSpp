@@ -687,19 +687,25 @@ class Block:
             else:
                 name = "Block"
 
-        # Get block type
-        block_type = "Unknown"
+        # Get block type - if it's None or missing, we'll omit the brackets
+        block_type = None
         if hasattr(self, "block_type") and self.block_type:
             block_type = self.block_type
 
         # Print the current block
         if _is_root:
             # Root level - no connector
-            print(f"{name} [{block_type}]")
+            if block_type:
+                print(f"{name} [{block_type}]")
+            else:
+                print(f"{name}")
             child_indent = ""
         else:
             connector = "└── " if _is_last else "├── "
-            print(f"{_indent}{connector}{name} [{block_type}]")
+            if block_type:
+                print(f"{_indent}{connector}{name} [{block_type}]")
+            else:
+                print(f"{_indent}{connector}{name}")
             child_indent = _indent + ("    " if _is_last else "│   ")
 
         # Print dimensions if requested
@@ -777,36 +783,6 @@ class SMSNetwork(Block):
         return f"SMSNetwork Object\n{super().__repr__()}"
 
     @property
-    def block_type(self) -> str:
-        """
-        Return the type of the block.
-
-        For SMSNetwork objects, this property overrides the parent Block class behavior.
-        If the 'type' attribute is explicitly set, it returns that value.
-        Otherwise, it defaults to 'SMSNetwork' instead of None (unlike Block which returns None).
-
-        Returns
-        -------
-        str
-            The block type, defaulting to 'SMSNetwork' if not explicitly set.
-        """
-        if "type" in self.attributes:
-            return self.attributes["type"]
-        return "SMSNetwork"
-
-    @block_type.setter
-    def block_type(self, value: str):
-        """
-        Set the type of the block.
-
-        Parameters
-        ----------
-        value : str
-            The type of the block.
-        """
-        self.attributes["type"] = value
-
-    @property
     def file_type(self) -> SMSFileType:
         """Return the file type of the SMS file."""
         return SMSFileType(self._attributes["SMS++_file_type"])
@@ -866,7 +842,7 @@ class SMSNetwork(Block):
         >>> from pysmspp import SMSNetwork
         >>> net = SMSNetwork(fp="network.nc4")
         >>> net.print_tree()  # Uses "SMSNetwork" as default name
-        SMSNetwork [SMSNetwork]
+        SMSNetwork
         └── Block_0 [UCBlock]
             ...
         """
@@ -874,7 +850,7 @@ class SMSNetwork(Block):
         if name is None:
             name = "SMSNetwork"
 
-        # Call parent class method (block_type property will return "SMSNetwork")
+        # Call parent class method
         super().print_tree(
             name=name,
             show_dimensions=show_dimensions,

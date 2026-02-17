@@ -88,10 +88,11 @@ def test_print_tree_default_naming():
     output = capture_print_output(block.print_tree)
     assert "TestBlock [TestBlock]" in output
 
-    # SMSNetwork uses "SMSNetwork" as default
+    # SMSNetwork uses "SMSNetwork" as default (no brackets when block_type is missing)
     net = pysmspp.SMSNetwork(get_network())
     output = capture_print_output(net.print_tree)
-    assert "SMSNetwork [SMSNetwork]" in output
+    # SMSNetwork doesn't have a block_type, so it should show without brackets
+    assert "SMSNetwork\n" in output or output.startswith("SMSNetwork\n")
 
 
 def test_print_tree_real_network():
