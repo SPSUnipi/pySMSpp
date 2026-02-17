@@ -1,7 +1,7 @@
 """pySMSpp: Python interface for SMS++ modeling and optimization.
 
-pySMSpp provides a Python interface to create, manipulate, and solve SMS++ 
-(Structured Modeling System) models. SMS++ is a framework for structured 
+pySMSpp provides a Python interface to create, manipulate, and solve SMS++
+(Structured Modeling System) models. SMS++ is a framework for structured
 mathematical optimization problems.
 
 Main Features
