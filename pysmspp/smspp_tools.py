@@ -71,10 +71,25 @@ class SMSPPSolverTool:
     def calculate_executable_call(self):
         """
         Calculate the executable call to run the solver tool.
+
+        This method is meant to be overridden by subclasses. The base class
+        implementation calls the function provided during initialization.
+
+        Notes
+        -----
+        Subclasses override this method to return solver-specific command strings.
         """
         self._exec_optimize()
 
     def __repr__(self):
+        """
+        Return a string representation of the solver tool.
+
+        Returns
+        -------
+        str
+            A formatted string showing key solver properties.
+        """
         return f"{type(self).__name__}\n\t\n\texec_file={self._exec_file}\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_solution={self.fp_solution}"
 
     def help(self, print_message=True):
@@ -348,6 +363,14 @@ class UCBlockSolver(SMSPPSolverTool):
         )
 
     def calculate_executable_call(self):
+        """
+        Generate the command-line call for the UCBlock solver.
+
+        Returns
+        -------
+        str
+            The command string to execute the ucblock_solver.
+        """
         exec_path = (
             f"ucblock_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
@@ -429,6 +452,14 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         )
 
     def calculate_executable_call(self):
+        """
+        Generate the command-line call for the InvestmentBlock test solver.
+
+        Returns
+        -------
+        str
+            The command string to execute the InvestmentBlock_test solver.
+        """
         exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile} -v -o"
         if self.fp_solution is not None:
             exec_path += f" -O {self.fp_solution}"
@@ -510,6 +541,14 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         )
 
     def calculate_executable_call(self):
+        """
+        Generate the command-line call for the Investment solver.
+
+        Returns
+        -------
+        str
+            The command string to execute the investment_solver.
+        """
         exec_path = f"investment_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
@@ -591,6 +630,14 @@ class SDDPSolver(SMSPPSolverTool):
         )
 
     def calculate_executable_call(self):
+        """
+        Generate the command-line call for the SDDP solver.
+
+        Returns
+        -------
+        str
+            The command string to execute the sddp_solver.
+        """
         exec_path = (
             f"sddp_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
