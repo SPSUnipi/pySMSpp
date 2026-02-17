@@ -76,9 +76,11 @@ class SMSConfig:
                 )
 
     def __repr__(self):
+        """Return a string representation of the configuration object."""
         return f'Configuration path: "{self.config}"'
 
     def __str__(self):
+        """Return the configuration path as a string."""
         return self.config
 
     @property
@@ -88,14 +90,21 @@ class SMSConfig:
 
     @staticmethod
     def get_templates():
-        """Return the list of available templates."""
+        """
+        Return the list of available configuration templates.
+
+        Returns
+        -------
+        list of str
+            List of template names available in the data/configs directory.
+        """
         dirconfigs = Path(dir_name, "data", "configs")
         return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
 def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
     """
-    Return the attibute value.
+    Return the attribute value or field from block configuration.
 
     Parameters
     ----------
@@ -103,10 +112,13 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
         The type of the block.
     attr_name : str
         The name of the attribute.
+    field : str, optional
+        The specific field to retrieve. If None, returns the entire row.
 
     Returns
     -------
-    str
+    str or pandas.Series
+        The requested field value or entire attribute row.
     """
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
@@ -290,6 +302,15 @@ class Block:
         self.from_kwargs(**kwargs)
 
     def __repr__(self):
+        """
+        Return a string representation of the Block object.
+
+        Returns
+        -------
+        str
+            A formatted string showing the counts and names of attributes,
+            dimensions, variables, and sub-blocks.
+        """
         # Extract the keys of the dictionaries
         dim_str = ", ".join(self.dimensions.keys()) if self.dimensions else "None"
         var_str = ", ".join(self.variables.keys()) if self.variables else "None"
@@ -468,16 +489,19 @@ class Block:
 
     def from_kwargs(self, **kwargs):
         """
-        Create a new Block from a dictionary.
+        Populate the Block from keyword arguments.
 
         Parameters
         ----------
-        dct : dict
-            The attributes of the block.
+        **kwargs : dict
+            Keyword arguments representing block components. If 'block_type' is
+            provided, it sets the block type and other arguments are added as
+            components based on the block type configuration.
 
         Returns
         -------
-        Returns the block being created.
+        Block
+            Returns self for method chaining.
         """
         if "block_type" in kwargs:
             btype = kwargs.pop("block_type")
@@ -490,7 +514,14 @@ class Block:
     # Input/Output operations
 
     def _to_netcdf_helper(self, grp: nc.Dataset | nc.Group):
-        """Helper function to recursively save a Block and its sub-blocks to NetCDF."""
+        """
+        Recursively save Block and sub-blocks to a NetCDF group.
+
+        Parameters
+        ----------
+        grp : netCDF4.Dataset or netCDF4.Group
+            The NetCDF dataset or group to write to.
+        """
         # Add the block's attributes
         for key, value in self.attributes.items():
             grp.setncattr(key, value)
@@ -528,7 +559,19 @@ class Block:
 
     @classmethod
     def _from_netcdf(cls, grb: nc.Dataset | nc.Group):
-        """Helper function to recursively load a Block and its sub-blocks from NetCDF."""
+        """
+        Recursively load Block and sub-blocks from a NetCDF group.
+
+        Parameters
+        ----------
+        grb : netCDF4.Dataset or netCDF4.Group
+            The NetCDF dataset or group to read from.
+
+        Returns
+        -------
+        Block
+            A new Block instance populated with data from the NetCDF group.
+        """
         # Create a new block
         new_block = cls()
 
@@ -557,7 +600,19 @@ class Block:
 
     @classmethod
     def from_netcdf(cls, filename):
-        """Deserialize a NetCDF file to create a Block instance with nested sub-blocks."""
+        """
+        Deserialize a NetCDF file to create a Block instance.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the NetCDF file to read.
+
+        Returns
+        -------
+        Block
+            A new Block instance with nested sub-blocks from the file.
+        """
         with nc.Dataset(filename, "r") as ncfile:
             return cls._from_netcdf(ncfile)
 
@@ -565,20 +620,26 @@ class Block:
 
     def add(self, component_name, name, *args, **kwargs):
         """
-        Add a new object to the block.
+        Add a component to the block.
+
+        Dispatches to the appropriate add method based on component type.
 
         Parameters
         ----------
         component_name : str
-            The class name of the block
+            The SMS++ component class name (e.g., 'Attribute', 'Dimension',
+            'Variable', or a Block type).
         name : str
-            The name of the block
-        kwargs : dict
-            The attributes of the block
+            The name of the component to add.
+        *args : tuple
+            Positional arguments passed to the specific add method.
+        **kwargs : dict
+            Keyword arguments passed to the specific add method.
 
         Returns
         -------
-        Returns the object being created: Attribute, Dimension, Variable, or Block.
+        Attribute, Dimension, Variable, or Block
+            The created component object.
         """
         component_nctype = self.components[component_name]["nctype"]
         if component_nctype == "Attribute":
@@ -596,14 +657,18 @@ class Block:
 
     def remove(self, component_name: str, name: str):
         """
-        Remove the object with the given name from the block.
+        Remove a component from the block.
 
         Parameters
         ----------
         component_name : str
-            The class name of the block
+            The SMS++ component class name.
         name : str
-            The name of the block
+            The name of the component to remove.
+
+        Returns
+        -------
+        The removed component object.
         """
         self.static(component_name).pop(name)
 
@@ -780,6 +845,14 @@ class SMSNetwork(Block):
             self.file_type = file_type
 
     def __repr__(self):
+        """
+        Return a string representation of the SMSNetwork object.
+
+        Returns
+        -------
+        str
+            A formatted string identifying this as an SMSNetwork with its components.
+        """
         return f"SMSNetwork Object\n{super().__repr__()}"
 
     @property
