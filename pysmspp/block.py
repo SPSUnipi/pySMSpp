@@ -674,8 +674,8 @@ class Block:
 
         >>> block.print_tree(show_dimensions=True, show_variables=True)
         UCBlock [UCBlock]
-          Dimensions: n=10, m=5
-          Variables: var1, var2, var3
+          Dimensions (2): n=10, m=5
+          Variables (3): var1, var2, var3
         └── Block_0 [UCBlock]
             ...
         """
@@ -687,19 +687,25 @@ class Block:
             else:
                 name = "Block"
 
-        # Get block type
-        block_type = "Unknown"
+        # Get block type - if it's None or missing, we'll omit the brackets
+        block_type = None
         if hasattr(self, "block_type") and self.block_type:
             block_type = self.block_type
 
         # Print the current block
         if _is_root:
             # Root level - no connector
-            print(f"{name} [{block_type}]")
+            if block_type:
+                print(f"{name} [{block_type}]")
+            else:
+                print(f"{name}")
             child_indent = ""
         else:
             connector = "└── " if _is_last else "├── "
-            print(f"{_indent}{connector}{name} [{block_type}]")
+            if block_type:
+                print(f"{_indent}{connector}{name} [{block_type}]")
+            else:
+                print(f"{_indent}{connector}{name}")
             child_indent = _indent + ("    " if _is_last else "│   ")
 
         # Print dimensions if requested
@@ -708,7 +714,7 @@ class Block:
                 f"{key}={value}" for key, value in self.dimensions.items()
             )
             detail_indent = child_indent if not _is_root else "  "
-            print(f"{detail_indent}Dimensions: {dims_str}")
+            print(f"{detail_indent}Dimensions ({len(self.dimensions)}): {dims_str}")
 
         # Print variables if requested
         if show_variables and self.variables:
@@ -718,7 +724,7 @@ class Block:
             else:
                 vars_str = ", ".join(vars_list[:5]) + f", ... ({len(vars_list)} total)"
             detail_indent = child_indent if not _is_root else "  "
-            print(f"{detail_indent}Variables: {vars_str}")
+            print(f"{detail_indent}Variables ({len(self.variables)}): {vars_str}")
 
         # Print attributes if requested (exclude 'type' since it's shown in brackets)
         if show_attributes and self.attributes:
@@ -730,7 +736,7 @@ class Block:
                 else:
                     attrs_str = ", ".join(attrs_list) + f", ... ({len(attrs)} total)"
                 detail_indent = child_indent if not _is_root else "  "
-                print(f"{detail_indent}Attributes: {attrs_str}")
+                print(f"{detail_indent}Attributes ({len(attrs)}): {attrs_str}")
 
         # Recursively print sub-blocks
         if self.blocks:
@@ -836,7 +842,7 @@ class SMSNetwork(Block):
         >>> from pysmspp import SMSNetwork
         >>> net = SMSNetwork(fp="network.nc4")
         >>> net.print_tree()  # Uses "SMSNetwork" as default name
-        SMSNetwork [Unknown]
+        SMSNetwork
         └── Block_0 [UCBlock]
             ...
         """
