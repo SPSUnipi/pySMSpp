@@ -92,7 +92,9 @@ def test_print_tree_default_naming():
     net = pysmspp.SMSNetwork(get_network())
     output = capture_print_output(net.print_tree)
     # SMSNetwork doesn't have a block_type, so it should show without brackets
-    assert "SMSNetwork\n" in output
+    # Use splitlines() to handle different line endings (Windows vs Unix)
+    lines = output.splitlines()
+    assert len(lines) > 0 and lines[0] == "SMSNetwork"
 
 
 def test_print_tree_real_network():
