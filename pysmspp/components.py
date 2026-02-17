@@ -19,6 +19,24 @@ class Dict(dict):
         self[name] = value
 
     def __getattr__(self, item: str) -> Any:
+        """
+        Get an item using attribute syntax (e.g., dict.key).
+
+        Parameters
+        ----------
+        item : str
+            The key name to retrieve.
+
+        Returns
+        -------
+        Any
+            The value associated with the key.
+
+        Raises
+        ------
+        AttributeError
+            If the key does not exist.
+        """
         try:
             return self.__getitem__(item)
         except KeyError as e:
