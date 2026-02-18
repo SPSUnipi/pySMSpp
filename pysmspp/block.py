@@ -12,6 +12,7 @@ import numpy as np
 import os
 from pathlib import Path
 import pandas as pd
+import warnings
 
 
 NC_DOUBLE = "f8"
@@ -133,9 +134,11 @@ class SMSConfig:
         return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
-def get_attr_field(block_type: str, attr_name: str, field: str = None):
+def get_attr_field(
+    block_type: str, attr_name: str, attr_value=None, col_name: str = None
+):
     """
-    Return the attribute value or field from block configuration.
+    Return the entry or the entire attribute row (pandas.Series) from block configuration.
 
     Parameters
     ----------
@@ -143,14 +146,41 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None):
         The type of the block.
     attr_name : str
         The name of the attribute.
-    field : str, optional
-        The specific field to retrieve. If None, returns the entire row.
+    attr_value : any, optional
+        The value used to infer the smspp_object type when ``block_type`` is
+        ``"Block"``. If ``attr_value`` is an instance of ``Block``, ``Variable``,
+        ``Dimension`` or ``Attribute``, the corresponding type name is returned.
+        If ``attr_value`` is ``None`` or any other type when ``block_type`` is
+        ``"Block"``, it is treated as an attribute, a warning is issued, and
+        ``"Attribute"`` is returned. For other ``block_type`` values, this
+        parameter is ignored for type inference.
+    col_name : str, optional
+        The specific entry to retrieve. If None, returns the entire row.
 
     Returns
     -------
     str or pandas.Series
-        The requested field value (str) or entire attribute row (pandas.Series).
+        The requested entry or entire attribute row (pandas.Series).
     """
+    if block_type == "Block":
+        if isinstance(attr_value, Block):
+            return "Block"
+        elif isinstance(attr_value, Variable):
+            return "Variable"
+        elif isinstance(attr_value, Dimension):
+            return "Dimension"
+        elif isinstance(attr_value, Attribute):
+            return "Attribute"
+        elif attr_value is not None:
+            warnings.warn(
+                f"Non-specified {attr_name} with value {attr_value} treated as attribute."
+            )
+            return "Attribute"
+        else:
+            raise ValueError(
+                f"Cannot infer type of {attr_name} with value {attr_value} in Block."
+            )
+
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
 
@@ -170,10 +200,10 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None):
                 + f"Possible types: {attr_sel.index.tolist()}."
             )
 
-    if field is None:
+    if col_name is None:
         return blocks[block_type].loc[attr]
     else:
-        return blocks[block_type].at[attr, field]
+        return blocks[block_type].at[attr, col_name]
 
 
 class SMSFileType(IntEnum):
@@ -256,6 +286,20 @@ class Attribute:
         self.name = name
         self.value = value
 
+    def __str__(self) -> str:
+        """Return string representation of the attribute value."""
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the attribute."""
+        return f"Attribute(name={self.name!r}, value={self.value!r})"
+
+    def __eq__(self, other) -> bool:
+        """Compare attribute with another value or Attribute object."""
+        if isinstance(other, Attribute):
+            return self.name == other.name and self.value == other.value
+        return self.value == other
+
 
 class Dimension:
     """
@@ -293,6 +337,20 @@ class Dimension:
         """
         self.name = name
         self.value = value
+
+    def __str__(self) -> str:
+        """Return string representation of the dimension value."""
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the dimension."""
+        return f"Dimension(name={self.name!r}, value={self.value!r})"
+
+    def __eq__(self, other) -> bool:
+        """Compare dimension with another value or Dimension object."""
+        if isinstance(other, Dimension):
+            return self.name == other.name and self.value == other.value
+        return self.value == other
 
 
 class Variable:
@@ -351,6 +409,13 @@ class Variable:
         self.var_type = var_type
         self.dimensions = dimensions
         self.data = data
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the variable."""
+        data_repr = (
+            f"{self.data!r}" if not isinstance(self.data, np.ndarray) else "array(...)"
+        )
+        return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
 
 
 class Block:
@@ -520,7 +585,7 @@ class Block:
     def block_type(self, ignore_missing: bool = True) -> str:
         """Return the type of the block."""
         if "type" in self.attributes:
-            return self.attributes["type"]
+            return self.attributes["type"].value
         elif ignore_missing:
             return None
         raise AttributeError("Block type not defined.")
@@ -535,7 +600,7 @@ class Block:
         block_type : str
             The type of the block.
         """
-        self.attributes["type"] = block_type
+        self.attributes["type"] = Attribute("type", block_type)
 
     def add_attribute(self, name: str, value, force: bool = False):
         """
@@ -546,18 +611,23 @@ class Block:
         name : str
             The name of the attribute
         value : any
-            The value of the attribute
+            The value of the attribute. Can be provided as a plain value
+            or as an Attribute object.
         force : bool (default: False)
             If True, overwrite the attribute if it exists.
 
         Returns
         -------
-        Returns the value of the attribute being created.
+        Attribute
+            Returns the Attribute object being created.
         """
         if not force and name in self.attributes:
             raise ValueError(f"Attribute {name} already exists.")
-        self.attributes[name] = value
-        return value
+        if isinstance(value, Attribute):
+            self.attributes[name] = value
+        else:
+            self.attributes[name] = Attribute(name, value)
+        return self.attributes[name]
 
     def add_dimension(self, name: str, value: int, force: bool = False):
         """
@@ -568,18 +638,23 @@ class Block:
         name : str
             The name of the dimension
         value : int
-            The value of the dimension
+            The value of the dimension. Can be provided as a plain value
+            or as a Dimension object.
         force : bool (default: False)
             If True, overwrite the dimension if it exists.
 
         Returns
         -------
-        Returns the value of the dimension being created.
+        Dimension
+            Returns the Dimension object being created.
         """
         if not force and name in self.dimensions:
             raise ValueError(f"Dimension {name} already exists.")
-        self.dimensions[name] = value
-        return value
+        if isinstance(value, Dimension):
+            self.dimensions[name] = value
+        else:
+            self.dimensions[name] = Dimension(name, value)
+        return self.dimensions[name]
 
     def add_variable(
         self,
@@ -655,7 +730,7 @@ class Block:
                 raise ValueError("Non accepted arguments have been passed.")
         else:
             self.blocks[name] = Block().from_kwargs(**kwargs)
-        return self
+        return self.blocks[name]
 
     def from_kwargs(self, **kwargs):
         """
@@ -676,8 +751,10 @@ class Block:
         if "block_type" in kwargs:
             btype = kwargs.pop("block_type")
             self.block_type = btype
+        else:
+            self.block_type = "Block"
         for key, value in kwargs.items():
-            nc_cmp = get_attr_field(self.block_type, key, "smspp_object")
+            nc_cmp = get_attr_field(self.block_type, key, value, "smspp_object")
             self.add(nc_cmp, key, value)
         return self
 
@@ -693,12 +770,12 @@ class Block:
             The NetCDF dataset or group to write to.
         """
         # Add the block's attributes
-        for key, value in self.attributes.items():
-            grp.setncattr(key, value)
+        for key, attr in self.attributes.items():
+            grp.setncattr(key, attr.value)
 
         # Add the dimensions
-        for key, value in self.dimensions.items():
-            grp.createDimension(key, value)
+        for key, dim in self.dimensions.items():
+            grp.createDimension(key, dim.value)
 
         # Add the variables
         for key, value in self.variables.items():
@@ -1101,12 +1178,12 @@ class SMSNetwork(Block):
     @property
     def file_type(self) -> SMSFileType:
         """Return the file type of the SMS file."""
-        return SMSFileType(self._attributes["SMS++_file_type"])
+        return SMSFileType(self.attributes["SMS++_file_type"].value)
 
     @file_type.setter
     def file_type(self, ft: SMSFileType | int):
-        """Return the file type of the SMS file."""
-        self._attributes["SMS++_file_type"] = int(ft)
+        """Set the file type of the SMS file."""
+        self.add_attribute("SMS++_file_type", int(ft), force=True)
 
     @classmethod
     def _from_netcdf(cls, ncfile: nc.Dataset):
