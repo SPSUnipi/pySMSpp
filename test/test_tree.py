@@ -94,7 +94,7 @@ def test_print_tree_default_naming():
     # SMSNetwork doesn't have a block_type, so it should show without brackets
     # Use splitlines() to handle different line endings (Windows vs Unix)
     lines = output.splitlines()
-    assert len(lines) > 0 and lines[0] == "SMSNetwork"
+    assert len(lines) > 0 and lines[0] == "SMSNetwork [Block]"
 
 
 def test_print_tree_real_network():
@@ -114,3 +114,6 @@ def test_print_tree_real_network():
     assert "UnitBlock_0 [ThermalUnitBlock]" in output
     assert "UnitBlock_1 [BatteryUnitBlock]" in output
     assert "Dimensions (5):" in output
+
+
+test_print_tree_default_naming()
