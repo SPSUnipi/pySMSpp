@@ -222,3 +222,23 @@ def test_attribute_dimension_consistency_with_variable():
     assert b.variables["var1"].data == 1.0
     assert b.attributes["attr1"].value == "value1"
     assert b.dimensions["dim1"].value == 10
+
+
+def test_add_block_with_attributes_and_dimensions():
+    b = SMSNetwork()
+    b.add("Dimension", "n_units", 3)
+    b.add("Attribute", "unit_type", "thermal")
+
+    block_kwargs = {
+        "MinPower": Variable("MinPower", "float", ("n_units",), [0.0] * 3),
+        "MaxPower": Variable("MaxPower", "float", ("n_units",), [100.0] * 3),
+        "LinearTerm": Variable("LinearTerm", "float", ("n_units",), [0.3] * 3),
+    }
+    bb = b.add("Block", "UnitBlock_0", **block_kwargs)
+
+    assert bb.block_type == "Block"
+
+    bb.add("Attribute", "type", "ThermalUnitBlock", force=True)
+
+    assert b.blocks["UnitBlock_0"].block_type == "ThermalUnitBlock"
+    assert b.blocks["UnitBlock_0"].variables["MinPower"].data == [0.0] * 3
