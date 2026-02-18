@@ -255,6 +255,8 @@ def test_tssb():
     fp_benchmark_tssb = get_datafile("TSSB_EC_CO_Test_TUB_simple.nc4")
     fp_log_tssb = get_temp_file("tmp_tssb.txt")
 
+    os.makedirs(os.path.dirname(fp_test_tssb), exist_ok=True)
+
     if os.path.exists(fp_test_tssb):
         os.remove(fp_test_tssb)
 
