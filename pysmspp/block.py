@@ -147,7 +147,13 @@ def get_attr_field(
     attr_name : str
         The name of the attribute.
     attr_value : any, optional
-        The value of the attribute to match. If block_type is none, this is used to infer the type of the attribute.
+        The value used to infer the smspp_object type when ``block_type`` is
+        ``"Block"``. If ``attr_value`` is an instance of ``Block``, ``Variable``,
+        ``Dimension`` or ``Attribute``, the corresponding type name is returned.
+        If ``attr_value`` is ``None`` or any other type when ``block_type`` is
+        ``"Block"``, it is treated as an attribute, a warning is issued, and
+        ``"Attribute"`` is returned. For other ``block_type`` values, this
+        parameter is ignored for type inference.
     col_name : str, optional
         The specific entry to retrieve. If None, returns the entire row.
 
