@@ -1,4 +1,4 @@
-from pysmspp import SMSNetwork, Block, Variable
+from pysmspp import SMSNetwork, Block, Variable, Attribute, Dimension
 from conftest import (
     add_base_ucblock,
     add_ucblock_with_one_unit,
@@ -148,3 +148,77 @@ def test_add_line_branches():
 
     b.blocks["Block_0"].add("Variable", "StartLine", v)
     assert len(b.blocks["Block_0"].variables["StartLine"].data) == n_branches
+
+
+def test_attribute_class():
+    """Test that Attribute class can be imported and used."""
+    # Test creating Attribute objects directly
+    attr1 = Attribute("test_attr", "test_value")
+    assert attr1.name == "test_attr"
+    assert attr1.value == "test_value"
+
+    attr2 = Attribute("test_num", 42)
+    assert attr2.name == "test_num"
+    assert attr2.value == 42
+
+    # Test string representation
+    assert str(attr1) == "test_value"
+    assert str(attr2) == "42"
+
+    # Test equality
+    assert attr1 == "test_value"
+    assert attr2 == 42
+
+    # Test with Block
+    b = Block()
+    b.add_attribute("my_attr", "my_value")
+    assert isinstance(b.attributes["my_attr"], Attribute)
+    assert b.attributes["my_attr"].value == "my_value"
+    assert b.attributes["my_attr"] == "my_value"
+
+
+def test_dimension_class():
+    """Test that Dimension class can be imported and used."""
+    # Test creating Dimension objects directly
+    dim1 = Dimension("test_dim", 10)
+    assert dim1.name == "test_dim"
+    assert dim1.value == 10
+
+    dim2 = Dimension("n_nodes", 5)
+    assert dim2.name == "n_nodes"
+    assert dim2.value == 5
+
+    # Test string representation
+    assert str(dim1) == "10"
+    assert str(dim2) == "5"
+
+    # Test equality
+    assert dim1 == 10
+    assert dim2 == 5
+
+    # Test with Block
+    b = Block()
+    b.add_dimension("my_dim", 20)
+    assert isinstance(b.dimensions["my_dim"], Dimension)
+    assert b.dimensions["my_dim"].value == 20
+    assert b.dimensions["my_dim"] == 20
+
+
+def test_attribute_dimension_consistency_with_variable():
+    """Test that Attribute and Dimension follow the same pattern as Variable."""
+    b = Block()
+
+    # All three should be objects stored in dictionaries
+    b.add_variable("var1", "float", (), 1.0)
+    b.add_attribute("attr1", "value1")
+    b.add_dimension("dim1", 10)
+
+    # All should return objects
+    assert isinstance(b.variables["var1"], Variable)
+    assert isinstance(b.attributes["attr1"], Attribute)
+    assert isinstance(b.dimensions["dim1"], Dimension)
+
+    # Access patterns should be consistent
+    assert b.variables["var1"].data == 1.0
+    assert b.attributes["attr1"].value == "value1"
+    assert b.dimensions["dim1"].value == 10
