@@ -82,17 +82,14 @@ def test_print_tree_truncation():
 
 def test_print_tree_default_naming():
     """Test default name behavior for Block and SMSNetwork."""
-    # Block uses block_type as default
     block = pysmspp.Block()
     block.block_type = "TestBlock"
     output = capture_print_output(block.print_tree)
     assert "TestBlock [TestBlock]" in output
 
-    # SMSNetwork uses "SMSNetwork" as default (no brackets when block_type is missing)
     net = pysmspp.SMSNetwork(get_network())
     output = capture_print_output(net.print_tree)
-    # SMSNetwork doesn't have a block_type, so it should show without brackets
-    # Use splitlines() to handle different line endings (Windows vs Unix)
+
     lines = output.splitlines()
     assert len(lines) > 0 and lines[0] == "SMSNetwork [Block]"
 
