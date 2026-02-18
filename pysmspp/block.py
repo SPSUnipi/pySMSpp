@@ -380,6 +380,11 @@ class Variable:
         self.dimensions = dimensions
         self.data = data
 
+    def __repr__(self) -> str:
+        """Return detailed representation of the variable."""
+        data_repr = f"{self.data!r}" if not isinstance(self.data, np.ndarray) else f"array(...)"
+        return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
+
 
 class Block:
     """
@@ -566,7 +571,7 @@ class Block:
         """
         self.attributes["type"] = Attribute("type", block_type)
 
-    def add_attribute(self, name: str, *args, force: bool = False, **kwargs):
+    def add_attribute(self, name: str, *args, force: bool = False):
         """
         Add an attribute to the block.
 
@@ -587,7 +592,9 @@ class Block:
         """
         if not force and name in self.attributes:
             raise ValueError(f"Attribute {name} already exists.")
-        if len(args) == 1:
+        if len(args) == 0:
+            raise ValueError("Attribute value is required.")
+        elif len(args) == 1:
             if isinstance(args[0], Attribute):
                 self.attributes[name] = args[0]
             else:
@@ -596,7 +603,7 @@ class Block:
             raise ValueError("Attribute value must be provided as a single argument.")
         return self.attributes[name]
 
-    def add_dimension(self, name: str, *args, force: bool = False, **kwargs):
+    def add_dimension(self, name: str, *args, force: bool = False):
         """
         Add a dimension to the block.
 
@@ -617,7 +624,9 @@ class Block:
         """
         if not force and name in self.dimensions:
             raise ValueError(f"Dimension {name} already exists.")
-        if len(args) == 1:
+        if len(args) == 0:
+            raise ValueError("Dimension value is required.")
+        elif len(args) == 1:
             if isinstance(args[0], Dimension):
                 self.dimensions[name] = args[0]
             else:
