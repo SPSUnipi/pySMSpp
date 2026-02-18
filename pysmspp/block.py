@@ -555,8 +555,7 @@ class Block:
     def block_type(self, ignore_missing: bool = True) -> str:
         """Return the type of the block."""
         if "type" in self.attributes:
-            attr = self.attributes["type"]
-            return attr.value if isinstance(attr, Attribute) else attr
+            return self.attributes["type"].value
         elif ignore_missing:
             return None
         raise AttributeError("Block type not defined.")
@@ -573,7 +572,7 @@ class Block:
         """
         self.attributes["type"] = Attribute("type", block_type)
 
-    def add_attribute(self, name: str, *args, force: bool = False):
+    def add_attribute(self, name: str, value, force: bool = False):
         """
         Add an attribute to the block.
 
@@ -582,7 +581,7 @@ class Block:
         name : str
             The name of the attribute
         value : any
-            The value of the attribute. Can be provided as a positional argument
+            The value of the attribute. Can be provided as a plain value
             or as an Attribute object.
         force : bool (default: False)
             If True, overwrite the attribute if it exists.
@@ -594,18 +593,13 @@ class Block:
         """
         if not force and name in self.attributes:
             raise ValueError(f"Attribute {name} already exists.")
-        if len(args) == 0:
-            raise ValueError("Attribute value is required.")
-        elif len(args) == 1:
-            if isinstance(args[0], Attribute):
-                self.attributes[name] = args[0]
-            else:
-                self.attributes[name] = Attribute(name, args[0])
+        if isinstance(value, Attribute):
+            self.attributes[name] = value
         else:
-            raise ValueError("Attribute value must be provided as a single argument.")
+            self.attributes[name] = Attribute(name, value)
         return self.attributes[name]
 
-    def add_dimension(self, name: str, *args, force: bool = False):
+    def add_dimension(self, name: str, value: int, force: bool = False):
         """
         Add a dimension to the block.
 
@@ -614,7 +608,7 @@ class Block:
         name : str
             The name of the dimension
         value : int
-            The value of the dimension. Can be provided as a positional argument
+            The value of the dimension. Can be provided as a plain value
             or as a Dimension object.
         force : bool (default: False)
             If True, overwrite the dimension if it exists.
@@ -626,15 +620,10 @@ class Block:
         """
         if not force and name in self.dimensions:
             raise ValueError(f"Dimension {name} already exists.")
-        if len(args) == 0:
-            raise ValueError("Dimension value is required.")
-        elif len(args) == 1:
-            if isinstance(args[0], Dimension):
-                self.dimensions[name] = args[0]
-            else:
-                self.dimensions[name] = Dimension(name, args[0])
+        if isinstance(value, Dimension):
+            self.dimensions[name] = value
         else:
-            raise ValueError("Dimension value must be provided as a single argument.")
+            self.dimensions[name] = Dimension(name, value)
         return self.dimensions[name]
 
     def add_variable(
@@ -750,13 +739,11 @@ class Block:
         """
         # Add the block's attributes
         for key, attr in self.attributes.items():
-            value = attr.value if isinstance(attr, Attribute) else attr
-            grp.setncattr(key, value)
+            grp.setncattr(key, attr.value)
 
         # Add the dimensions
         for key, dim in self.dimensions.items():
-            value = dim.value if isinstance(dim, Dimension) else dim
-            grp.createDimension(key, value)
+            grp.createDimension(key, dim.value)
 
         # Add the variables
         for key, value in self.variables.items():
@@ -1159,12 +1146,12 @@ class SMSNetwork(Block):
     @property
     def file_type(self) -> SMSFileType:
         """Return the file type of the SMS file."""
-        return SMSFileType(self._attributes["SMS++_file_type"])
+        return SMSFileType(self.attributes["SMS++_file_type"].value)
 
     @file_type.setter
     def file_type(self, ft: SMSFileType | int):
-        """Return the file type of the SMS file."""
-        self._attributes["SMS++_file_type"] = int(ft)
+        """Set the file type of the SMS file."""
+        self.add_attribute("SMS++_file_type", int(ft), force=True)
 
     @classmethod
     def _from_netcdf(cls, ncfile: nc.Dataset):
