@@ -12,6 +12,7 @@ import numpy as np
 import os
 from pathlib import Path
 import pandas as pd
+import warnings
 
 
 NC_DOUBLE = "f8"
@@ -133,9 +134,11 @@ class SMSConfig:
         return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
-def get_attr_field(block_type: str, attr_name: str, field: str = None):
+def get_attr_field(
+    block_type: str, attr_name: str, attr_value=None, col_name: str = None
+):
     """
-    Return the attribute value or field from block configuration.
+    Return the entry or the entire attribute row (pandas.Series) from block configuration.
 
     Parameters
     ----------
@@ -143,14 +146,41 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None):
         The type of the block.
     attr_name : str
         The name of the attribute.
-    field : str, optional
-        The specific field to retrieve. If None, returns the entire row.
+    attr_value : any, optional
+        The value used to infer the smspp_object type when ``block_type`` is
+        ``"Block"``. If ``attr_value`` is an instance of ``Block``, ``Variable``,
+        ``Dimension`` or ``Attribute``, the corresponding type name is returned.
+        If ``attr_value`` is ``None`` or any other type when ``block_type`` is
+        ``"Block"``, it is treated as an attribute, a warning is issued, and
+        ``"Attribute"`` is returned. For other ``block_type`` values, this
+        parameter is ignored for type inference.
+    col_name : str, optional
+        The specific entry to retrieve. If None, returns the entire row.
 
     Returns
     -------
     str or pandas.Series
-        The requested field value (str) or entire attribute row (pandas.Series).
+        The requested entry or entire attribute row (pandas.Series).
     """
+    if block_type == "Block":
+        if isinstance(attr_value, Block):
+            return "Block"
+        elif isinstance(attr_value, Variable):
+            return "Variable"
+        elif isinstance(attr_value, Dimension):
+            return "Dimension"
+        elif isinstance(attr_value, Attribute):
+            return "Attribute"
+        elif attr_value is not None:
+            warnings.warn(
+                f"Non-specified {attr_name} with value {attr_value} treated as attribute."
+            )
+            return "Attribute"
+        else:
+            raise ValueError(
+                f"Cannot infer type of {attr_name} with value {attr_value} in Block."
+            )
+
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
 
@@ -170,10 +200,10 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None):
                 + f"Possible types: {attr_sel.index.tolist()}."
             )
 
-    if field is None:
+    if col_name is None:
         return blocks[block_type].loc[attr]
     else:
-        return blocks[block_type].at[attr, field]
+        return blocks[block_type].at[attr, col_name]
 
 
 class SMSFileType(IntEnum):
@@ -700,7 +730,7 @@ class Block:
                 raise ValueError("Non accepted arguments have been passed.")
         else:
             self.blocks[name] = Block().from_kwargs(**kwargs)
-        return self
+        return self.blocks[name]
 
     def from_kwargs(self, **kwargs):
         """
@@ -721,8 +751,10 @@ class Block:
         if "block_type" in kwargs:
             btype = kwargs.pop("block_type")
             self.block_type = btype
+        else:
+            self.block_type = "Block"
         for key, value in kwargs.items():
-            nc_cmp = get_attr_field(self.block_type, key, "smspp_object")
+            nc_cmp = get_attr_field(self.block_type, key, value, "smspp_object")
             self.add(nc_cmp, key, value)
         return self
 
