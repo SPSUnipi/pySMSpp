@@ -382,7 +382,9 @@ class Variable:
 
     def __repr__(self) -> str:
         """Return detailed representation of the variable."""
-        data_repr = f"{self.data!r}" if not isinstance(self.data, np.ndarray) else f"array(...)"
+        data_repr = (
+            f"{self.data!r}" if not isinstance(self.data, np.ndarray) else "array(...)"
+        )
         return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
 
 
