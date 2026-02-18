@@ -50,6 +50,45 @@ jobs:
       run: |
         pytest
 
+  test_pypsa2smspp:
+    # Test pypsa2smspp package integration
+    name: Test pypsa2smspp integration
+    needs:
+    - test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        - "3.13"
+        - "3.12"
+        os:
+        - ubuntu-latest
+    env:
+      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0 # Needed for setuptools_scm
+
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install package and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[dev]
+
+    - name: Install pypsa2smspp
+      run: |
+        pip install pypsa2smspp
+
+    - name: Test pypsa2smspp integration
+      run: |
+        pytest test/test_pypsa2smspp.py -v
+
   test_with_smspp:
     # Test package build in matrix of OS and Python versions
     name: Test package with SMSpp
