@@ -1,7 +1,5 @@
 """Tests for pypsa2smspp package integration."""
 
-import pytest
-
 
 def test_pypsa2smspp_import():
     """Test that pypsa2smspp can be imported."""
