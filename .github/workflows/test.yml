@@ -63,7 +63,6 @@ jobs:
       matrix:
         python-version:
         - "3.13"
-        - "3.12"
         os:
         - ubuntu-latest
     env:
@@ -83,13 +82,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install .[dev]
 
-    - name: Install pypsa2smspp
+    - name: Install pypsa2smspp with tests
       run: |
-        pip install pypsa2smspp
+        git clone https://github.com/SPSUnipi/pypsa2smspp.git
+        cd pypsa2smspp
+        pip install -e .[dev]
 
-    - name: Test pypsa2smspp integration
+    - name: Test pypsa2smspp package
       run: |
-        pytest test/test_pypsa2smspp.py -v
+        cd pypsa2smspp
+        pytest -v
 
   test_with_smspp:
     # Test package build in matrix of OS and Python versions
