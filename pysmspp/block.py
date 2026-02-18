@@ -34,7 +34,38 @@ for file_name in os.listdir(os.path.join(dir_name, "data", "blocks")):
 
 class SMSConfig:
     """
-    SMSConfig is a class to specify the configuration file for SMS++.
+    Configuration manager for SMS++ solver settings.
+
+    SMSConfig manages solver configuration files for SMS++ optimization. It can
+    load configurations from file paths or use predefined templates stored in the
+    package data directory.
+
+    Configuration files specify solver parameters such as tolerances, iteration
+    limits, decomposition strategies, and other optimization settings required by
+    SMS++ solvers.
+
+    Attributes
+    ----------
+    config : str
+        The absolute path to the configuration file.
+
+    Examples
+    --------
+    Load from a template:
+
+    >>> config = SMSConfig(template="UCBlock/uc_solverconfig")
+
+    Load from a file path:
+
+    >>> config = SMSConfig(fp="/path/to/config.txt")
+
+    Get available templates:
+
+    >>> templates = SMSConfig.get_templates()
+
+    See Also
+    --------
+    SMSNetwork.optimize : Uses SMSConfig for optimization
     """
 
     def __init__(self, fp: Path | str = None, template: str = None):
@@ -76,9 +107,11 @@ class SMSConfig:
                 )
 
     def __repr__(self):
+        """Return a string representation of the configuration object."""
         return f'Configuration path: "{self.config}"'
 
     def __str__(self):
+        """Return the configuration path as a string."""
         return self.config
 
     @property
@@ -88,14 +121,21 @@ class SMSConfig:
 
     @staticmethod
     def get_templates():
-        """Return the list of available templates."""
+        """
+        Return the list of available configuration templates.
+
+        Returns
+        -------
+        list of str
+            List of template names available in the data/configs directory.
+        """
         dirconfigs = Path(dir_name, "data", "configs")
         return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
-def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
+def get_attr_field(block_type: str, attr_name: str, field: str = None):
     """
-    Return the attibute value.
+    Return the attribute value or field from block configuration.
 
     Parameters
     ----------
@@ -103,10 +143,13 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
         The type of the block.
     attr_name : str
         The name of the attribute.
+    field : str, optional
+        The specific field to retrieve. If None, returns the entire row.
 
     Returns
     -------
-    str
+    str or pandas.Series
+        The requested field value (str) or entire attribute row (pandas.Series).
     """
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
@@ -135,14 +178,37 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None) -> str:
 
 class SMSFileType(IntEnum):
     """
-    File types for SMS++ files.
+    Enumeration of SMS++ file types.
 
-    Supported values
-    ----------------
-    eProbFile (0): Problem file: Block and Configuration
-    eBlockFile (1): Block file
-    eConfigFile (2): Configuration file
+    Defines the different types of files that can be created and managed in SMS++
+    systems. Each file type serves a specific purpose in the modeling and
+    optimization workflow.
 
+    Attributes
+    ----------
+    eProbFile : int
+        Problem file (value 0): Contains both the model block structure and
+        solver configuration. This is the complete specification needed to run
+        an optimization.
+    eBlockFile : int
+        Block file (value 1): Contains only the model structure with blocks,
+        variables, dimensions, and attributes. No solver configuration included.
+    eConfigFile : int
+        Configuration file (value 2): Contains only solver settings and
+        parameters. No model structure included.
+    eSolutionFile : int
+        Solution file (value 3): Contains the optimization results including
+        objective values, variable values, and solver status.
+
+    Examples
+    --------
+    >>> network = SMSNetwork(file_type=SMSFileType.eBlockFile)
+    >>> print(SMSFileType.eProbFile)  # Output: 0
+    >>> file_type = SMSFileType(1)  # eBlockFile
+
+    See Also
+    --------
+    SMSNetwork : Uses SMSFileType to specify file format
     """
 
     eProbFile = 0  # Problem file: Block and Configuration
@@ -152,6 +218,27 @@ class SMSFileType(IntEnum):
 
 
 class Attribute:
+    """
+    Represents an attribute in an SMS++ model.
+
+    Attributes store metadata and configuration parameters for blocks in the
+    SMS++ hierarchical structure. They can hold string, integer, or floating-point
+    values.
+
+    Attributes
+    ----------
+    name : str
+        The name of the attribute.
+    value : str | int | float
+        The value of the attribute.
+
+    Examples
+    --------
+    >>> attr = Attribute("block_type", "UCBlock")
+    >>> attr = Attribute("TimeHorizon", 24)
+    >>> attr = Attribute("LinearTerm", 0.3)
+    """
+
     name: str
     value: str | int | float
 
@@ -162,15 +249,34 @@ class Attribute:
         Parameters
         ----------
         name : str
-            The name of the attribute
+            The name of the attribute.
         value : str | int | float
-            The value of the attribute
+            The value of the attribute.
         """
         self.name = name
         self.value = value
 
 
 class Dimension:
+    """
+    Represents a dimension in an SMS++ model.
+
+    Dimensions define the size of arrays and variables in the SMS++ model structure.
+    They are used to specify the shape of multi-dimensional variables and data arrays.
+
+    Attributes
+    ----------
+    name : str
+        The name of the dimension.
+    value : int
+        The size of the dimension (number of elements).
+
+    Examples
+    --------
+    >>> dim = Dimension("TimeHorizon", 24)
+    >>> dim = Dimension("NumberNodes", 2)
+    """
+
     name: str
     value: int
 
@@ -181,15 +287,38 @@ class Dimension:
         Parameters
         ----------
         name : str
-            The name of the dimension
+            The name of the dimension.
         value : int
-            The value of the dimension
+            The size of the dimension.
         """
         self.name = name
         self.value = value
 
 
 class Variable:
+    """
+    Represents a variable in an SMS++ model.
+
+    Variables hold the data arrays and parameters used in SMS++ optimization models.
+    They have a specific type, dimensional structure, and associated data values.
+
+    Attributes
+    ----------
+    name : str
+        The name of the variable.
+    var_type : str
+        The data type of the variable (e.g., "float", "int", "double").
+    dimensions : tuple
+        The dimensions of the variable as a tuple of dimension names.
+    data : float | list | np.ndarray
+        The data values of the variable.
+
+    Examples
+    --------
+    >>> var = Variable("MinPower", "float", (), 0.0)
+    >>> var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), np.full((2, 24), 50.0))
+    """
+
     name: str
     var_type: str
     dimensions: tuple
@@ -208,13 +337,13 @@ class Variable:
         Parameters
         ----------
         name : str
-            The name of the variable
+            The name of the variable.
         var_type : str
-            The type of the variable
+            The data type of the variable (e.g., "float", "int", "double").
         dimensions : tuple
-            The dimensions of the variable
+            The dimensions of the variable. Use empty tuple () for scalar values.
         data : float | list | np.ndarray
-            The data of the variable
+            The data values of the variable.
         """
         if dimensions is None:
             dimensions = ()
@@ -225,6 +354,59 @@ class Variable:
 
 
 class Block:
+    """
+    Hierarchical container for SMS++ model components.
+
+    A Block is the fundamental building component of SMS++ models, providing a
+    hierarchical structure to organize attributes, dimensions, variables, and
+    sub-blocks. Blocks can be nested to create complex optimization models with
+    multiple layers of structure.
+
+    The Block class supports:
+    - Reading from and writing to NetCDF4 files
+    - Dynamic construction from attributes, dimensions, variables, and sub-blocks
+    - Hierarchical nesting of blocks
+    - Type-based component management
+
+    Attributes
+    ----------
+    attributes : Dict
+        Dictionary of Attribute objects containing metadata and parameters.
+    dimensions : Dict
+        Dictionary of Dimension objects defining array sizes.
+    variables : Dict
+        Dictionary of Variable objects containing data arrays.
+    blocks : Dict
+        Dictionary of nested Block objects forming the hierarchy.
+    components : Dict
+        Configuration dictionary for component types.
+
+    Examples
+    --------
+    Create an empty block:
+
+    >>> block = Block()
+
+    Create a block from a NetCDF file:
+
+    >>> block = Block(fp="model.nc")
+
+    Create a block with attributes:
+
+    >>> block = Block(attributes={"type": "UCBlock"})
+
+    Create a block with variables using kwargs:
+
+    >>> block = Block(MinPower=Variable("MinPower", "float", (), 0.0))
+
+    See Also
+    --------
+    SMSNetwork : Network-level block for complete SMS++ models
+    Attribute : Metadata storage
+    Dimension : Array dimension definition
+    Variable : Data array storage
+    """
+
     # Class variables
 
     _attributes: Dict  # attributes of the block
@@ -290,6 +472,15 @@ class Block:
         self.from_kwargs(**kwargs)
 
     def __repr__(self):
+        """
+        Return a string representation of the Block object.
+
+        Returns
+        -------
+        str
+            A formatted string showing the counts and names of attributes,
+            dimensions, variables, and sub-blocks.
+        """
         # Extract the keys of the dictionaries
         dim_str = ", ".join(self.dimensions.keys()) if self.dimensions else "None"
         var_str = ", ".join(self.variables.keys()) if self.variables else "None"
@@ -468,16 +659,19 @@ class Block:
 
     def from_kwargs(self, **kwargs):
         """
-        Create a new Block from a dictionary.
+        Populate the Block from keyword arguments.
 
         Parameters
         ----------
-        dct : dict
-            The attributes of the block.
+        **kwargs : dict
+            Keyword arguments representing block components. If 'block_type' is
+            provided, it sets the block type and other arguments are added as
+            components based on the block type configuration.
 
         Returns
         -------
-        Returns the block being created.
+        Block
+            Returns self for method chaining.
         """
         if "block_type" in kwargs:
             btype = kwargs.pop("block_type")
@@ -490,7 +684,14 @@ class Block:
     # Input/Output operations
 
     def _to_netcdf_helper(self, grp: nc.Dataset | nc.Group):
-        """Helper function to recursively save a Block and its sub-blocks to NetCDF."""
+        """
+        Recursively save Block and sub-blocks to a NetCDF group.
+
+        Parameters
+        ----------
+        grp : netCDF4.Dataset or netCDF4.Group
+            The NetCDF dataset or group to write to.
+        """
         # Add the block's attributes
         for key, value in self.attributes.items():
             grp.setncattr(key, value)
@@ -528,7 +729,19 @@ class Block:
 
     @classmethod
     def _from_netcdf(cls, grb: nc.Dataset | nc.Group):
-        """Helper function to recursively load a Block and its sub-blocks from NetCDF."""
+        """
+        Recursively load Block and sub-blocks from a NetCDF group.
+
+        Parameters
+        ----------
+        grb : netCDF4.Dataset or netCDF4.Group
+            The NetCDF dataset or group to read from.
+
+        Returns
+        -------
+        Block
+            A new Block instance populated with data from the NetCDF group.
+        """
         # Create a new block
         new_block = cls()
 
@@ -557,7 +770,19 @@ class Block:
 
     @classmethod
     def from_netcdf(cls, filename):
-        """Deserialize a NetCDF file to create a Block instance with nested sub-blocks."""
+        """
+        Deserialize a NetCDF file to create a Block instance.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the NetCDF file to read.
+
+        Returns
+        -------
+        Block
+            A new Block instance with nested sub-blocks from the file.
+        """
         with nc.Dataset(filename, "r") as ncfile:
             return cls._from_netcdf(ncfile)
 
@@ -565,20 +790,26 @@ class Block:
 
     def add(self, component_name, name, *args, **kwargs):
         """
-        Add a new object to the block.
+        Add a component to the block.
+
+        Dispatches to the appropriate add method based on component type.
 
         Parameters
         ----------
         component_name : str
-            The class name of the block
+            The SMS++ component class name (e.g., 'Attribute', 'Dimension',
+            'Variable', or a Block type).
         name : str
-            The name of the block
-        kwargs : dict
-            The attributes of the block
+            The name of the component to add.
+        *args : tuple
+            Positional arguments passed to the specific add method.
+        **kwargs : dict
+            Keyword arguments passed to the specific add method.
 
         Returns
         -------
-        Returns the object being created: Attribute, Dimension, Variable, or Block.
+        Attribute, Dimension, Variable, or Block
+            The created component object.
         """
         component_nctype = self.components[component_name]["nctype"]
         if component_nctype == "Attribute":
@@ -596,16 +827,21 @@ class Block:
 
     def remove(self, component_name: str, name: str):
         """
-        Remove the object with the given name from the block.
+        Remove a component from the block.
 
         Parameters
         ----------
         component_name : str
-            The class name of the block
+            The SMS++ component class name.
         name : str
-            The name of the block
+            The name of the component to remove.
+
+        Returns
+        -------
+        Attribute, Dimension, Variable, or Block
+            The removed component object.
         """
-        self.static(component_name).pop(name)
+        return self.static(component_name).pop(name)
 
     def static(self, component_name: str) -> Dict:
         """
@@ -623,10 +859,187 @@ class Block:
         """
         return getattr(self, self.components[component_name]["list_name"])
 
+    def print_tree(
+        self,
+        name: str = None,
+        show_dimensions: bool = False,
+        show_variables: bool = False,
+        show_attributes: bool = False,
+        _indent: str = "",
+        _is_last: bool = True,
+        _is_root: bool = True,
+    ) -> None:
+        """
+        Print a tree representation of the block structure.
+
+        This method displays the hierarchical structure of blocks in a tree format,
+        with optional display of dimensions, variables, and attributes.
+
+        Parameters
+        ----------
+        name : str, optional
+            The name of the block. If not provided, uses the block_type if available,
+            otherwise defaults to "Block".
+        show_dimensions : bool, optional
+            Whether to display dimensions (default: False).
+        show_variables : bool, optional
+            Whether to display variables (default: False).
+        show_attributes : bool, optional
+            Whether to display attributes (default: False).
+        _indent : str, optional
+            Internal parameter for indentation (default: "").
+        _is_last : bool, optional
+            Internal parameter to track if this is the last child (default: True).
+        _is_root : bool, optional
+            Internal parameter to track if this is the root node (default: True).
+
+        Examples
+        --------
+        >>> from pysmspp import Block
+        >>> block = Block(fp="network.nc4")
+        >>> block.print_tree()  # Uses block_type as name
+        UCBlock [UCBlock]
+        └── Block_0 [UCBlock]
+            ├── UnitBlock_0 [ThermalUnitBlock]
+            └── UnitBlock_1 [BatteryUnitBlock]
+
+        >>> block.print_tree("MyNetwork")  # Uses custom name
+        MyNetwork [UCBlock]
+        └── Block_0 [UCBlock]
+            ...
+
+        >>> block.print_tree(show_dimensions=True, show_variables=True)
+        UCBlock [UCBlock]
+          Dimensions (2): n=10, m=5
+          Variables (3): var1, var2, var3
+        └── Block_0 [UCBlock]
+            ...
+        """
+        # Determine the name to use
+        if name is None:
+            # Use block_type if available, otherwise default to "Block"
+            if hasattr(self, "block_type") and self.block_type:
+                name = self.block_type
+            else:
+                name = "Block"
+
+        # Get block type - if it's None or missing, we'll omit the brackets
+        block_type = None
+        if hasattr(self, "block_type") and self.block_type:
+            block_type = self.block_type
+
+        # Print the current block
+        if _is_root:
+            # Root level - no connector
+            if block_type:
+                print(f"{name} [{block_type}]")
+            else:
+                print(f"{name}")
+            child_indent = ""
+        else:
+            connector = "└── " if _is_last else "├── "
+            if block_type:
+                print(f"{_indent}{connector}{name} [{block_type}]")
+            else:
+                print(f"{_indent}{connector}{name}")
+            child_indent = _indent + ("    " if _is_last else "│   ")
+
+        # Print dimensions if requested
+        if show_dimensions and self.dimensions:
+            dims_str = ", ".join(
+                f"{key}={value}" for key, value in self.dimensions.items()
+            )
+            detail_indent = child_indent if not _is_root else "  "
+            print(f"{detail_indent}Dimensions ({len(self.dimensions)}): {dims_str}")
+
+        # Print variables if requested
+        if show_variables and self.variables:
+            vars_list = list(self.variables.keys())
+            if len(vars_list) <= 5:
+                vars_str = ", ".join(vars_list)
+            else:
+                vars_str = ", ".join(vars_list[:5]) + f", ... ({len(vars_list)} total)"
+            detail_indent = child_indent if not _is_root else "  "
+            print(f"{detail_indent}Variables ({len(self.variables)}): {vars_str}")
+
+        # Print attributes if requested (exclude 'type' since it's shown in brackets)
+        if show_attributes and self.attributes:
+            attrs = {k: v for k, v in self.attributes.items() if k != "type"}
+            if attrs:
+                attrs_list = [f"{k}={v}" for k, v in list(attrs.items())[:5]]
+                if len(attrs) <= 5:
+                    attrs_str = ", ".join(attrs_list)
+                else:
+                    attrs_str = ", ".join(attrs_list) + f", ... ({len(attrs)} total)"
+                detail_indent = child_indent if not _is_root else "  "
+                print(f"{detail_indent}Attributes ({len(attrs)}): {attrs_str}")
+
+        # Recursively print sub-blocks
+        if self.blocks:
+            sub_blocks = list(self.blocks.items())
+            for i, (sub_name, sub_block) in enumerate(sub_blocks):
+                is_last_child = i == len(sub_blocks) - 1
+                sub_block.print_tree(
+                    sub_name,
+                    show_dimensions,
+                    show_variables,
+                    show_attributes,
+                    child_indent,
+                    is_last_child,
+                    False,
+                )
+
 
 class SMSNetwork(Block):
     """
-    SMSNetwork is a subclass of Block that implements the creation of a SMS problem file.
+    Top-level network container for SMS++ optimization models.
+
+    SMSNetwork is the main entry point for creating and managing complete SMS++
+    models. It extends Block with network-specific functionality including file
+    type management and optimization execution.
+
+    An SMSNetwork can contain multiple blocks organized hierarchically to represent
+    complex optimization problems such as unit commitment, investment planning, or
+    multi-stage stochastic problems.
+
+    Attributes
+    ----------
+    file_type : SMSFileType
+        The type of SMS++ file (eProbFile, eBlockFile, eConfigFile, or eSolutionFile).
+    attributes : Dict
+        Inherited from Block. Network-level attributes.
+    dimensions : Dict
+        Inherited from Block. Network-level dimensions.
+    variables : Dict
+        Inherited from Block. Network-level variables.
+    blocks : Dict
+        Inherited from Block. Nested blocks forming the model structure.
+
+    Examples
+    --------
+    Create an empty network:
+
+    >>> network = SMSNetwork()
+
+    Create a network with block file type:
+
+    >>> network = SMSNetwork(file_type=SMSFileType.eBlockFile)
+
+    Load a network from file:
+
+    >>> network = SMSNetwork(fp="model.nc")
+
+    Create and optimize a network:
+
+    >>> network = SMSNetwork(file_type=SMSFileType.eBlockFile)
+    >>> network.add("UCBlock", "Block_0", TimeHorizon=24, NumberUnits=1)
+    >>> result = network.optimize(config, temp_file, output_file)
+
+    See Also
+    --------
+    Block : Base class for hierarchical components
+    SMSConfig : Configuration manager for SMS++ solvers
+    SMSFileType : Enumeration of file types
     """
 
     def __init__(
@@ -636,7 +1049,32 @@ class SMSNetwork(Block):
         **kwargs,
     ):
         """
-        Initialize a SMSNetwork object with the given file type.
+        Initialize an SMSNetwork object.
+
+        Creates a new SMS++ network, either empty, from a file, or with specified
+        components. The file_type determines how the network will be stored and used.
+
+        Parameters
+        ----------
+        fp : Path | str, optional
+            Path to a NetCDF file to load the network from. If provided, the network
+            is loaded from the file. Default is empty string (create empty network).
+        file_type : SMSFileType | int, optional
+            The type of SMS++ file to create. Options:
+            - eProbFile (0): Problem file with block and configuration
+            - eBlockFile (1): Block file only (no configuration)
+            - eConfigFile (2): Configuration file only
+            - eSolutionFile (3): Solution file
+            Default is eProbFile.
+        **kwargs : dict
+            Additional keyword arguments to pass to the Block constructor for
+            dynamic component creation.
+
+        Examples
+        --------
+        >>> network = SMSNetwork()
+        >>> network = SMSNetwork(file_type=SMSFileType.eBlockFile)
+        >>> network = SMSNetwork(fp="existing_model.nc")
         """
         if fp:
             super().__init__()
@@ -650,6 +1088,14 @@ class SMSNetwork(Block):
             self.file_type = file_type
 
     def __repr__(self):
+        """
+        Return a string representation of the SMSNetwork object.
+
+        Returns
+        -------
+        str
+            A formatted string identifying this as an SMSNetwork with its components.
+        """
         return f"SMSNetwork Object\n{super().__repr__()}"
 
     @property
@@ -673,6 +1119,62 @@ class SMSNetwork(Block):
             dimensions=blk.dimensions,
             variables=blk.variables,
             blocks=blk.blocks,
+        )
+
+    def print_tree(
+        self,
+        name: str = None,
+        show_dimensions: bool = False,
+        show_variables: bool = False,
+        show_attributes: bool = False,
+        _indent: str = "",
+        _is_last: bool = True,
+        _is_root: bool = True,
+    ) -> None:
+        """
+        Print a tree representation of the SMSNetwork structure.
+
+        This method overrides Block.print_tree() to use "SMSNetwork" as the default name.
+
+        Parameters
+        ----------
+        name : str, optional
+            The name of the network. If not provided, defaults to "SMSNetwork".
+        show_dimensions : bool, optional
+            Whether to display dimensions (default: False).
+        show_variables : bool, optional
+            Whether to display variables (default: False).
+        show_attributes : bool, optional
+            Whether to display attributes (default: False).
+        _indent : str, optional
+            Internal parameter for indentation (default: "").
+        _is_last : bool, optional
+            Internal parameter to track if this is the last child (default: True).
+        _is_root : bool, optional
+            Internal parameter to track if this is the root node (default: True).
+
+        Examples
+        --------
+        >>> from pysmspp import SMSNetwork
+        >>> net = SMSNetwork(fp="network.nc4")
+        >>> net.print_tree()  # Uses "SMSNetwork" as default name
+        SMSNetwork
+        └── Block_0 [UCBlock]
+            ...
+        """
+        # Use "SMSNetwork" as default name for SMSNetwork objects
+        if name is None:
+            name = "SMSNetwork"
+
+        # Call parent class method
+        super().print_tree(
+            name=name,
+            show_dimensions=show_dimensions,
+            show_variables=show_variables,
+            show_attributes=show_attributes,
+            _indent=_indent,
+            _is_last=_is_last,
+            _is_root=_is_root,
         )
 
     def optimize(

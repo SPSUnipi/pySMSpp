@@ -52,6 +52,7 @@ docs=[
     "scikit-learn",
     "ipython",
     "ipykernel",
+    "docutils<0.22",  # incompatibility issue with Sphinx 9.1
 ]
 
 [tool.setuptools]

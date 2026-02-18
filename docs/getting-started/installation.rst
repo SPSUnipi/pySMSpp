@@ -14,7 +14,7 @@ To use pySMSpp we highly recommend to use a package manager such as `conda
 <https://pip.pypa.io/en/stable/>`_ as easy-to-use package managers, available for Windows, Mac OS X and GNU/Linux.
 
 As common practice, it is highly recommend to use dedicated `conda/mamba environments <https://mamba.readthedocs.io/en/latest/user_guide/mamba.html>`_ or `virtual environments
-<https://pypi.python.org/pypi/virtualenv>`_ to ensure .
+<https://pypi.python.org/pypi/virtualenv>`_ to ensure proper dependency management and isolation.
 
 
 Adoption of conda environments

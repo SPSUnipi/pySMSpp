@@ -1,0 +1,9 @@
+name: pysmspp-docs
+channels:
+- conda-forge
+dependencies:
+- python=3.13
+- smspp-project
+- pip
+- pip:
+  - -e ..[dev,docs]
