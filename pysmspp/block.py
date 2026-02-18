@@ -256,6 +256,20 @@ class Attribute:
         self.name = name
         self.value = value
 
+    def __str__(self) -> str:
+        """Return string representation of the attribute value."""
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the attribute."""
+        return f"Attribute(name={self.name!r}, value={self.value!r})"
+
+    def __eq__(self, other) -> bool:
+        """Compare attribute with another value or Attribute object."""
+        if isinstance(other, Attribute):
+            return self.name == other.name and self.value == other.value
+        return self.value == other
+
 
 class Dimension:
     """
@@ -293,6 +307,20 @@ class Dimension:
         """
         self.name = name
         self.value = value
+
+    def __str__(self) -> str:
+        """Return string representation of the dimension value."""
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the dimension."""
+        return f"Dimension(name={self.name!r}, value={self.value!r})"
+
+    def __eq__(self, other) -> bool:
+        """Compare dimension with another value or Dimension object."""
+        if isinstance(other, Dimension):
+            return self.name == other.name and self.value == other.value
+        return self.value == other
 
 
 class Variable:
@@ -351,6 +379,13 @@ class Variable:
         self.var_type = var_type
         self.dimensions = dimensions
         self.data = data
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the variable."""
+        data_repr = (
+            f"{self.data!r}" if not isinstance(self.data, np.ndarray) else "array(...)"
+        )
+        return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
 
 
 class Block:
@@ -520,7 +555,7 @@ class Block:
     def block_type(self, ignore_missing: bool = True) -> str:
         """Return the type of the block."""
         if "type" in self.attributes:
-            return self.attributes["type"]
+            return self.attributes["type"].value
         elif ignore_missing:
             return None
         raise AttributeError("Block type not defined.")
@@ -535,7 +570,7 @@ class Block:
         block_type : str
             The type of the block.
         """
-        self.attributes["type"] = block_type
+        self.attributes["type"] = Attribute("type", block_type)
 
     def add_attribute(self, name: str, value, force: bool = False):
         """
@@ -546,18 +581,23 @@ class Block:
         name : str
             The name of the attribute
         value : any
-            The value of the attribute
+            The value of the attribute. Can be provided as a plain value
+            or as an Attribute object.
         force : bool (default: False)
             If True, overwrite the attribute if it exists.
 
         Returns
         -------
-        Returns the value of the attribute being created.
+        Attribute
+            Returns the Attribute object being created.
         """
         if not force and name in self.attributes:
             raise ValueError(f"Attribute {name} already exists.")
-        self.attributes[name] = value
-        return value
+        if isinstance(value, Attribute):
+            self.attributes[name] = value
+        else:
+            self.attributes[name] = Attribute(name, value)
+        return self.attributes[name]
 
     def add_dimension(self, name: str, value: int, force: bool = False):
         """
@@ -568,18 +608,23 @@ class Block:
         name : str
             The name of the dimension
         value : int
-            The value of the dimension
+            The value of the dimension. Can be provided as a plain value
+            or as a Dimension object.
         force : bool (default: False)
             If True, overwrite the dimension if it exists.
 
         Returns
         -------
-        Returns the value of the dimension being created.
+        Dimension
+            Returns the Dimension object being created.
         """
         if not force and name in self.dimensions:
             raise ValueError(f"Dimension {name} already exists.")
-        self.dimensions[name] = value
-        return value
+        if isinstance(value, Dimension):
+            self.dimensions[name] = value
+        else:
+            self.dimensions[name] = Dimension(name, value)
+        return self.dimensions[name]
 
     def add_variable(
         self,
@@ -693,12 +738,12 @@ class Block:
             The NetCDF dataset or group to write to.
         """
         # Add the block's attributes
-        for key, value in self.attributes.items():
-            grp.setncattr(key, value)
+        for key, attr in self.attributes.items():
+            grp.setncattr(key, attr.value)
 
         # Add the dimensions
-        for key, value in self.dimensions.items():
-            grp.createDimension(key, value)
+        for key, dim in self.dimensions.items():
+            grp.createDimension(key, dim.value)
 
         # Add the variables
         for key, value in self.variables.items():
@@ -1101,12 +1146,12 @@ class SMSNetwork(Block):
     @property
     def file_type(self) -> SMSFileType:
         """Return the file type of the SMS file."""
-        return SMSFileType(self._attributes["SMS++_file_type"])
+        return SMSFileType(self.attributes["SMS++_file_type"].value)
 
     @file_type.setter
     def file_type(self, ft: SMSFileType | int):
-        """Return the file type of the SMS file."""
-        self._attributes["SMS++_file_type"] = int(ft)
+        """Set the file type of the SMS file."""
+        self.add_attribute("SMS++_file_type", int(ft), force=True)
 
     @classmethod
     def _from_netcdf(cls, ncfile: nc.Dataset):
