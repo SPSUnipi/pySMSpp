@@ -50,49 +50,6 @@ jobs:
       run: |
         pytest
 
-  test_pypsa2smspp:
-    # Test pypsa2smspp package integration
-    name: Test pypsa2smspp integration
-    needs:
-    - test
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-        - "3.13"
-        os:
-        - ubuntu-latest
-    env:
-      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
-    steps:
-    - uses: actions/checkout@v5
-      with:
-        fetch-depth: 0 # Needed for setuptools_scm
-
-    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install package and dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install .[dev]
-
-    - name: Install pypsa2smspp with tests
-      run: |
-        git clone https://github.com/SPSUnipi/pypsa2smspp.git
-        cd pypsa2smspp
-        pip install -e .[dev]
-
-    - name: Test pypsa2smspp package
-      run: |
-        cd pypsa2smspp
-        pytest -v
-
   test_with_smspp:
     # Test package build in matrix of OS and Python versions
     name: Test package with SMSpp
@@ -164,3 +121,46 @@ jobs:
     - name: Test package with SMSpp
       run: |
         pytest --force-smspp
+
+  test_pypsa2smspp:
+    # Test pypsa2smspp package integration
+    name: Test pypsa2smspp integration
+    needs:
+    - test_with_smspp
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        - "3.13"
+        os:
+        - ubuntu-latest
+    env:
+      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0 # Needed for setuptools_scm
+
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install package and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[dev]
+
+    - name: Install pypsa2smspp with tests
+      run: |
+        git clone https://github.com/SPSUnipi/pypsa2smspp.git
+        cd pypsa2smspp
+        pip install -e .[dev]
+
+    - name: Test pypsa2smspp package
+      run: |
+        cd pypsa2smspp
+        pytest -v -W ignore::FutureWarning
