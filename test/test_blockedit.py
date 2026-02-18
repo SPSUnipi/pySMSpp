@@ -409,6 +409,10 @@ def test_tssb():
                     np.repeat([0], PathDim2),  # ignored missing values
                 ),
             ),
+            Block=Block(
+                id=Attribute("id", "0"),
+                filename=Attribute("filename", "test_tssb.nc"),
+            ),
         ),
     )
 
