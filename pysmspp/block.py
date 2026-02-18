@@ -138,7 +138,7 @@ def get_attr_field(
     block_type: str, attr_name: str, attr_value=None, col_name: str = None
 ):
     """
-    Return the attribute value or field from block configuration.
+    Return the entry or the entire attribute row (pandas.Series) from block configuration.
 
     Parameters
     ----------
@@ -160,22 +160,26 @@ def get_attr_field(
     Returns
     -------
     str or pandas.Series
-        The requested field value (str) or entire attribute row (pandas.Series).
+        The requested entry or entire attribute row (pandas.Series).
     """
     if block_type == "Block":
-        if type(attr_value) is Block:
+        if isinstance(attr_value, Block):
             return "Block"
-        elif type(attr_value) is Variable:
+        elif isinstance(attr_value, Variable):
             return "Variable"
-        elif type(attr_value) is Dimension:
+        elif isinstance(attr_value, Dimension):
             return "Dimension"
-        elif type(attr_value) is Attribute:
+        elif isinstance(attr_value, Attribute):
             return "Attribute"
-        else:
+        elif attr_value is not None:
             warnings.warn(
                 f"Non-specified {attr_name} with value {attr_value} treated as attribute."
             )
             return "Attribute"
+        else:
+            raise ValueError(
+                f"Cannot infer type of {attr_name} with value {attr_value} in Block."
+            )
 
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
