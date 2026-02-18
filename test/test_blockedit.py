@@ -26,9 +26,9 @@ def test_attribute():
     b = SMSNetwork()
 
     b.add("Attribute", "test_attr", "test_value")
-    assert b.attributes["test_attr"] == "test_value"
+    assert b.attributes["test_attr"].value == "test_value"
     b.add("Attribute", "test_attr_num", 1)
-    assert b.attributes["test_attr_num"] == 1
+    assert b.attributes["test_attr_num"].value == 1
 
     b.remove("Attribute", "test_attr")
     assert "test_attr" not in b.attributes
@@ -37,7 +37,7 @@ def test_attribute():
 def test_dimension():
     b = SMSNetwork()
     b.add("Dimension", "test_dim", 1)
-    assert b.dimensions["test_dim"] == 1
+    assert b.dimensions["test_dim"].value == 1
 
     b.remove("Dimension", "test_dim")
     assert "test_dim" not in b.dimensions

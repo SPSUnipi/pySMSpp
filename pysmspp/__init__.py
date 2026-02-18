@@ -17,6 +17,8 @@ Key Classes
 SMSNetwork : Main container for SMS++ optimization models
 Block : Hierarchical container for model components (attributes, dimensions, variables)
 SMSConfig : Configuration manager for SMS++ solver settings
+Attribute : Represents model attributes with name and value
+Dimension : Represents model dimensions with name and size
 Variable : Represents model variables with dimensions and data
 SMSPPSolverTool : Base class for SMS++ solver integrations
 
@@ -42,6 +44,8 @@ from pysmspp.block import (
     SMSConfig as SMSConfig,
     Block as Block,
     SMSFileType as SMSFileType,
+    Attribute as Attribute,
+    Dimension as Dimension,
     Variable as Variable,
     components as components,
     blocks as blocks,

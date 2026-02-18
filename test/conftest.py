@@ -259,8 +259,8 @@ def add_tub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
-    ucb.dimensions["NumberUnits"] += 1
-    ucb.dimensions["NumberElectricalGenerators"] += 1
+    ucb.dimensions["NumberUnits"].value += 1
+    ucb.dimensions["NumberElectricalGenerators"].value += 1
 
     ucb.add("ThermalUnitBlock", ucname, block=tb)
     return b
@@ -275,8 +275,8 @@ def add_bub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
-    ucb.dimensions["NumberUnits"] += 1
-    ucb.dimensions["NumberElectricalGenerators"] += 1
+    ucb.dimensions["NumberUnits"].value += 1
+    ucb.dimensions["NumberElectricalGenerators"].value += 1
 
     ucb.add("BatteryUnitBlock", ucname, block=bub)
     return b
@@ -291,8 +291,8 @@ def add_hub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
-    ucb.dimensions["NumberUnits"] += 1
-    ucb.dimensions["NumberElectricalGenerators"] += 1
+    ucb.dimensions["NumberUnits"].value += 1
+    ucb.dimensions["NumberElectricalGenerators"].value += 1
 
     ucb.add("HydroUnitBlock", ucname, block=hub)
     return b
@@ -307,8 +307,8 @@ def add_iub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
-    ucb.dimensions["NumberUnits"] += 1
-    ucb.dimensions["NumberElectricalGenerators"] += 1
+    ucb.dimensions["NumberUnits"].value += 1
+    ucb.dimensions["NumberElectricalGenerators"].value += 1
 
     ucb.add("IntermittentUnitBlock", ucname, block=iub)
     return b
@@ -323,8 +323,8 @@ def add_sub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     ucb = b.blocks[name_inner_block]
     ucname = get_new_ucname(ucb)
 
-    ucb.dimensions["NumberUnits"] += 1
-    ucb.dimensions["NumberElectricalGenerators"] += 1
+    ucb.dimensions["NumberUnits"].value += 1
+    ucb.dimensions["NumberElectricalGenerators"].value += 1
 
     ucb.add("SlackUnitBlock", ucname, block=sub)
     return b
