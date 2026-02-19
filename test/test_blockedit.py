@@ -302,7 +302,9 @@ def test_tssb():
                 "PathElementIndices",
                 "u4",
                 ("TotalLength",),
-                np.zeros(TotalLength),  # ignored missing values (masked array)
+                np.zeros(
+                    TotalLength, dtype=np.uint32
+                ),  # ignored missing values (masked array)
             ),
             PathGroupIndices=Variable(
                 "PathGroupIndices",
@@ -334,7 +336,7 @@ def test_tssb():
                 "PathRangeIndices",
                 "u4",
                 ("TotalLength",),
-                np.ones(TotalLength),  # ignored missing values
+                np.ones(TotalLength, dtype=np.uint32),  # ignored missing values
             ),
             PathStart=Variable(
                 "PathStart",
@@ -373,13 +375,15 @@ def test_tssb():
                 "SetSize",
                 "u4",
                 ("SetSize_dim",),
-                np.zeros(SizeDim_perScenario * NumberDataMappings),
+                np.zeros(SizeDim_perScenario * NumberDataMappings, dtype=np.uint32),
             ),
             SetElements=Variable(
                 "SetElements",
                 "u4",
                 ("SetElements_dim",),
-                np.zeros(SizeElements_perScenario * NumberDataMappings),
+                np.zeros(
+                    SizeElements_perScenario * NumberDataMappings, dtype=np.uint32
+                ),
             ),
             AbstractPath=Block(
                 block_type="AbstractPath",
