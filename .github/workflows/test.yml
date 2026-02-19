@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-  - cron: "0 6 * * 1,4"
+  - cron: "0 6 * * 1-5"
   workflow_dispatch:
 
 # Cancel any in-progress runs when a new run is triggered
@@ -92,7 +92,6 @@ jobs:
 
     - name: Verify SMS++ installation
       run: |
-        which SMS++
         conda list
 
     - name: Test package with SMSpp
