@@ -84,7 +84,7 @@ jobs:
 
     - name: Install smspp-project from conda-forge
       run: |
-        mamba install -c conda-forge smspp-project -y
+        conda install -c conda-forge smspp-project -y
 
     - name: Install package and dependencies
       run: |
@@ -93,7 +93,7 @@ jobs:
     - name: Verify SMS++ installation
       run: |
         which SMS++
-        SMS++ --version
+        conda list
 
     - name: Test package with SMSpp
       run: |
