@@ -173,3 +173,14 @@ jobs:
     - name: Test package with SMSpp
       run: |
         pytest --force-smspp
+
+    - name: Install pypsa2smspp with tests
+      run: |
+        git clone https://github.com/SPSUnipi/pypsa2smspp.git
+        cd pypsa2smspp
+        pip install -e .[dev]
+
+    - name: Test pypsa2smspp package
+      run: |
+        cd pypsa2smspp
+        pytest -v -W ignore
