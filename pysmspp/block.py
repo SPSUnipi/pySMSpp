@@ -162,7 +162,16 @@ def get_attr_field(
     str or pandas.Series
         The requested entry or entire attribute row (pandas.Series).
     """
-    if block_type == "Block":
+    if (block_type == "Block") or (block_type is None) or (block_type not in blocks):
+        if (
+            (block_type is not None)
+            and (block_type in blocks)
+            and (block_type != "Block")
+        ):
+            warnings.warn(
+                f"Block type {block_type} not found in blocks configuration. "
+                + "Type inference will be based on attribute value only."
+            )
         if isinstance(attr_value, Block):
             return "Block"
         elif isinstance(attr_value, Variable):
@@ -751,8 +760,6 @@ class Block:
         if "block_type" in kwargs:
             btype = kwargs.pop("block_type")
             self.block_type = btype
-        else:
-            self.block_type = "Block"
         for key, value in kwargs.items():
             nc_cmp = get_attr_field(self.block_type, key, value, "smspp_object")
             self.add(nc_cmp, key, value)

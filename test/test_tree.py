@@ -91,7 +91,7 @@ def test_print_tree_default_naming():
     output = capture_print_output(net.print_tree)
 
     lines = output.splitlines()
-    assert len(lines) > 0 and lines[0] == "SMSNetwork [Block]"
+    assert len(lines) > 0 and lines[0] == "SMSNetwork"
 
 
 def test_print_tree_real_network():
