@@ -144,10 +144,10 @@ jobs:
       with:
         fetch-depth: 0 # Needed for setuptools_scm
 
-    - name: Setup Mambaforge
+    - name: Setup Miniforge
       uses: conda-incubator/setup-miniconda@v3
       with:
-        miniforge-variant: Mambaforge
+        miniforge-variant: Miniforge3
         miniforge-version: latest
         activate-environment: test-env
         python-version: ${{ matrix.python-version }}
