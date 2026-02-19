@@ -162,3 +162,27 @@ def test_is_smspp_installed(force_smspp):
         assert result_multi is True, (
             "is_smspp_installed should return True for all solvers when --force-smspp is set"
         )
+
+
+def test_optimize_tssbsolver(force_smspp):
+    fp_network = get_network("TSSB_EC_CO_Test_TUB_simple.nc4")
+    fp_log = get_temp_file("test_optimize_tssbsolver.txt")
+    configfile = SMSConfig(template="TSSBlock/TSSBSCfg.txt")
+
+    from pysmspp import TSSBlockSolver
+
+    tssb_solver = TSSBlockSolver(
+        configfile=str(configfile),
+        fp_network=fp_network,
+        fp_log=fp_log,
+    )
+
+    if tssb_solver.is_available() or force_smspp:
+        tssb_solver.optimize(logging=True)
+
+        assert "success" in tssb_solver.status.lower()
+    else:
+        pytest.skip("TSSBBlockSolver not available in PATH")
+
+
+test_optimize_tssbsolver(True)

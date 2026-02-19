@@ -672,6 +672,94 @@ class SDDPSolver(SMSPPSolverTool):
         self._upper_bound = np.nan
 
 
+class TSSBlockSolver(SMSPPSolverTool):
+    """
+    Class to interact with the TSSBlockSolver tool from SMS++, with name "tssb_solver".
+    """
+
+    def __init__(
+        self,
+        fp_network: Path | str = "",
+        configfile: Path | str = "",
+        fp_solution: Path | str = None,
+        fp_log: Path | str = None,
+        **kwargs,
+    ):
+        """
+        Constructor for the SDDPSolver, with executable file "sddp_solver".
+
+        Parameters
+        ----------
+        fp_network : Path | str
+            Path to the SMSpp network to solve.
+        configfile : Path | str
+            Path to the configuration file.
+        fp_solution : Path | str, optional
+            Path to the solution file, by default None.
+        fp_log : Path | str, optional
+            Path to the log file, by default None.
+        """
+        super().__init__(
+            exec_file="tssb_solver",
+            fp_network=fp_network,
+            configfile=configfile,
+            fp_solution=fp_solution,
+            fp_log=fp_log,
+        )
+
+    def calculate_executable_call(self):
+        """
+        Generate the command-line call for the SDDP solver.
+
+        Returns
+        -------
+        str
+            The command string to execute the tssb_solver.
+        """
+        fp_dir, fp_name = os.path.split(self.fp_network)
+        exec_path = f"tssb_solver {fp_name} -p {fp_dir}/ -c {self.configdir} -S {self.configfile}"
+        if self.fp_solution is not None:
+            exec_path += f" -o -O {self.fp_solution}"
+        return exec_path
+
+    def parse_solver_log(
+        self,
+    ):  # TODO: needs revision to better capture the output
+        """
+        Check the output of the InvestmentBlockSolver.
+        It will extract the status, upper bound, lower bound, and objective value from the log.
+
+        Parameters
+        ----------
+        log : str
+            The path to the solution file.
+        """
+        if self._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        res = re.search("Status = (.*)\n", self._log)
+
+        if not res:  # if success not found
+            self._status = "Failed"
+            self._objective_value = np.nan
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+            return
+
+        smspp_status = res.group(1).replace("\r", "")
+        self._status = smspp_status
+
+        res = re.search("Upper bound = (.*)\n", self._log)
+        up = float(res.group(1).replace("\r", ""))
+
+        res = re.search("Lower bound = (.*)\n", self._log)
+        lb = float(res.group(1).replace("\r", ""))
+
+        self._objective_value = up
+        self._lower_bound = up
+        self._upper_bound = lb
+
+
 def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -> bool:
     """
     Check if SMS++ is installed by verifying that the specified solver executables
