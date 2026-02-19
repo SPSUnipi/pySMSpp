@@ -5,6 +5,6 @@ AbstractPath,PathDim,Dimension,Dimension,int,-,-,,required,Number of paths
 AbstractPath,TotalLength,Dimension,Dimension,int,-,-,,required,Total number of nodes across all paths
 AbstractPath,PathStart,Variable,Variable,int,-|PathDim,-,,required,Start index of each path
 AbstractPath,PathNodeTypes,Variable,Variable,str,-|TotalLength,-,,required,Type of each node
-AbstractPath,PathGroupIndices,Variable,Variable,int,-|TotalLength,-,,required,Group index per node
+AbstractPath,PathGroupIndices,Variable,Variable,str,-|TotalLength,-,,required,Group index per node
 AbstractPath,PathElementIndices,Variable,Variable,int,-|TotalLength,-,,required,Element index per node
 AbstractPath,PathRangeIndices,Variable,Variable,int,-|TotalLength,-,,required,Scenario range index per node
