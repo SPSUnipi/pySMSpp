@@ -754,7 +754,7 @@ class Block:
         else:
             self.block_type = "Block"
         for key, value in kwargs.items():
-            nc_cmp = get_attr_field(self.block_type, key, value, "smspp_object")
+            nc_cmp = get_attr_field(self.block_type or "Block", key, value, "smspp_object")
             self.add(nc_cmp, key, value)
         return self
 

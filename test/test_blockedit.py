@@ -73,6 +73,17 @@ def test_fromkwargs():
     assert tb.variables["MinPower"].data == 0
 
 
+def test_empty_block_type():
+    # Block with empty block_type and no other kwargs
+    b = Block(block_type="")
+    assert b.block_type == ""
+
+    # Block with empty block_type and Attribute kwargs
+    b2 = Block(block_type="", id=Attribute("id", "0"))
+    assert b2.block_type == ""
+    assert b2.attributes["id"].value == "0"
+
+
 def test_block_constructor():
     kwargs = {
         "block_type": "ThermalUnitBlock",
