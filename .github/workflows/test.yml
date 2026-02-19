@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-  - cron: "0 6 * * 1,4"
+  - cron: "0 6 * * 1-5"
   workflow_dispatch:
 
 # Cancel any in-progress runs when a new run is triggered
@@ -50,18 +50,70 @@ jobs:
       run: |
         pytest
 
-  test_with_smspp:
-    # Test package build in matrix of OS and Python versions
-    name: Test package with SMSpp
+  test_with_smspp_conda:
+    # Test package with SMS++ installed from conda-forge
+    name: Test package with SMSpp from conda-forge (Linux)
     needs:
     - test
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         python-version:
         - "3.13"
-        os: ${{ ((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJson('["ubuntu", "macos", "windows"]')) || fromJson('["ubuntu", "macos"]') }}
+        - "3.12"
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0 # Needed for setuptools_scm
+
+    - name: Setup Miniforge
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        miniforge-variant: Miniforge3
+        miniforge-version: latest
+        activate-environment: test-env
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install smspp-project from conda-forge
+      run: |
+        conda install -c conda-forge smspp-project -y
+
+    - name: Install package and dependencies
+      run: |
+        pip install .[dev]
+
+    - name: List environment
+      run: |
+        conda list
+
+    - name: Test package with SMSpp
+      run: |
+        pytest --force-smspp
+
+  test_with_smspp:
+    # Test package build in matrix of OS and Python versions
+    name: Test package with latest SMSpp
+    needs:
+    - test
+    runs-on: ${{ matrix.os }}-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        - "3.13"
+        os:
+        - ubuntu
+        - macos
+        - windows
     env:
       MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
       MAX_JOBS: 4  # Number of jobs in cmake compilation of SMS++ installation
