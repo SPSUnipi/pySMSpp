@@ -1,4 +1,4 @@
-from pysmspp import Block, Variable
+from pysmspp import SMSNetwork, Block, Variable, Attribute
 import os
 import re
 import numpy as np
@@ -362,3 +362,185 @@ def build_base_investmentblock(b, innerblock=None):
         InnerBlock=innerblock,
     )
     return b
+
+
+def build_tssb_block(fp_tssb):
+    sn_benchmark = SMSNetwork(fp_tssb)
+
+    sn = SMSNetwork()
+
+    ScenarioSize = 48  # For DiscreteScenarioSet
+    NumberScenarios = 9  # For DiscreteScenarioSet
+    NumberDataMappings = NumberScenarios  # for StochasticBlock
+
+    PathDim = 5  # for AbstractPath
+    TotalLength = 10  # for AbstractPath
+
+    SizeDim_perScenario = 2  # for StochBlock
+    SizeElements_perScenario = 4  # for StochBlock
+    PathDim2 = 9  # for AbstractPath in StochasticBlock
+
+    pool_weights = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["DiscreteScenarioSet"]
+        .variables["PoolWeights"]
+        .data
+    )
+
+    scenarios = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["DiscreteScenarioSet"]
+        .variables["Scenarios"]
+        .data
+    )
+
+    sn.add(
+        "TwoStageStochasticBlock",
+        "Block_0",
+        NumberScenarios=NumberScenarios,
+        DiscreteScenarioSet=Block(
+            block_type="DiscreteScenarioSet",
+            ScenarioSize=ScenarioSize,
+            NumberScenarios=NumberScenarios,
+            PoolWeights=Variable(
+                "PoolWeights",
+                "double",
+                ("NumberScenarios",),
+                pool_weights,
+            ),
+            Scenarios=Variable(
+                "Scenarios",
+                "double",
+                ("NumberScenarios", "ScenarioSize"),
+                scenarios,
+            ),
+        ),
+        StaticAbstractPath=Block(
+            block_type="StaticAbstractPath",
+            PathDim=PathDim,
+            TotalLength=TotalLength,
+            PathElementIndices=Variable(
+                "PathElementIndices",
+                "u4",
+                ("TotalLength",),
+                np.zeros(
+                    TotalLength, dtype=np.uint32
+                ),  # ignored missing values (masked array)
+            ),
+            PathGroupIndices=Variable(
+                "PathGroupIndices",
+                "str",
+                ("TotalLength",),
+                np.array(
+                    [
+                        "0",
+                        "x_thermal",
+                        "1",
+                        "x_intermittent",
+                        "2",
+                        "x_battery",
+                        "2",
+                        "x_converter",
+                        "3",
+                        "x_intermittent",
+                    ],
+                    dtype="object",
+                ),
+            ),
+            PathNodeTypes=Variable(
+                "PathNodeTypes",
+                "c",
+                ("TotalLength",),
+                np.tile(["B", "V"], TotalLength // 2),
+            ),
+            PathRangeIndices=Variable(
+                "PathRangeIndices",
+                "u4",
+                ("TotalLength",),
+                np.ones(TotalLength, dtype=np.uint32),  # ignored missing values
+            ),
+            PathStart=Variable(
+                "PathStart",
+                "u4",
+                ("PathDim",),
+                list(range(0, TotalLength, 2)),  # ignored missing values
+            ),
+        ),
+        StochasticBlock=Block(
+            block_type="StochasticBlock",
+            NumberDataMappings=NumberDataMappings,
+            SetSize_dim=SizeDim_perScenario * NumberDataMappings,
+            SetElements_dim=SizeElements_perScenario * NumberDataMappings,
+            FunctionName=Variable(
+                "FunctionName",
+                "str",
+                ("NumberDataMappings",),
+                np.repeat(
+                    np.array(["UCBlock::set_active_power_demand"], dtype="object"),
+                    NumberDataMappings,
+                ),
+            ),
+            Caller=Variable(
+                "Caller",
+                "c",
+                ("NumberDataMappings",),
+                np.repeat(["B"], NumberDataMappings),
+            ),
+            DataType=Variable(
+                "DataType",
+                "c",
+                ("NumberDataMappings",),
+                np.repeat(["D"], NumberDataMappings),
+            ),
+            SetSize=Variable(
+                "SetSize",
+                "u4",
+                ("SetSize_dim",),
+                np.zeros(SizeDim_perScenario * NumberDataMappings, dtype=np.uint32),
+            ),
+            SetElements=Variable(
+                "SetElements",
+                "u4",
+                ("SetElements_dim",),
+                np.zeros(
+                    SizeElements_perScenario * NumberDataMappings, dtype=np.uint32
+                ),
+            ),
+            AbstractPath=Block(
+                block_type="AbstractPath",
+                PathDim=PathDim2,
+                TotalLength=0,  # Unlimited
+                PathElementIndices=Variable(
+                    "PathElementIndices",
+                    "u4",
+                    ("TotalLength",),
+                    [],  # ignored missing values (masked array)
+                ),
+                PathGroupIndices=Variable(
+                    "PathGroupIndices",
+                    "str",
+                    ("TotalLength",),
+                    np.array([], dtype="object"),
+                ),
+                PathNodeTypes=Variable("PathNodeTypes", "c", ("TotalLength",), []),
+                PathRangeIndices=Variable(
+                    "PathRangeIndices",
+                    "u4",
+                    ("TotalLength",),
+                    [],  # ignored missing values
+                ),
+                PathStart=Variable(
+                    "PathStart",
+                    "u4",
+                    ("PathDim",),
+                    np.repeat([0], PathDim2),  # ignored missing values
+                ),
+            ),
+            Block=Block(
+                id=Attribute("id", "0"),
+                filename=Attribute("filename", "EC_CO_Test_TUB.nc4[0]"),
+            ),
+        ),
+    )
+
+    return sn
