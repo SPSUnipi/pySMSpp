@@ -90,7 +90,7 @@ jobs:
       run: |
         pip install .[dev]
 
-    - name: Verify SMS++ installation
+    - name: List environment
       run: |
         conda list
 
@@ -100,7 +100,7 @@ jobs:
 
   test_with_smspp:
     # Test package build in matrix of OS and Python versions
-    name: Test package with SMSpp
+    name: Test package with latest SMSpp
     needs:
     - test
     runs-on: ${{ matrix.os }}-latest
