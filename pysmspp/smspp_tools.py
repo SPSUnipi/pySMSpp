@@ -399,14 +399,14 @@ class UCBlockSolver(SMSPPSolverTool):
         self._status = smspp_status
 
         res = re.search("Upper bound = (.*)\n", self._log)
-        up = float(res.group(1).replace("\r", ""))
+        ub = float(res.group(1).replace("\r", ""))
 
         res = re.search("Lower bound = (.*)\n", self._log)
         lb = float(res.group(1).replace("\r", ""))
 
-        self._objective_value = up
-        self._lower_bound = up
-        self._upper_bound = lb
+        self._objective_value = ub
+        self._lower_bound = lb
+        self._upper_bound = ub
 
 
 class InvestmentBlockTestSolver(SMSPPSolverTool):
@@ -638,7 +638,7 @@ class SDDPSolver(SMSPPSolverTool):
         self,
     ):  # TODO: needs revision to better capture the output
         """
-        Check the output of the InvestmentBlockSolver.
+        Check the output of the SDDPSolver.
         It will extract the status, upper bound, lower bound, and objective value from the log.
 
         Parameters
@@ -686,7 +686,7 @@ class TSSBlockSolver(SMSPPSolverTool):
         **kwargs,
     ):
         """
-        Constructor for the SDDPSolver, with executable file "sddp_solver".
+        Constructor for the TSSBlockSolver, with executable file "tssb_solver".
 
         Parameters
         ----------
@@ -709,7 +709,7 @@ class TSSBlockSolver(SMSPPSolverTool):
 
     def calculate_executable_call(self):
         """
-        Generate the command-line call for the SDDP solver.
+        Generate the command-line call for the TSSB solver.
 
         Returns
         -------
@@ -726,8 +726,9 @@ class TSSBlockSolver(SMSPPSolverTool):
         self,
     ):  # TODO: needs revision to better capture the output
         """
-        Check the output of the InvestmentBlockSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
+        Check the output of the TSSBlockSolver.
+        It extracts the solver status, upper bound, lower bound, and objective value
+        from the internal log string stored in ``self._log``.
 
         Parameters
         ----------
@@ -750,14 +751,14 @@ class TSSBlockSolver(SMSPPSolverTool):
         self._status = smspp_status
 
         res = re.search("Upper bound = (.*)\n", self._log)
-        up = float(res.group(1).replace("\r", ""))
+        ub = float(res.group(1).replace("\r", ""))
 
         res = re.search("Lower bound = (.*)\n", self._log)
         lb = float(res.group(1).replace("\r", ""))
 
-        self._objective_value = up
-        self._lower_bound = up
-        self._upper_bound = lb
+        self._objective_value = ub
+        self._lower_bound = lb
+        self._upper_bound = ub
 
 
 def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -> bool:
