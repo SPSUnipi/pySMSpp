@@ -1,4 +1,4 @@
-from pysmspp import SMSNetwork, Block, Variable, Attribute
+from pysmspp import SMSFileType, SMSNetwork, Block, Variable, Attribute
 import os
 import re
 import numpy as np
@@ -367,7 +367,7 @@ def build_base_investmentblock(b, innerblock=None):
 def build_tssb_block(fp_tssb):
     sn_benchmark = SMSNetwork(fp_tssb)
 
-    sn = SMSNetwork()
+    sn = SMSNetwork(file_type=SMSFileType.eBlockFile)
 
     ScenarioSize = 48  # For DiscreteScenarioSet
     NumberScenarios = 9  # For DiscreteScenarioSet
@@ -397,6 +397,7 @@ def build_tssb_block(fp_tssb):
     sn.add(
         "TwoStageStochasticBlock",
         "Block_0",
+        id="0",
         NumberScenarios=NumberScenarios,
         DiscreteScenarioSet=Block(
             block_type="DiscreteScenarioSet",
