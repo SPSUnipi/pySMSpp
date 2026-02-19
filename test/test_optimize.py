@@ -183,6 +183,3 @@ def test_optimize_tssbsolver(force_smspp):
         assert "success" in tssb_solver.status.lower()
     else:
         pytest.skip("TSSBBlockSolver not available in PATH")
-
-
-test_optimize_tssbsolver(True)
