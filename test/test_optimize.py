@@ -1,3 +1,5 @@
+import os
+import shutil
 from pysmspp import (
     SMSConfig,
     SMSNetwork,
@@ -170,10 +172,18 @@ def test_optimize_tssbsolver(force_smspp):
     fp_log = get_temp_file("test_optimize_tssbsolver.txt")
     configfile = SMSConfig(template="TSSBlock/TSSBSCfg.txt")
 
+    # Create a new TSSB block from the original network and save to a temp file
     fp_tssb_new = get_temp_file("test_tssb_new.nc4")
     fp_log_new = get_temp_file("test_optimize_tssbsolver_new.txt")
 
     build_tssb_block(fp_network).to_netcdf(fp_tssb_new, force=True)
+
+    # Copy the original EC_CO_Test_TUB.nc4 to a temp location
+    fp_ec = get_network("EC_CO_Test_TUB.nc4")
+    fp_ec_copy = get_temp_file("EC_CO_Test_TUB.nc4")
+
+    if not os.path.exists(fp_ec_copy):
+        shutil.copy(fp_ec, fp_ec_copy)
 
     from pysmspp import TSSBlockSolver
 

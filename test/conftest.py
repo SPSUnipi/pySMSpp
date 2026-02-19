@@ -1,4 +1,4 @@
-from pysmspp import SMSFileType, SMSNetwork, Block, Variable, Attribute
+from pysmspp import SMSFileType, SMSNetwork, Block, Variable, Dimension, Attribute
 import os
 import re
 import numpy as np
@@ -403,23 +403,22 @@ def build_tssb_block(fp_tssb):
             block_type="DiscreteScenarioSet",
             ScenarioSize=ScenarioSize,
             NumberScenarios=NumberScenarios,
-            PoolWeights=Variable(
-                "PoolWeights",
-                "double",
-                ("NumberScenarios",),
-                pool_weights,
-            ),
             Scenarios=Variable(
                 "Scenarios",
                 "double",
                 ("NumberScenarios", "ScenarioSize"),
                 scenarios,
             ),
+            PoolWeights=Variable(
+                "PoolWeights",
+                "double",
+                ("NumberScenarios",),
+                pool_weights,
+            ),
         ),
         StaticAbstractPath=Block(
-            block_type="StaticAbstractPath",
-            PathDim=PathDim,
-            TotalLength=TotalLength,
+            PathDim=Dimension("PathDim", PathDim),
+            TotalLength=Dimension("TotalLength", TotalLength),
             PathElementIndices=Variable(
                 "PathElementIndices",
                 "u4",
@@ -508,22 +507,20 @@ def build_tssb_block(fp_tssb):
                 ),
             ),
             AbstractPath=Block(
-                block_type="AbstractPath",
-                PathDim=PathDim2,
-                TotalLength=0,  # Unlimited
-                PathElementIndices=Variable(
-                    "PathElementIndices",
-                    "u4",
-                    ("TotalLength",),
-                    [],  # ignored missing values (masked array)
-                ),
+                PathDim=Dimension("PathDim", PathDim2),
+                TotalLength=Dimension("TotalLength", 0),  # Unlimited
                 PathGroupIndices=Variable(
                     "PathGroupIndices",
                     "str",
                     ("TotalLength",),
                     np.array([], dtype="object"),
                 ),
-                PathNodeTypes=Variable("PathNodeTypes", "c", ("TotalLength",), []),
+                PathElementIndices=Variable(
+                    "PathElementIndices",
+                    "u4",
+                    ("TotalLength",),
+                    [],  # ignored missing values (masked array)
+                ),
                 PathRangeIndices=Variable(
                     "PathRangeIndices",
                     "u4",
@@ -536,6 +533,7 @@ def build_tssb_block(fp_tssb):
                     ("PathDim",),
                     np.repeat([0], PathDim2),  # ignored missing values
                 ),
+                PathNodeTypes=Variable("PathNodeTypes", "c", ("TotalLength",), []),
             ),
             Block=Block(
                 id=Attribute("id", "0"),
