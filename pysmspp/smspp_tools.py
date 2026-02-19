@@ -218,7 +218,7 @@ class SMSPPSolverTool:
         if logging:
             print(msg)
 
-        self.parse_ucblock_solver_log()
+        self.parse_solver_log()
 
         if process.returncode != 0:
             raise ValueError(
@@ -253,7 +253,7 @@ class SMSPPSolverTool:
         """
         return shutil.which(self._exec_file) is not None
 
-    def parse_ucblock_solver_log(self):
+    def parse_solver_log(self):
         """
         Check the output of the SolverTool.
         It will extract the status, upper bound, lower bound, and objective value from the log.
@@ -264,7 +264,7 @@ class SMSPPSolverTool:
             The path to the solution file.
         """
         raise NotImplementedError(
-            "Method parse_ucblock_solver_log must be implemented in the derived class."
+            "Method parse_solver_log must be implemented in the derived class."
         )
 
     @property
@@ -373,7 +373,7 @@ class UCBlockSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_ucblock_solver_log(self):
+    def parse_solver_log(self):
         """
         Check the output of the UCBlockSolver.
         It will extract the status, upper bound, lower bound, and objective value from the log.
@@ -458,7 +458,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             exec_path += f" -O {self.fp_solution}"
         return exec_path
 
-    def parse_ucblock_solver_log(
+    def parse_solver_log(
         self,
     ):  # TODO: needs revision to better capture the output
         """
@@ -545,7 +545,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_ucblock_solver_log(
+    def parse_solver_log(
         self,
     ):  # TODO: needs revision to better capture the output
         """
@@ -634,7 +634,7 @@ class SDDPSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_ucblock_solver_log(
+    def parse_solver_log(
         self,
     ):  # TODO: needs revision to better capture the output
         """
