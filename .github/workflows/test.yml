@@ -104,7 +104,6 @@ jobs:
     name: Test package with SMSpp
     needs:
     - test
-    - test_with_smspp_conda
     runs-on: ${{ matrix.os }}-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     strategy:
