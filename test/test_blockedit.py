@@ -325,19 +325,19 @@ def test_tssb():
                 ),
             ),
             PathNodeTypes=Variable(
-                "PathGroupIndices",
+                "PathNodeTypes",
                 "c",
                 ("TotalLength",),
                 np.tile(["B", "V"], TotalLength // 2),
             ),
             PathRangeIndices=Variable(
-                "PathGroupIndices",
+                "PathRangeIndices",
                 "u4",
                 ("TotalLength",),
                 np.ones(TotalLength),  # ignored missing values
             ),
             PathStart=Variable(
-                "PathGroupIndices",
+                "PathStart",
                 "u4",
                 ("PathDim",),
                 list(range(0, TotalLength, 2)),  # ignored missing values
@@ -397,15 +397,15 @@ def test_tssb():
                     ("TotalLength",),
                     np.array([], dtype="object"),
                 ),
-                PathNodeTypes=Variable("PathGroupIndices", "c", ("TotalLength",), []),
+                PathNodeTypes=Variable("PathNodeTypes", "c", ("TotalLength",), []),
                 PathRangeIndices=Variable(
-                    "PathGroupIndices",
+                    "PathRangeIndices",
                     "u4",
                     ("TotalLength",),
                     [],  # ignored missing values
                 ),
                 PathStart=Variable(
-                    "PathGroupIndices",
+                    "PathStart",
                     "u4",
                     ("PathDim",),
                     np.repeat([0], PathDim2),  # ignored missing values
@@ -413,7 +413,7 @@ def test_tssb():
             ),
             Block=Block(
                 id=Attribute("id", "0"),
-                filename=Attribute("filename", "test_tssb.nc"),
+                filename=Attribute("filename", "EC_CO_Test_TUB.nc4[0]"),
             ),
         ),
     )
