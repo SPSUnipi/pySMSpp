@@ -1,0 +1,58 @@
+site_name: pySMSpp
+site_url: https://pysmspp.readthedocs.io
+repo_url: https://github.com/SPSUnipi/pySMSpp
+repo_name: SPSUnipi/pySMSpp
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+  - mkdocs-jupyter:
+      execute: false
+      include_source: true
+      ignore: ["conf.py", "*.nblink", "create-nblinks"]
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Introduction: getting-started/introduction.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quick-start.md
+  - Examples:
+    - UCBlock Thermal 1-bus: examples/ucblock_thermal_1bus.ipynb
+    - UCBlock 2 Thermal Line: examples/ucblock_2thermal_line.ipynb
+    - Navigating SMS++ Blocks: examples/navigating_sms_blocks.ipynb
+  - API Reference: api_reference.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - toc:
+      permalink: true
+
+exclude_docs: |
+  conf.py
+  *.rst
+  *.nblink
+  create-nblinks
+  Makefile
+  make.bat
