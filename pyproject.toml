@@ -48,6 +48,7 @@ docs=[
     "mkdocstrings[python]>=0.24",
     "mkdocs-jupyter>=0.24",
     "mkdocs-autorefs>=0.5",
+    "pymdown-extensions>=10.0",
 ]
 
 [tool.setuptools]

@@ -62,7 +62,7 @@ pre-commit run --all-files
 Install the documentation dependencies:
 
 ```bash
-pip install -e ".[docs]"
+pip install -e ".[dev,docs]"
 ```
 
 ### Building Documentation Locally
@@ -110,4 +110,4 @@ def my_function(param1: int, param2: str) -> bool:
 
 ### Adding Notebooks
 
-Place Jupyter notebooks in `docs/examples/notebooks/` and add them to the `nav` section in `mkdocs.yml` under Examples.
+Place Jupyter notebooks in `docs/examples/` and add them to the `nav` section in `mkdocs.yml` under Examples.

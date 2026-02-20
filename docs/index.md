@@ -26,13 +26,13 @@ pySMSpp is a Python package to interface [Structured Modeling System for mathema
 
     ---
 
-    [:octicons-arrow-right-24: Unit Commitment (1 bus)](examples/notebooks/ucblock_thermal_1bus.ipynb)
+    [:octicons-arrow-right-24: Unit Commitment (1 bus)](examples/ucblock_thermal_1bus.ipynb)
 
-    [:octicons-arrow-right-24: Unit Commitment (2 thermal, line)](examples/notebooks/ucblock_2thermal_line.ipynb)
+    [:octicons-arrow-right-24: Unit Commitment (2 thermal, line)](examples/ucblock_2thermal_line.ipynb)
 
-    [:octicons-arrow-right-24: Navigating SMS Blocks](examples/notebooks/navigating_sms_blocks.ipynb)
+    [:octicons-arrow-right-24: Navigating SMS Blocks](examples/navigating_sms_blocks.ipynb)
 
-    [:octicons-arrow-right-24: Plotting Variables and Blocks](examples/notebooks/plotting_variables_and_blocks.ipynb)
+    [:octicons-arrow-right-24: Plotting Variables and Blocks](examples/plotting_variables_and_blocks.ipynb)
 
 </div>
 
@@ -47,6 +47,14 @@ pySMSpp is a Python package to interface [Structured Modeling System for mathema
     The API Reference is generated automatically from the docstrings in the code. It provides a detailed description of all modules, classes and functions, their parameters and usage.
 
     [:octicons-arrow-right-24: API Reference](api_reference.md)
+
+-   :material-new-box:{ .lg .middle } **Release Notes**
+
+    ---
+
+    Track the evolution of pySMSpp: new features, improvements, and bug fixes across all releases.
+
+    [:octicons-arrow-right-24: Release Notes](release_notes.md)
 
 -   :fontawesome-solid-users:{ .lg .middle } **Contributing**
 
