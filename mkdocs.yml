@@ -7,68 +7,68 @@ repo_name: SPSUnipi/pySMSpp
 theme:
   name: material
   features:
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
-    - navigation.top
-    - search.suggest
-    - search.highlight
-    - content.code.copy
+  - navigation.tabs
+  - navigation.sections
+  - navigation.expand
+  - navigation.top
+  - search.suggest
+  - search.highlight
+  - content.code.copy
   palette:
-    - scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+  - scheme: default
+    primary: indigo
+    accent: indigo
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - scheme: slate
+    primary: indigo
+    accent: indigo
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
 
 plugins:
-  - search
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            docstring_style: numpy
-            show_source: true
-  - mkdocs-jupyter:
-      execute: false
-      include_source: true
+- search
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_style: numpy
+          show_source: true
+- mkdocs-jupyter:
+    execute: false
+    include_source: true
 
 nav:
-  - Home: index.md
-  - Getting Started:
-      - Introduction: getting-started/introduction.md
-      - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quick-start.md
-  - Examples:
-      - Unit Commitment (1 bus): examples/notebooks/ucblock_thermal_1bus.ipynb
-      - Unit Commitment (2 thermal, line): examples/notebooks/ucblock_2thermal_line.ipynb
-      - Navigating SMS Blocks: examples/notebooks/navigating_sms_blocks.ipynb
-      - Plotting Variables and Blocks: examples/notebooks/plotting_variables_and_blocks.ipynb
-  - User Guide:
-      - API Reference: api_reference.md
-  - Contributing: contributing.md
+- Home: index.md
+- Getting Started:
+  - Introduction: getting-started/introduction.md
+  - Installation: getting-started/installation.md
+  - Quick Start: getting-started/quick-start.md
+- Examples:
+  - Unit Commitment (1 bus): examples/notebooks/ucblock_thermal_1bus.ipynb
+  - Unit Commitment (2 thermal, line): examples/notebooks/ucblock_2thermal_line.ipynb
+  - Navigating SMS Blocks: examples/notebooks/navigating_sms_blocks.ipynb
+  - Plotting Variables and Blocks: examples/notebooks/plotting_variables_and_blocks.ipynb
+- User Guide:
+  - API Reference: api_reference.md
+- Contributing: contributing.md
 
 markdown_extensions:
-  - admonition
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - attr_list
-  - md_in_html
-  - toc:
-      permalink: true
+- admonition
+- pymdownx.details
+- pymdownx.superfences
+- pymdownx.highlight:
+    anchor_linenums: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- attr_list
+- md_in_html
+- toc:
+    permalink: true
 
 extra:
   social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/SPSUnipi/pySMSpp
+  - icon: fontawesome/brands/github
+    link: https://github.com/SPSUnipi/pySMSpp
