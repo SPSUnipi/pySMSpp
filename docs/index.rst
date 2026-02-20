@@ -32,6 +32,7 @@ Documentation
 * :doc:`/examples/ucblock_thermal_1bus`
 * :doc:`/examples/ucblock_2thermal_line`
 * :doc:`/examples/navigating_sms_blocks`
+* :doc:`/examples/plotting_variables_and_blocks`
 
 .. toctree::
    :hidden:
@@ -41,6 +42,7 @@ Documentation
    examples/ucblock_thermal_1bus
    examples/ucblock_2thermal_line
    examples/navigating_sms_blocks
+   examples/plotting_variables_and_blocks
 
 
 **User Guide**

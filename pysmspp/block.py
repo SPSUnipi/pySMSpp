@@ -458,8 +458,6 @@ class Variable:
 
         Raises
         ------
-        ImportError
-            If *matplotlib* is not installed.
         ValueError
             If the variable has more than 2 dimensions, or an unsupported
             *kind* is given.
@@ -470,13 +468,7 @@ class Variable:
         >>> ax = var.plot()
         >>> ax = var.plot(kind="line")
         """
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            raise ImportError(
-                "matplotlib is required for plotting. "
-                "Install it with: pip install matplotlib"
-            )
+        import matplotlib.pyplot as plt
 
         data = np.asarray(self.data)
 
@@ -1194,8 +1186,6 @@ class Block:
 
         Raises
         ------
-        ImportError
-            If *matplotlib* is not installed.
         ValueError
             If no plottable variables are found.
 
@@ -1208,13 +1198,7 @@ class Block:
 
         >>> fig = block.plot(kind="line")
         """
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            raise ImportError(
-                "matplotlib is required for plotting. "
-                "Install it with: pip install matplotlib"
-            )
+        import matplotlib.pyplot as plt
 
         if variables is None:
             vars_to_plot = {

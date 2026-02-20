@@ -9,8 +9,6 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import pysmspp
 from pysmspp import Block, Variable
-
-pytest.importorskip("matplotlib")
 import matplotlib
 import matplotlib.pyplot as plt
 
