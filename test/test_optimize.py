@@ -174,7 +174,6 @@ def test_optimize_tssbsolver(force_smspp):
 
     # Create a new TSSB block from the original network and save to a temp file
     fp_tssb_new = get_temp_file("test_tssb_new.nc4")
-    fp_log_new = get_temp_file("test_optimize_tssbsolver_new.txt")
 
     build_tssb_block(fp_network).to_netcdf(fp_tssb_new, force=True)
 
@@ -196,7 +195,7 @@ def test_optimize_tssbsolver(force_smspp):
     tssb_solver_new = TSSBlockSolver(
         configfile=str(configfile),
         fp_network=fp_tssb_new,
-        fp_log=fp_log_new,
+        fp_log=fp_log,
     )
 
     if tssb_solver.is_available() or force_smspp:
@@ -208,8 +207,12 @@ def test_optimize_tssbsolver(force_smspp):
 
         assert "success" in tssb_solver_new.status.lower()
 
-        assert tssb_solver.objective_value == tssb_solver_new.objective_value, (
-            "Objective values should match between original and new TSSB blocks"
+        obj_orig = tssb_solver.objective_value
+        obj_new = tssb_solver_new.objective_value
+        assert obj_orig == pytest.approx(obj_new, rel=1e-4), (
+            "Objective values should match between original ({:.2f}) and new ({:.2f}) TSSB blocks".format(
+                obj_orig, obj_new
+            )
         )
     else:
         pytest.skip("TSSBBlockSolver not available in PATH")

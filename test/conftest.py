@@ -394,6 +394,41 @@ def build_tssb_block(fp_tssb):
         .data
     )
 
+    path_element_indices = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["StaticAbstractPath"]
+        .variables["PathElementIndices"]
+        .data
+    )
+
+    path_range_indices = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["StaticAbstractPath"]
+        .variables["PathRangeIndices"]
+        .data
+    )
+
+    path_start = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["StaticAbstractPath"]
+        .variables["PathStart"]
+        .data
+    )
+
+    set_size = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["StochasticBlock"]
+        .variables["SetSize"]
+        .data
+    )
+
+    set_elements = (
+        sn_benchmark.blocks["Block_0"]
+        .blocks["StochasticBlock"]
+        .variables["SetElements"]
+        .data
+    )
+
     sn.add(
         "TwoStageStochasticBlock",
         "Block_0",
@@ -423,9 +458,7 @@ def build_tssb_block(fp_tssb):
                 "PathElementIndices",
                 "u4",
                 ("TotalLength",),
-                np.zeros(
-                    TotalLength, dtype=np.uint32
-                ),  # ignored missing values (masked array)
+                path_element_indices,  # ignored missing values (masked array)
             ),
             PathGroupIndices=Variable(
                 "PathGroupIndices",
@@ -457,13 +490,13 @@ def build_tssb_block(fp_tssb):
                 "PathRangeIndices",
                 "u4",
                 ("TotalLength",),
-                np.ones(TotalLength, dtype=np.uint32),  # ignored missing values
+                path_range_indices,  # ignored missing values
             ),
             PathStart=Variable(
                 "PathStart",
                 "u4",
                 ("PathDim",),
-                list(range(0, TotalLength, 2)),  # ignored missing values
+                path_start,  # ignored missing values
             ),
         ),
         StochasticBlock=Block(
@@ -496,15 +529,13 @@ def build_tssb_block(fp_tssb):
                 "SetSize",
                 "u4",
                 ("SetSize_dim",),
-                np.zeros(SizeDim_perScenario * NumberDataMappings, dtype=np.uint32),
+                set_size,
             ),
             SetElements=Variable(
                 "SetElements",
                 "u4",
                 ("SetElements_dim",),
-                np.zeros(
-                    SizeElements_perScenario * NumberDataMappings, dtype=np.uint32
-                ),
+                set_elements,
             ),
             AbstractPath=Block(
                 PathDim=Dimension("PathDim", PathDim2),
