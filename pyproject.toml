@@ -43,11 +43,11 @@ dev = [
     "h5py<3.15",  # Temporary fix for compatibility issues with netcdf4; issues potentially linked to compatibility to xarray https://github.com/pydata/xarray/issues?q=is%3Aissue%20state%3Aopen%20h5py
 ]
 docs=[
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings[python]",
-    "mkdocs-jupyter",
-    "mkdocs-autorefs",
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.0",
+    "mkdocstrings[python]>=0.24",
+    "mkdocs-jupyter>=0.24",
+    "mkdocs-autorefs>=0.5",
 ]
 
 [tool.setuptools]
