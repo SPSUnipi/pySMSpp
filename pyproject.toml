@@ -32,6 +32,9 @@ Homepage = "https://github.com/SPSUnipi/pySMSpp"
 Issues = "https://github.com/SPSUnipi/pySMSpp/issues"
 
 [project.optional-dependencies]
+plot = [
+    "matplotlib>=3.0",
+]
 dev = [
     "pytest", 
     "coverage",
