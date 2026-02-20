@@ -30,11 +30,10 @@ def test_variable_plot_scalar():
 
 
 def test_variable_plot_1d():
-    """Test that a 1-D variable produces a line plot."""
+    """Test that a 1-D variable produces a line plot with correct labels."""
     data = np.linspace(0, 10, 24)
     var = Variable("ActivePower", "float", ("TimeHorizon",), data)
     ax = var.plot()
-    assert ax is not None
     assert len(ax.lines) == 1
     assert ax.get_title() == "ActivePower"
     assert ax.get_xlabel() == "TimeHorizon"
@@ -42,27 +41,16 @@ def test_variable_plot_1d():
     plt.close("all")
 
 
-def test_variable_plot_2d():
-    """Test that a 2-D variable produces an image (heatmap) by default."""
+def test_variable_plot_2d_heatmap():
+    """Test that a 2-D variable defaults to a heatmap; explicit kind='heatmap' behaves identically."""
     data = np.full((3, 24), 50.0)
     var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
-    ax = var.plot()
-    assert ax is not None
-    assert ax.get_title() == "ActivePowerDemand"
-    assert ax.get_xlabel() == "TimeHorizon"
-    assert ax.get_ylabel() == "NumberNodes"
-    plt.close("all")
-
-
-def test_variable_plot_2d_kind_heatmap():
-    """Test explicit kind='heatmap' for a 2-D variable."""
-    data = np.full((3, 24), 50.0)
-    var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
-    ax = var.plot(kind="heatmap")
-    assert ax.get_title() == "ActivePowerDemand"
-    assert ax.get_xlabel() == "TimeHorizon"
-    assert ax.get_ylabel() == "NumberNodes"
-    plt.close("all")
+    for kind_arg in ({}, {"kind": "heatmap"}):
+        ax = var.plot(**kind_arg)
+        assert ax.get_title() == "ActivePowerDemand"
+        assert ax.get_xlabel() == "TimeHorizon"
+        assert ax.get_ylabel() == "NumberNodes"
+        plt.close("all")
 
 
 def test_variable_plot_2d_kind_line():
@@ -70,7 +58,6 @@ def test_variable_plot_2d_kind_line():
     data = np.random.rand(3, 24)
     var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
     ax = var.plot(kind="line")
-    # One line per row
     assert len(ax.lines) == 3
     assert ax.get_xlabel() == "TimeHorizon"
     assert ax.get_ylabel() == "ActivePowerDemand"
@@ -78,41 +65,34 @@ def test_variable_plot_2d_kind_line():
     plt.close("all")
 
 
-def test_variable_plot_2d_kind_invalid():
-    """Test that an unsupported kind raises ValueError."""
-    data = np.full((2, 5), 1.0)
-    var = Variable("V", "float", ("a", "b"), data)
+def test_variable_plot_raises_for_invalid_kind_and_3d():
+    """Test ValueError for unsupported kind and for >2-D data."""
+    data_2d = np.full((2, 5), 1.0)
+    var_2d = Variable("V", "float", ("a", "b"), data_2d)
     with pytest.raises(ValueError, match="Unsupported kind"):
-        var.plot(kind="pie")
+        var_2d.plot(kind="pie")
+
+    data_3d = np.zeros((2, 3, 4))
+    var_3d = Variable("BadVar", "float", ("a", "b", "c"), data_3d)
+    with pytest.raises(ValueError, match="3"):
+        var_3d.plot()
     plt.close("all")
 
 
 def test_variable_plot_uses_provided_axes():
     """Test that plot() draws on the provided axes."""
     _, ax_provided = plt.subplots()
-    data = np.arange(10, dtype=float)
-    var = Variable("TestVar", "float", ("n",), data)
+    var = Variable("TestVar", "float", ("n",), np.arange(10, dtype=float))
     ax_returned = var.plot(ax=ax_provided)
     assert ax_returned is ax_provided
     plt.close("all")
 
 
-def test_variable_plot_raises_for_3d():
-    """Test that a 3-D variable raises ValueError."""
-    data = np.zeros((2, 3, 4))
-    var = Variable("BadVar", "float", ("a", "b", "c"), data)
-    with pytest.raises(ValueError, match="3"):
-        var.plot()
-    plt.close("all")
-
-
 def test_variable_plot_kwargs_forwarded():
-    """Test that extra kwargs are forwarded to the plot function."""
-    data = np.arange(5, dtype=float)
-    var = Variable("Var1D", "float", ("n",), data)
+    """Test that extra kwargs are forwarded to the underlying matplotlib function."""
+    var = Variable("Var1D", "float", ("n",), np.arange(5, dtype=float))
     ax = var.plot(linewidth=3)
-    line = ax.lines[0]
-    assert line.get_linewidth() == 3.0
+    assert ax.lines[0].get_linewidth() == 3.0
     plt.close("all")
 
 
@@ -121,23 +101,13 @@ def test_variable_plot_kwargs_forwarded():
 # ---------------------------------------------------------------------------
 
 
-def test_block_plot_returns_figure():
-    """Test that Block.plot() returns a matplotlib Figure."""
-    block = Block()
-    block.add_variable(
-        "ActivePower", "float", ("TimeHorizon",), np.linspace(0, 100, 24)
-    )
-    fig = block.plot()
-    assert isinstance(fig, plt.Figure)
-    plt.close("all")
-
-
-def test_block_plot_creates_one_subplot_per_variable():
-    """Test that one subplot is created for each variable."""
+def test_block_plot_subplots_per_variable():
+    """Block.plot() returns a Figure with one subplot per non-scalar variable."""
     block = Block()
     block.add_variable("P1", "float", ("T",), np.arange(10, dtype=float))
     block.add_variable("P2", "float", ("T",), np.arange(10, dtype=float) * 2)
     fig = block.plot()
+    assert isinstance(fig, plt.Figure)
     assert len(fig.axes) == 2
     plt.close("all")
 
@@ -153,21 +123,18 @@ def test_block_plot_variable_selection():
     plt.close("all")
 
 
-def test_block_plot_skips_scalars_by_default():
-    """Scalar variables are excluded when variables=None."""
+def test_block_plot_scalar_handling():
+    """Scalars are excluded by default but included when explicitly listed."""
     block = Block()
     block.add_variable("Scalar", "float", (), 42.0)
     block.add_variable("Array", "float", ("T",), np.arange(5, dtype=float))
+
+    # Default: scalars skipped
     fig = block.plot()
     assert len(fig.axes) == 1
     plt.close("all")
 
-
-def test_block_plot_includes_scalar_when_explicit():
-    """Scalar variables are included when explicitly listed."""
-    block = Block()
-    block.add_variable("Scalar", "float", (), 42.0)
-    block.add_variable("Array", "float", ("T",), np.arange(5, dtype=float))
+    # Explicit list: scalars included
     fig = block.plot(variables=["Scalar", "Array"])
     assert len(fig.axes) == 2
     plt.close("all")
@@ -193,22 +160,8 @@ def test_block_plot_custom_figsize():
     plt.close("all")
 
 
-def test_block_plot_2d_variable():
-    """Test that Block.plot() handles 2-D variables."""
-    block = Block()
-    block.add_variable(
-        "Demand",
-        "float",
-        ("NumberNodes", "TimeHorizon"),
-        np.full((3, 24), 50.0),
-    )
-    fig = block.plot()
-    assert len(fig.axes) >= 1
-    plt.close("all")
-
-
 def test_block_plot_kwargs_forwarded_to_variable():
-    """Test that kwargs passed to Block.plot() are forwarded to Variable.plot()."""
+    """kwargs passed to Block.plot() are forwarded to Variable.plot()."""
     block = Block()
     block.add_variable(
         "Demand",
@@ -216,8 +169,7 @@ def test_block_plot_kwargs_forwarded_to_variable():
         ("NumberNodes", "TimeHorizon"),
         np.random.rand(3, 24),
     )
-    # kind="line" should produce lines, not an image
+    # kind="line" should produce 3 lines (one per row), not an image
     fig = block.plot(kind="line")
-    ax = fig.axes[0]
-    assert len(ax.lines) == 3
+    assert len(fig.axes[0].lines) == 3
     plt.close("all")
