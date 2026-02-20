@@ -173,6 +173,7 @@ def test_optimize_tssbsolver(force_smspp):
 
     # Create a new TSSB block from the original network and save to a temp file
     fp_tssb_new = get_temp_file("test_tssb_new.nc4")
+    fp_log_new = get_temp_file("test_optimize_tssbsolver_new.txt")
 
     build_tssb_block(fp_network).to_netcdf(fp_tssb_new, force=True)
 
@@ -192,7 +193,7 @@ def test_optimize_tssbsolver(force_smspp):
     tssb_solver_new = TSSBlockSolver(
         configfile=str(configfile),
         fp_network=fp_tssb_new,
-        fp_log=fp_log,
+        fp_log=fp_log_new,
     )
 
     if tssb_solver.is_available() or force_smspp:
