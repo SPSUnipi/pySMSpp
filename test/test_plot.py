@@ -7,7 +7,6 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-import pysmspp
 from pysmspp import Block, Variable
 import matplotlib
 import matplotlib.pyplot as plt
@@ -46,9 +45,7 @@ def test_variable_plot_1d():
 def test_variable_plot_2d():
     """Test that a 2-D variable produces an image (heatmap) by default."""
     data = np.full((3, 24), 50.0)
-    var = Variable(
-        "ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data
-    )
+    var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
     ax = var.plot()
     assert ax is not None
     assert ax.get_title() == "ActivePowerDemand"
@@ -60,9 +57,7 @@ def test_variable_plot_2d():
 def test_variable_plot_2d_kind_heatmap():
     """Test explicit kind='heatmap' for a 2-D variable."""
     data = np.full((3, 24), 50.0)
-    var = Variable(
-        "ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data
-    )
+    var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
     ax = var.plot(kind="heatmap")
     assert ax.get_title() == "ActivePowerDemand"
     assert ax.get_xlabel() == "TimeHorizon"
@@ -73,9 +68,7 @@ def test_variable_plot_2d_kind_heatmap():
 def test_variable_plot_2d_kind_line():
     """Test kind='line' for a 2-D variable produces a line plot with legend."""
     data = np.random.rand(3, 24)
-    var = Variable(
-        "ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data
-    )
+    var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
     ax = var.plot(kind="line")
     # One line per row
     assert len(ax.lines) == 3
