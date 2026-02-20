@@ -80,7 +80,7 @@ exclude_also = [
 
 # Static type checker settings
 [tool.mypy]
-exclude = ['dev/*', 'examples/*', 'doc/*']
+exclude = ['dev/*', 'docs/examples/*', 'doc/*']
 ignore_missing_imports = true
 no_implicit_optional = true
 warn_unused_ignores = true

@@ -37,7 +37,8 @@ plugins:
           docstring_style: numpy
           show_source: true
 - mkdocs-jupyter:
-    execute: false
+    execute: true
+    allow_errors: true
     include_source: true
 
 nav:
