@@ -5,25 +5,20 @@
 # Required
 version: 2
 
-# Set the OS, Python version and other tools you might need
+# Set the OS and Python version
 build:
   os: ubuntu-24.04
   tools:
-    python: "miniforge3-latest"
-    # You can also specify other tool versions:
-    # nodejs: "23"
-    # rust: "1.82"
-    # golang: "1.23"
+    python: "3.12"
 
 # Build documentation with MkDocs
 mkdocs:
   configuration: mkdocs.yml
 
-# Optionally build your docs in additional formats such as PDF and ePub
-# formats:
-#    - pdf
-#    - epub
+# Install documentation requirements
+python:
+  install:
+    - requirements: docs/requirements.txt
+    - method: pip
+      path: .
 
-# Use conda to install dependencies
-conda:
-  environment: docs/environment.yml
