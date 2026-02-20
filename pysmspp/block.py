@@ -426,6 +426,90 @@ class Variable:
         )
         return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
 
+    def plot(self, ax=None, kind: str = "auto", **kwargs):
+        """
+        Plot the variable data.
+
+        The plot type depends on the variable dimensionality and *kind*:
+
+        - **Scalar** (0-D): bar chart.
+        - **1-D array**: line plot with the dimension name on the x-axis.
+        - **2-D array**: heatmap (``imshow``) with a colorbar when
+          ``kind="heatmap"``, or a line plot where each row is a separate
+          line with a legend when ``kind="line"``.
+          ``kind="auto"`` defaults to ``"heatmap"``.
+
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes, optional
+            Axes to draw on. If *None* a new figure and axes are created.
+        kind : str, optional
+            Plot style for 2-D variables. Accepted values are ``"auto"``,
+            ``"heatmap"`` (default), and ``"line"``. Ignored for 0-D and 1-D
+            variables.
+        **kwargs : dict
+            Additional keyword arguments forwarded to the underlying
+            matplotlib function (``bar``, ``plot``, or ``imshow``).
+
+        Returns
+        -------
+        matplotlib.axes.Axes
+            The axes containing the plot.
+
+        Raises
+        ------
+        ValueError
+            If the variable has more than 2 dimensions, or an unsupported
+            *kind* is given.
+
+        Examples
+        --------
+        >>> var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
+        >>> ax = var.plot()
+        >>> ax = var.plot(kind="line")
+        """
+        import matplotlib.pyplot as plt
+
+        data = np.asarray(self.data)
+
+        if ax is None:
+            _, ax = plt.subplots()
+
+        if data.ndim == 0:
+            ax.bar([self.name], [float(data)], **kwargs)
+            ax.set_title(self.name)
+        elif data.ndim == 1:
+            ax.plot(data, **kwargs)
+            ax.set_xlabel(self.dimensions[0])
+            ax.set_ylabel(self.name)
+            ax.set_title(self.name)
+        elif data.ndim == 2:
+            resolved_kind = "heatmap" if kind == "auto" else kind
+            if resolved_kind == "heatmap":
+                im = ax.imshow(data, aspect="auto", **kwargs)
+                ax.set_xlabel(self.dimensions[1])
+                ax.set_ylabel(self.dimensions[0])
+                ax.set_title(self.name)
+                plt.colorbar(im, ax=ax)
+            elif resolved_kind == "line":
+                for i, row in enumerate(data):
+                    ax.plot(row, label=f"{self.dimensions[0]}={i}", **kwargs)
+                ax.set_xlabel(self.dimensions[1])
+                ax.set_ylabel(self.name)
+                ax.set_title(self.name)
+                ax.legend()
+            else:
+                raise ValueError(
+                    f"Unsupported kind '{kind}'. Use 'auto', 'heatmap', or 'line'."
+                )
+        else:
+            raise ValueError(
+                f"Cannot plot variable '{self.name}' with {data.ndim} dimensions. "
+                "Only 0-, 1-, and 2-D variables are supported."
+            )
+
+        return ax
+
 
 class Block:
     """
@@ -1072,6 +1156,75 @@ class Block:
                     is_last_child,
                     False,
                 )
+
+    def plot(self, variables: list = None, figsize: tuple = None, **kwargs):
+        """
+        Plot variables of the block.
+
+        Each variable is rendered in its own subplot using :meth:`Variable.plot`.
+        Only variables whose data array has at least 1 dimension are plotted by
+        default; scalar variables are included when they are explicitly listed in
+        *variables*.
+
+        Parameters
+        ----------
+        variables : list of str, optional
+            Names of the variables to plot. If *None*, all variables whose data
+            is a 1-D or 2-D array are included.
+        figsize : tuple of (float, float), optional
+            Figure size ``(width, height)`` in inches passed to
+            ``matplotlib.pyplot.subplots``. If *None* each subplot is given
+            a height of 3 inches and a width of 8 inches.
+        **kwargs : dict
+            Additional keyword arguments forwarded to :meth:`Variable.plot`
+            for each subplot (e.g. ``kind="line"``).
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The figure containing the subplots.
+
+        Raises
+        ------
+        ValueError
+            If no plottable variables are found.
+
+        Examples
+        --------
+        >>> block = Block(fp="model.nc")
+        >>> fig = block.plot()
+
+        >>> fig = block.plot(variables=["ActivePowerDemand", "MaxPowerFlow"])
+
+        >>> fig = block.plot(kind="line")
+        """
+        import matplotlib.pyplot as plt
+
+        if variables is None:
+            vars_to_plot = {
+                name: var
+                for name, var in self.variables.items()
+                if np.asarray(var.data).ndim >= 1
+            }
+        else:
+            vars_to_plot = {name: self.variables[name] for name in variables}
+
+        if not vars_to_plot:
+            raise ValueError(
+                "No plottable variables found in the block. "
+                "Use 'variables' to explicitly specify variable names."
+            )
+
+        n = len(vars_to_plot)
+        if figsize is None:
+            figsize = (8, 3 * n)
+        fig, axes = plt.subplots(n, 1, figsize=figsize, squeeze=False)
+
+        for ax, (name, var) in zip(axes[:, 0], vars_to_plot.items()):
+            var.plot(ax=ax, **kwargs)
+
+        fig.tight_layout()
+        return fig
 
 
 class SMSNetwork(Block):
