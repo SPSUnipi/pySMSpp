@@ -165,7 +165,7 @@ def get_attr_field(
     if (block_type == "Block") or (block_type is None) or (block_type not in blocks):
         if (
             (block_type is not None)
-            and (block_type in blocks)
+            and (block_type not in blocks)
             and (block_type != "Block")
         ):
             warnings.warn(
