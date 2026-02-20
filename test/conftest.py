@@ -408,13 +408,6 @@ def build_tssb_block(fp_tssb):
         .data
     )
 
-    path_start = (
-        sn_benchmark.blocks["Block_0"]
-        .blocks["StaticAbstractPath"]
-        .variables["PathStart"]
-        .data
-    )
-
     set_size = (
         sn_benchmark.blocks["Block_0"]
         .blocks["StochasticBlock"]
@@ -458,7 +451,7 @@ def build_tssb_block(fp_tssb):
                 "PathElementIndices",
                 "u4",
                 ("TotalLength",),
-                path_element_indices,  # ignored missing values (masked array)
+                path_element_indices,  # important to have missing values! only ones does not work
             ),
             PathGroupIndices=Variable(
                 "PathGroupIndices",
@@ -490,13 +483,13 @@ def build_tssb_block(fp_tssb):
                 "PathRangeIndices",
                 "u4",
                 ("TotalLength",),
-                path_range_indices,  # ignored missing values
+                path_range_indices,  # important to have missing values! only ones does not work
             ),
             PathStart=Variable(
                 "PathStart",
                 "u4",
                 ("PathDim",),
-                path_start,  # ignored missing values
+                np.array(range(0, 10, 2), dtype=np.uint32),  # ignored missing values
             ),
         ),
         StochasticBlock=Block(
