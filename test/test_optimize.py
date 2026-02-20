@@ -1,4 +1,3 @@
-import os
 import shutil
 from pysmspp import (
     SMSConfig,
@@ -180,9 +179,7 @@ def test_optimize_tssbsolver(force_smspp):
     # Copy the original EC_CO_Test_TUB.nc4 to a temp location
     fp_ec = get_network("EC_CO_Test_TUB.nc4")
     fp_ec_copy = get_temp_file("EC_CO_Test_TUB.nc4")
-
-    if not os.path.exists(fp_ec_copy):
-        shutil.copy(fp_ec, fp_ec_copy)
+    shutil.copy(fp_ec, fp_ec_copy)
 
     from pysmspp import TSSBlockSolver
 

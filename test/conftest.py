@@ -365,6 +365,26 @@ def build_base_investmentblock(b, innerblock=None):
 
 
 def build_tssb_block(fp_tssb):
+    """
+    Build a test SMSNetwork containing a TSSB (two-stage stochastic block) structure.
+    This helper loads a benchmark network from ``fp_tssb`` and uses it as a template
+    to construct a new in-memory network in block-file mode. The new network
+    contains a top-level block with a discrete scenario set, one or more abstract
+    paths, and a stochastic block whose dimensions (scenario size, number of
+    scenarios, and data mappings) and key data arrays are consistent with those
+    of the benchmark network.
+
+    Parameters
+    ----------
+    fp_tssb : str or os.PathLike
+        Path to an existing TSSB network.
+
+    Returns
+    -------
+    SMSNetwork
+        A newly created :class:`pysmspp.SMSNetwork` instance with
+        ``file_type=SMSFileType.eBlockFile``.
+    """
     sn_benchmark = SMSNetwork(fp_tssb)
 
     sn = SMSNetwork(file_type=SMSFileType.eBlockFile)
