@@ -6,6 +6,12 @@ from pysmspp import (
     UCBlockSolver,
     InvestmentBlockTestSolver,
 )
+from pysmspp.smspp_tools import (
+    SMSPPSolverTool,
+    InvestmentBlockSolver,
+    SDDPSolver,
+    TSSBlockSolver,
+)
 from conftest import (
     get_network,
     add_base_ucblock,
@@ -23,6 +29,99 @@ import numpy as np
 
 RTOL = 1e-4
 ATOL = 1e-2
+
+
+def _make_solver(cls):
+    """Create a solver instance with no real files, for testing parse_solver_log."""
+    obj = object.__new__(cls)
+    obj._log = None
+    obj._status = None
+    obj._objective_value = None
+    obj._lower_bound = None
+    obj._upper_bound = None
+    return obj
+
+
+def test_parse_solver_log_raises_when_log_is_none():
+    """parse_solver_log raises ValueError if optimize has not been called."""
+    for cls in (UCBlockSolver, TSSBlockSolver, InvestmentBlockSolver, SDDPSolver, InvestmentBlockTestSolver):
+        solver = _make_solver(cls)
+        with pytest.raises(ValueError, match="Optimization was not launched"):
+            solver.parse_solver_log()
+
+
+def test_parse_solver_log_base_raises_not_implemented():
+    """Base class raises NotImplementedError when no patterns are configured."""
+    solver = _make_solver(SMSPPSolverTool)
+    solver._log = "some log"
+    with pytest.raises(NotImplementedError):
+        solver.parse_solver_log()
+
+
+@pytest.mark.parametrize("cls", [UCBlockSolver, TSSBlockSolver])
+def test_parse_solver_log_pattern_a_success(cls):
+    """Solvers using Pattern A (status/bounds) parse a successful log correctly."""
+    solver = _make_solver(cls)
+    solver._log = "Status = kOpt\nUpper bound = 1234.5\nLower bound = 1234.0\n"
+    solver.parse_solver_log()
+    assert solver.status == "kOpt"
+    assert solver.objective_value == pytest.approx(1234.5)
+    assert solver.upper_bound == pytest.approx(1234.5)
+    assert solver.lower_bound == pytest.approx(1234.0)
+
+
+@pytest.mark.parametrize("cls", [UCBlockSolver, TSSBlockSolver])
+def test_parse_solver_log_pattern_a_failure(cls):
+    """Solvers using Pattern A set Failed status when the pattern is not found."""
+    solver = _make_solver(cls)
+    solver._log = "No status line here"
+    solver.parse_solver_log()
+    assert solver.status == "Failed"
+    assert np.isnan(solver.objective_value)
+    assert np.isnan(solver.lower_bound)
+    assert np.isnan(solver.upper_bound)
+
+
+@pytest.mark.parametrize("cls", [InvestmentBlockSolver, SDDPSolver])
+def test_parse_solver_log_pattern_b_success(cls):
+    """Solvers using Pattern B (objective value) parse a successful log correctly."""
+    solver = _make_solver(cls)
+    solver._log = "Solution value: 5678.9\nSolver status: kOpt\n"
+    solver.parse_solver_log()
+    assert solver.status == "Success (kOpt)"
+    assert solver.objective_value == pytest.approx(5678.9)
+    assert np.isnan(solver.lower_bound)
+    assert np.isnan(solver.upper_bound)
+
+
+@pytest.mark.parametrize("cls", [InvestmentBlockSolver, SDDPSolver])
+def test_parse_solver_log_pattern_b_failure(cls):
+    """Solvers using Pattern B set Failed status when the pattern is not found."""
+    solver = _make_solver(cls)
+    solver._log = "No objective value here"
+    solver.parse_solver_log()
+    assert solver.status == "Failed"
+    assert np.isnan(solver.objective_value)
+
+
+def test_parse_solver_log_investment_block_test_solver_success():
+    """InvestmentBlockTestSolver parses Fi* objective correctly."""
+    solver = _make_solver(InvestmentBlockTestSolver)
+    solver._log = "Fi* = 42.0\nSolver status: kOpt\n"
+    solver.parse_solver_log()
+    assert solver.status == "Success (kOpt)"
+    assert solver.objective_value == pytest.approx(42.0)
+    assert np.isnan(solver.lower_bound)
+    assert np.isnan(solver.upper_bound)
+
+
+def test_parse_solver_log_investment_block_test_solver_failure():
+    """InvestmentBlockTestSolver sets Failed status when Fi* is not found."""
+    solver = _make_solver(InvestmentBlockTestSolver)
+    solver._log = "No Fi* line here"
+    solver.parse_solver_log()
+    assert solver.status == "Failed"
+    assert np.isnan(solver.objective_value)
 
 
 def test_help_ucblocksolver(force_smspp):

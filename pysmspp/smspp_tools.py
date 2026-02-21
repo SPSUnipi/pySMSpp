@@ -13,6 +13,19 @@ class SMSPPSolverTool:
     Base class for the SMS++ solver tools.
     """
 
+    # Class-level attributes for log parsing.
+    # Subclasses configure these to avoid overriding parse_solver_log.
+    #
+    # Pattern A (UCBlockSolver, TSSBlockSolver): set _log_status_pattern,
+    #   _log_upper_bound_pattern, and _log_lower_bound_pattern.
+    # Pattern B (InvestmentBlockSolver, SDDPSolver, InvestmentBlockTestSolver):
+    #   set _log_objective_pattern (and optionally _log_solver_status_pattern).
+    _log_status_pattern = None
+    _log_objective_pattern = None
+    _log_upper_bound_pattern = None
+    _log_lower_bound_pattern = None
+    _log_solver_status_pattern = "Solver status: (.*)\n"
+
     def __init__(
         self,
         exec_file: str = "",
@@ -258,14 +271,78 @@ class SMSPPSolverTool:
         Check the output of the SolverTool.
         It will extract the status, upper bound, lower bound, and objective value from the log.
 
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
+        The parsing behaviour is controlled by class-level pattern attributes:
+
+        - **Pattern A** (e.g. UCBlockSolver, TSSBlockSolver): set
+          ``_log_status_pattern``, ``_log_upper_bound_pattern``, and
+          ``_log_lower_bound_pattern``.
+        - **Pattern B** (e.g. InvestmentBlockSolver, SDDPSolver,
+          InvestmentBlockTestSolver): set ``_log_objective_pattern`` and,
+          optionally, ``_log_solver_status_pattern``.
+
+        Subclasses that require custom parsing logic may still override this
+        method directly.
         """
-        raise NotImplementedError(
-            "Method parse_solver_log must be implemented in the derived class."
-        )
+        if self._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        if self._log_status_pattern is not None:
+            # Pattern A: extract status, upper bound, and lower bound
+            res = re.search(self._log_status_pattern, self._log)
+
+            if not res:
+                self._status = "Failed"
+                self._objective_value = np.nan
+                self._lower_bound = np.nan
+                self._upper_bound = np.nan
+                return
+
+            self._status = res.group(1).replace("\r", "")
+
+            if self._log_upper_bound_pattern:
+                res = re.search(self._log_upper_bound_pattern, self._log)
+                if res:
+                    ub = float(res.group(1).replace("\r", ""))
+                    self._upper_bound = ub
+                    self._objective_value = ub
+
+            if self._log_lower_bound_pattern:
+                res = re.search(self._log_lower_bound_pattern, self._log)
+                if res:
+                    lb = float(res.group(1).replace("\r", ""))
+                    self._lower_bound = lb
+
+        elif self._log_objective_pattern is not None:
+            # Pattern B: extract objective value and solver status
+            res = re.search(self._log_objective_pattern, self._log)
+
+            if not res:
+                self._status = "Failed"
+                self._objective_value = np.nan
+                self._lower_bound = np.nan
+                self._upper_bound = np.nan
+                return
+
+            self._objective_value = float(res.group(1).replace("\r", ""))
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+
+            res = re.search(self._log_solver_status_pattern, self._log)
+            if res:
+                smspp_status = res.group(1).replace("\r", "")
+            else:
+                smspp_status = "unknown"
+
+            if np.isfinite(self._objective_value):
+                self._status = f"Success ({smspp_status})"
+            else:
+                self._status = f"Failed ({smspp_status})"
+
+        else:
+            raise NotImplementedError(
+                "Method parse_solver_log must be implemented in the derived class "
+                "or log patterns must be configured via class attributes."
+            )
 
     @property
     def status(self):
@@ -329,6 +406,10 @@ class UCBlockSolver(SMSPPSolverTool):
     Class to interact with the UCBlockSolver tool from SMS++.
     """
 
+    _log_status_pattern = "Status = (.*)\n"
+    _log_upper_bound_pattern = "Upper bound = (.*)\n"
+    _log_lower_bound_pattern = "Lower bound = (.*)\n"
+
     def __init__(
         self,
         fp_network: Path | str = "",
@@ -373,46 +454,13 @@ class UCBlockSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_solver_log(self):
-        """
-        Check the output of the UCBlockSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Status = (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        smspp_status = res.group(1).replace("\r", "")
-        self._status = smspp_status
-
-        res = re.search("Upper bound = (.*)\n", self._log)
-        ub = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Lower bound = (.*)\n", self._log)
-        lb = float(res.group(1).replace("\r", ""))
-
-        self._objective_value = ub
-        self._lower_bound = lb
-        self._upper_bound = ub
-
 
 class InvestmentBlockTestSolver(SMSPPSolverTool):
     """
     Class to interact with the InvestmentBlockTestSolver tool from SMS++, with executable file "InvestmentBlock_test".
     """
+
+    _log_objective_pattern = r"Fi\* = (.*)\n"
 
     def __init__(
         self,
@@ -458,48 +506,13 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             exec_path += f" -O {self.fp_solution}"
         return exec_path
 
-    def parse_solver_log(
-        self,
-    ):  # TODO: needs revision to better capture the output
-        """
-        Check the output of the InvestmentBlockTestSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search(r"Fi\* = (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        self._objective_value = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Solver status: (.*)\n", self._log)
-        smspp_status = res.group(1).replace("\r", "")
-
-        if np.isfinite(self._objective_value):
-            self._status = f"Success ({smspp_status})"
-        else:
-            self._status = f"Failed ({smspp_status})"
-
-        self._lower_bound = np.nan
-        self._upper_bound = np.nan
-
 
 class InvestmentBlockSolver(SMSPPSolverTool):
     """
     Class to interact with the InvestmentBlockSolver tool from SMS++, with name "investment_solver".
     """
+
+    _log_objective_pattern = "Solution value: (.*)\n"
 
     def __init__(
         self,
@@ -545,48 +558,13 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_solver_log(
-        self,
-    ):  # TODO: needs revision to better capture the output
-        """
-        Check the output of the InvestmentBlockSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Solution value: (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        self._objective_value = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Solver status: (.*)\n", self._log)
-        smspp_status = res.group(1).replace("\r", "")
-
-        if np.isfinite(self._objective_value):
-            self._status = f"Success ({smspp_status})"
-        else:
-            self._status = f"Failed ({smspp_status})"
-
-        self._lower_bound = np.nan
-        self._upper_bound = np.nan
-
 
 class SDDPSolver(SMSPPSolverTool):
     """
     Class to interact with the SDDPSolver tool from SMS++, with name "sddp_solver".
     """
+
+    _log_objective_pattern = "Solution value: (.*)\n"
 
     def __init__(
         self,
@@ -634,48 +612,15 @@ class SDDPSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_solver_log(
-        self,
-    ):  # TODO: needs revision to better capture the output
-        """
-        Check the output of the SDDPSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Solution value: (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        self._objective_value = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Solver status: (.*)\n", self._log)
-        smspp_status = res.group(1).replace("\r", "")
-
-        if np.isfinite(self._objective_value):
-            self._status = f"Success ({smspp_status})"
-        else:
-            self._status = f"Failed ({smspp_status})"
-
-        self._lower_bound = np.nan
-        self._upper_bound = np.nan
-
 
 class TSSBlockSolver(SMSPPSolverTool):
     """
     Class to interact with the TSSBlockSolver tool from SMS++, with name "tssb_solver".
     """
+
+    _log_status_pattern = "Status = (.*)\n"
+    _log_upper_bound_pattern = "Upper bound = (.*)\n"
+    _log_lower_bound_pattern = "Lower bound = (.*)\n"
 
     def __init__(
         self,
@@ -721,44 +666,6 @@ class TSSBlockSolver(SMSPPSolverTool):
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
-
-    def parse_solver_log(
-        self,
-    ):  # TODO: needs revision to better capture the output
-        """
-        Check the output of the TSSBlockSolver.
-        It extracts the solver status, upper bound, lower bound, and objective value
-        from the internal log string stored in ``self._log``.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Status = (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        smspp_status = res.group(1).replace("\r", "")
-        self._status = smspp_status
-
-        res = re.search("Upper bound = (.*)\n", self._log)
-        ub = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Lower bound = (.*)\n", self._log)
-        lb = float(res.group(1).replace("\r", ""))
-
-        self._objective_value = ub
-        self._lower_bound = lb
-        self._upper_bound = ub
 
 
 def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -> bool:
