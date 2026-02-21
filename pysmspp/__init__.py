@@ -21,9 +21,6 @@ Attribute : Represents model attributes with name and value
 Dimension : Represents model dimensions with name and size
 Variable : Represents model variables with dimensions and data
 SMSPPSolverTool : Base class for SMS++ solver integrations
-SolverLogParser : Base class for solver log parsers
-StatusBoundsSolverLogParser : Parser for solvers reporting status and bounds
-ObjectiveValueSolverLogParser : Parser for solvers reporting an objective value
 
 Quick Start
 -----------
@@ -55,9 +52,6 @@ from pysmspp.block import (
 )
 from pysmspp.smspp_tools import (
     SMSPPSolverTool as SMSPPSolverTool,
-    SolverLogParser as SolverLogParser,
-    StatusBoundsSolverLogParser as StatusBoundsSolverLogParser,
-    ObjectiveValueSolverLogParser as ObjectiveValueSolverLogParser,
     UCBlockSolver as UCBlockSolver,
     InvestmentBlockTestSolver as InvestmentBlockTestSolver,
     TSSBlockSolver as TSSBlockSolver,

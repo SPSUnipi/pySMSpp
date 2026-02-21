@@ -5,12 +5,10 @@ from pysmspp import (
     SMSFileType,
     UCBlockSolver,
     InvestmentBlockTestSolver,
-    SolverLogParser,
-    StatusBoundsSolverLogParser,
-    ObjectiveValueSolverLogParser,
 )
 from pysmspp.smspp_tools import (
     SMSPPSolverTool,
+    SolverLogParserAccessor,
     InvestmentBlockSolver,
     SDDPSolver,
     TSSBlockSolver,
@@ -46,66 +44,77 @@ def _make_solver(cls):
 
 
 # ---------------------------------------------------------------------------
-# Tests for SolverLogParser classes
+# Tests for SolverLogParserAccessor
 # ---------------------------------------------------------------------------
 
 
-def test_solver_log_parser_base_raises_not_implemented():
-    """SolverLogParser.parse raises NotImplementedError."""
-    parser = SolverLogParser()
+def test_accessor_raises_value_error_when_log_is_none():
+    """SolverLogParserAccessor raises ValueError if _log is None."""
+    solver = _make_solver(UCBlockSolver)
+    accessor = SolverLogParserAccessor(
+        solver,
+        status_pattern="Status = (.*)\n",
+    )
+    with pytest.raises(ValueError, match="Optimization was not launched"):
+        accessor()
+
+
+def test_accessor_raises_not_implemented_without_patterns():
+    """SolverLogParserAccessor raises NotImplementedError when no patterns given."""
+    solver = _make_solver(UCBlockSolver)
+    solver._log = "some log"
+    accessor = SolverLogParserAccessor(solver)
     with pytest.raises(NotImplementedError):
-        parser.parse("some log")
+        accessor()
 
 
 @pytest.mark.parametrize(
-    "log, expected",
+    "log, expected_status, expected_obj, expected_ub, expected_lb",
     [
         (
             "Status = kOpt\nUpper bound = 1234.5\nLower bound = 1234.0\n",
-            {
-                "status": "kOpt",
-                "objective_value": 1234.5,
-                "upper_bound": 1234.5,
-                "lower_bound": 1234.0,
-            },
+            "kOpt",
+            1234.5,
+            1234.5,
+            1234.0,
         ),
         (
             "No status line here",
-            {
-                "status": "Failed",
-                "objective_value": float("nan"),
-                "upper_bound": float("nan"),
-                "lower_bound": float("nan"),
-            },
+            "Failed",
+            float("nan"),
+            float("nan"),
+            float("nan"),
         ),
         (
             "Status = kUnbounded\n",
-            {
-                "status": "kUnbounded",
-                "objective_value": float("nan"),
-                "upper_bound": float("nan"),
-                "lower_bound": float("nan"),
-            },
+            "kUnbounded",
+            float("nan"),
+            float("nan"),
+            float("nan"),
         ),
     ],
 )
-def test_status_bounds_solver_log_parser(log, expected):
-    """StatusBoundsSolverLogParser extracts status, bounds, and objective."""
-    parser = StatusBoundsSolverLogParser(
+def test_accessor_status_bounds_mode(
+    log, expected_status, expected_obj, expected_ub, expected_lb
+):
+    """SolverLogParserAccessor extracts status, bounds, and objective (status+bounds mode)."""
+    solver = _make_solver(UCBlockSolver)
+    solver._log = log
+    SolverLogParserAccessor(
+        solver,
         status_pattern="Status = (.*)\n",
         upper_bound_pattern="Upper bound = (.*)\n",
         lower_bound_pattern="Lower bound = (.*)\n",
-    )
-    result = parser.parse(log)
-    assert result["status"] == expected["status"]
-    if np.isnan(expected["objective_value"]):
-        assert np.isnan(result["objective_value"])
-        assert np.isnan(result["upper_bound"])
-        assert np.isnan(result["lower_bound"])
+    )()
+    assert solver._status == expected_status
+    if np.isnan(expected_obj):
+        assert np.isnan(solver._objective_value)
+        assert np.isnan(solver._upper_bound)
+        assert np.isnan(solver._lower_bound)
     else:
-        assert result["objective_value"] == pytest.approx(expected["objective_value"])
-        assert result["upper_bound"] == pytest.approx(expected["upper_bound"])
-        assert result["lower_bound"] == pytest.approx(expected["lower_bound"])
+        assert solver._objective_value == pytest.approx(expected_obj)
+        assert solver._upper_bound == pytest.approx(expected_ub)
+        assert solver._lower_bound == pytest.approx(expected_lb)
 
 
 @pytest.mark.parametrize(
@@ -123,28 +132,58 @@ def test_status_bounds_solver_log_parser(log, expected):
         ),
     ],
 )
-def test_objective_value_solver_log_parser(log, expected_status, expected_obj):
-    """ObjectiveValueSolverLogParser extracts objective value and status."""
-    parser = ObjectiveValueSolverLogParser(
+def test_accessor_objective_value_mode(log, expected_status, expected_obj):
+    """SolverLogParserAccessor extracts objective value and status (objective mode)."""
+    solver = _make_solver(InvestmentBlockSolver)
+    solver._log = log
+    SolverLogParserAccessor(
+        solver,
         objective_pattern="Solution value: (.*)\n",
-    )
-    result = parser.parse(log)
-    assert result["status"] == expected_status
+    )()
+    assert solver._status == expected_status
     if np.isnan(expected_obj):
-        assert np.isnan(result["objective_value"])
+        assert np.isnan(solver._objective_value)
     else:
-        assert result["objective_value"] == pytest.approx(expected_obj)
-    assert np.isnan(result["lower_bound"])
-    assert np.isnan(result["upper_bound"])
+        assert solver._objective_value == pytest.approx(expected_obj)
+    assert np.isnan(solver._lower_bound)
+    assert np.isnan(solver._upper_bound)
 
 
-def test_objective_value_solver_log_parser_missing_status():
-    """ObjectiveValueSolverLogParser falls back to 'unknown' when status is absent."""
-    parser = ObjectiveValueSolverLogParser(
+def test_accessor_objective_mode_missing_status():
+    """SolverLogParserAccessor falls back to 'unknown' when solver_status_pattern is absent."""
+    solver = _make_solver(InvestmentBlockSolver)
+    solver._log = "Solution value: 10.0\n"
+    SolverLogParserAccessor(
+        solver,
         objective_pattern="Solution value: (.*)\n",
+    )()
+    assert solver._status == "Success (unknown)"
+
+
+@pytest.mark.parametrize(
+    "line_ending",
+    ["\n", "\r\n", "\r"],
+    ids=["unix", "windows", "old-mac"],
+)
+def test_accessor_windows_linux_line_endings(line_ending):
+    """SolverLogParserAccessor normalizes line endings for cross-platform robustness."""
+    log = (
+        f"Status = kOpt{line_ending}"
+        f"Upper bound = 55.5{line_ending}"
+        f"Lower bound = 44.4{line_ending}"
     )
-    result = parser.parse("Solution value: 10.0\n")
-    assert result["status"] == "Success (unknown)"
+    solver = _make_solver(UCBlockSolver)
+    solver._log = log
+    SolverLogParserAccessor(
+        solver,
+        status_pattern="Status = (.*)\n",
+        upper_bound_pattern="Upper bound = (.*)\n",
+        lower_bound_pattern="Lower bound = (.*)\n",
+    )()
+    assert solver._status == "kOpt"
+    assert solver._objective_value == pytest.approx(55.5)
+    assert solver._upper_bound == pytest.approx(55.5)
+    assert solver._lower_bound == pytest.approx(44.4)
 
 
 # ---------------------------------------------------------------------------
@@ -167,7 +206,7 @@ def test_parse_solver_log_raises_when_log_is_none():
 
 
 def test_parse_solver_log_base_raises_not_implemented():
-    """Base class raises NotImplementedError when no parser is configured."""
+    """Base class raises NotImplementedError when no pattern is configured."""
     solver = _make_solver(SMSPPSolverTool)
     solver._log = "some log"
     with pytest.raises(NotImplementedError):
@@ -176,7 +215,7 @@ def test_parse_solver_log_base_raises_not_implemented():
 
 @pytest.mark.parametrize("cls", [UCBlockSolver, TSSBlockSolver])
 def test_parse_solver_log_pattern_a_success(cls):
-    """Solvers using StatusBoundsSolverLogParser parse a successful log correctly."""
+    """Solvers using status+bounds mode parse a successful log correctly."""
     solver = _make_solver(cls)
     solver._log = "Status = kOpt\nUpper bound = 1234.5\nLower bound = 1234.0\n"
     solver.parse_solver_log()
@@ -188,7 +227,7 @@ def test_parse_solver_log_pattern_a_success(cls):
 
 @pytest.mark.parametrize("cls", [UCBlockSolver, TSSBlockSolver])
 def test_parse_solver_log_pattern_a_failure(cls):
-    """Solvers using StatusBoundsSolverLogParser set Failed when pattern is not found."""
+    """Solvers using status+bounds mode set Failed when pattern is not found."""
     solver = _make_solver(cls)
     solver._log = "No status line here"
     solver.parse_solver_log()
@@ -200,7 +239,7 @@ def test_parse_solver_log_pattern_a_failure(cls):
 
 @pytest.mark.parametrize("cls", [InvestmentBlockSolver, SDDPSolver])
 def test_parse_solver_log_pattern_b_success(cls):
-    """Solvers using ObjectiveValueSolverLogParser parse a successful log correctly."""
+    """Solvers using objective value mode parse a successful log correctly."""
     solver = _make_solver(cls)
     solver._log = "Solution value: 5678.9\nSolver status: kOpt\n"
     solver.parse_solver_log()
@@ -212,7 +251,7 @@ def test_parse_solver_log_pattern_b_success(cls):
 
 @pytest.mark.parametrize("cls", [InvestmentBlockSolver, SDDPSolver])
 def test_parse_solver_log_pattern_b_failure(cls):
-    """Solvers using ObjectiveValueSolverLogParser set Failed when pattern is not found."""
+    """Solvers using objective value mode set Failed when pattern is not found."""
     solver = _make_solver(cls)
     solver._log = "No objective value here"
     solver.parse_solver_log()

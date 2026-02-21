@@ -8,228 +8,195 @@ import time
 import psutil
 
 
-class SolverLogParser:
+class SolverLogParserAccessor:
     """
-    Base class for parsing SMS++ solver output logs.
+    Accessor for parsing SMS++ solver output logs.
 
-    Subclasses implement the :meth:`parse` method to extract solver results
-    (status, objective value, bounds) from solver-specific log output.
+    Encapsulates the log parsing logic for a :class:`SMSPPSolverTool` instance.
+    Once initialized with a solver tool and the relevant search patterns,
+    calling the accessor (``accessor()``) parses the log and updates the
+    solver tool's result attributes in-place.
 
-    Subclasses are associated with solver classes via the ``_log_parser``
-    class attribute on :class:`SMSPPSolverTool`.
+    A single class handles all solver log formats:
 
-    See Also
-    --------
-    StatusBoundsSolverLogParser : Parser for solvers reporting status and bounds.
-    ObjectiveValueSolverLogParser : Parser for solvers reporting an objective value.
-    """
+    - **Status + bounds mode**: set ``status_pattern`` (plus optionally
+      ``upper_bound_pattern`` and ``lower_bound_pattern``).  Used by
+      :class:`UCBlockSolver` and :class:`TSSBlockSolver`.
+    - **Objective value mode**: set ``objective_pattern`` (plus optionally
+      ``solver_status_pattern``).  Used by :class:`InvestmentBlockSolver`,
+      :class:`SDDPSolver`, and :class:`InvestmentBlockTestSolver`.
 
-    def parse(self, log: str) -> dict:
-        """
-        Parse the solver log string and return a result dictionary.
-
-        Parameters
-        ----------
-        log : str
-            The full solver log output.
-
-        Returns
-        -------
-        dict
-            A dictionary with the following keys:
-
-            - ``"status"`` : str – solver status string.
-            - ``"objective_value"`` : float – best objective value
-              (``nan`` when unavailable).
-            - ``"lower_bound"`` : float – lower bound
-              (``nan`` when unavailable).
-            - ``"upper_bound"`` : float – upper bound
-              (``nan`` when unavailable).
-        """
-        raise NotImplementedError(
-            "Method parse must be implemented in the derived class."
-        )
-
-
-class StatusBoundsSolverLogParser(SolverLogParser):
-    """
-    Log parser for SMS++ solvers that report a status string, an upper bound,
-    and a lower bound.
-
-    This parser is used by solvers whose logs contain lines of the form::
-
-        Status = <value>
-        Upper bound = <value>
-        Lower bound = <value>
-
-    If the status pattern is not found, the parser returns a ``"Failed"``
-    result with ``nan`` for all numeric fields.
+    Log text is normalized to Unix line endings before matching so that the
+    same patterns work on both Windows (``\\r\\n``) and Linux (``\\n``).
 
     Parameters
     ----------
-    status_pattern : str
-        Regular expression (with one capture group) to extract the status.
-    upper_bound_pattern : str
-        Regular expression (with one capture group) to extract the upper bound.
-    lower_bound_pattern : str
-        Regular expression (with one capture group) to extract the lower bound.
+    solver_tool : SMSPPSolverTool
+        The solver tool instance whose log to parse.  After calling the
+        accessor the following attributes on ``solver_tool`` are updated:
+        ``_status``, ``_objective_value``, ``_lower_bound``, ``_upper_bound``.
+    status_pattern : str, optional
+        Regular expression with one capture group to extract the solver status
+        string (e.g. ``"Status = (.*)\\n"``).  Use together with
+        ``upper_bound_pattern`` and ``lower_bound_pattern`` for solvers that
+        report status and bounds.
+    upper_bound_pattern : str, optional
+        Regular expression with one capture group to extract the upper bound.
+    lower_bound_pattern : str, optional
+        Regular expression with one capture group to extract the lower bound.
+    objective_pattern : str, optional
+        Regular expression with one capture group to extract the objective
+        value.  Use together with ``solver_status_pattern`` for solvers that
+        report an objective value.
+    solver_status_pattern : str, optional
+        Regular expression with one capture group to extract the solver status
+        string when in *objective value* mode.  Defaults to
+        ``"Solver status: (.*)\\n"``.
+
+    Raises
+    ------
+    ValueError
+        If :meth:`SMSPPSolverTool.optimize` has not been called yet when the
+        accessor is invoked.
+    NotImplementedError
+        If neither ``status_pattern`` nor ``objective_pattern`` is provided
+        when the accessor is invoked.
 
     Examples
     --------
-    >>> parser = StatusBoundsSolverLogParser(
+    Status + bounds mode (e.g. UCBlockSolver):
+
+    >>> import pysmspp
+    >>> from pysmspp.smspp_tools import SolverLogParserAccessor
+    >>> solver = object.__new__(pysmspp.UCBlockSolver)
+    >>> solver._log = "Status = kOpt\\nUpper bound = 100.0\\nLower bound = 90.0\\n"
+    >>> accessor = SolverLogParserAccessor(
+    ...     solver,
     ...     status_pattern="Status = (.*)\\n",
     ...     upper_bound_pattern="Upper bound = (.*)\\n",
     ...     lower_bound_pattern="Lower bound = (.*)\\n",
     ... )
-    >>> result = parser.parse("Status = kOpt\\nUpper bound = 100.0\\nLower bound = 90.0\\n")
-    >>> result["status"]
+    >>> accessor()
+    >>> solver._status
     'kOpt'
-    >>> result["objective_value"]
-    100.0
-    """
 
-    def __init__(
-        self,
-        status_pattern: str,
-        upper_bound_pattern: str,
-        lower_bound_pattern: str,
-    ):
-        self.status_pattern = status_pattern
-        self.upper_bound_pattern = upper_bound_pattern
-        self.lower_bound_pattern = lower_bound_pattern
+    Objective value mode (e.g. InvestmentBlockTestSolver):
 
-    def parse(self, log: str) -> dict:
-        """
-        Parse a solver log to extract status, upper bound, and lower bound.
-
-        Parameters
-        ----------
-        log : str
-            The full solver log output.
-
-        Returns
-        -------
-        dict
-            Dictionary with keys ``"status"``, ``"objective_value"``,
-            ``"lower_bound"``, and ``"upper_bound"``.
-        """
-        res = re.search(self.status_pattern, log)
-
-        if not res:
-            return {
-                "status": "Failed",
-                "objective_value": np.nan,
-                "lower_bound": np.nan,
-                "upper_bound": np.nan,
-            }
-
-        status = res.group(1).replace("\r", "")
-        objective_value = np.nan
-        upper_bound = np.nan
-        lower_bound = np.nan
-
-        res = re.search(self.upper_bound_pattern, log)
-        if res:
-            upper_bound = float(res.group(1).replace("\r", ""))
-            objective_value = upper_bound
-
-        res = re.search(self.lower_bound_pattern, log)
-        if res:
-            lower_bound = float(res.group(1).replace("\r", ""))
-
-        return {
-            "status": status,
-            "objective_value": objective_value,
-            "lower_bound": lower_bound,
-            "upper_bound": upper_bound,
-        }
-
-
-class ObjectiveValueSolverLogParser(SolverLogParser):
-    """
-    Log parser for SMS++ solvers that report an objective value and a solver
-    status string.
-
-    This parser is used by solvers whose logs contain lines of the form::
-
-        <objective_label> <value>
-        Solver status: <value>
-
-    If the objective pattern is not found, the parser returns a ``"Failed"``
-    result with ``nan`` for all numeric fields.  Lower and upper bounds are
-    always ``nan`` for this parser type.
-
-    Parameters
-    ----------
-    objective_pattern : str
-        Regular expression (with one capture group) to extract the objective
-        value.
-    solver_status_pattern : str, optional
-        Regular expression (with one capture group) to extract the solver
-        status string.  Defaults to ``"Solver status: (.*)\\n"``.
-
-    Examples
-    --------
-    >>> parser = ObjectiveValueSolverLogParser(
-    ...     objective_pattern="Solution value: (.*)\\n",
+    >>> solver2 = object.__new__(pysmspp.InvestmentBlockTestSolver)
+    >>> solver2._log = "Fi* = 42.0\\nSolver status: kOpt\\n"
+    >>> accessor2 = SolverLogParserAccessor(
+    ...     solver2,
+    ...     objective_pattern=r"Fi\\* = (.*)\\n",
     ... )
-    >>> result = parser.parse("Solution value: 42.5\\nSolver status: kOpt\\n")
-    >>> result["status"]
+    >>> accessor2()
+    >>> solver2._status
     'Success (kOpt)'
-    >>> result["objective_value"]
-    42.5
     """
 
     def __init__(
         self,
-        objective_pattern: str,
+        solver_tool: "SMSPPSolverTool",
+        *,
+        status_pattern: str | None = None,
+        upper_bound_pattern: str | None = None,
+        lower_bound_pattern: str | None = None,
+        objective_pattern: str | None = None,
         solver_status_pattern: str = "Solver status: (.*)\n",
     ):
-        self.objective_pattern = objective_pattern
-        self.solver_status_pattern = solver_status_pattern
+        self._solver = solver_tool
+        self._status_pattern = status_pattern
+        self._upper_bound_pattern = upper_bound_pattern
+        self._lower_bound_pattern = lower_bound_pattern
+        self._objective_pattern = objective_pattern
+        self._solver_status_pattern = solver_status_pattern
 
-    def parse(self, log: str) -> dict:
+    def __call__(self) -> None:
         """
-        Parse a solver log to extract objective value and solver status.
+        Parse the log of the associated solver tool and update its attributes.
 
-        Parameters
-        ----------
-        log : str
-            The full solver log output.
+        The log text is normalized to Unix line endings (``\\n``) before
+        matching so that the same regex patterns work on both Windows and
+        Linux.
 
-        Returns
-        -------
-        dict
-            Dictionary with keys ``"status"``, ``"objective_value"``,
-            ``"lower_bound"``, and ``"upper_bound"``.
+        Updates ``_status``, ``_objective_value``, ``_lower_bound``, and
+        ``_upper_bound`` on the associated :class:`SMSPPSolverTool` instance.
+
+        Raises
+        ------
+        ValueError
+            If :meth:`SMSPPSolverTool.optimize` has not been called yet.
+        NotImplementedError
+            If neither ``status_pattern`` nor ``objective_pattern`` was
+            provided at construction time.
         """
-        res = re.search(self.objective_pattern, log)
+        if self._solver._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        # Normalize line endings for cross-platform compatibility
+        log = self._solver._log.replace("\r\n", "\n").replace("\r", "\n")
+
+        if self._status_pattern is not None:
+            self._parse_status_bounds(log)
+        elif self._objective_pattern is not None:
+            self._parse_objective_value(log)
+        else:
+            raise NotImplementedError(
+                "A 'status_pattern' or 'objective_pattern' must be provided "
+                "to parse the solver log."
+            )
+
+    def _parse_status_bounds(self, log: str) -> None:
+        """Parse status, upper bound, and lower bound from the normalized log."""
+        res = re.search(self._status_pattern, log)
 
         if not res:
-            return {
-                "status": "Failed",
-                "objective_value": np.nan,
-                "lower_bound": np.nan,
-                "upper_bound": np.nan,
-            }
+            self._solver._status = "Failed"
+            self._solver._objective_value = np.nan
+            self._solver._lower_bound = np.nan
+            self._solver._upper_bound = np.nan
+            return
 
-        objective_value = float(res.group(1).replace("\r", ""))
+        self._solver._status = res.group(1)
+        self._solver._objective_value = np.nan
+        self._solver._upper_bound = np.nan
+        self._solver._lower_bound = np.nan
 
-        res = re.search(self.solver_status_pattern, log)
-        smspp_status = res.group(1).replace("\r", "") if res else "unknown"
+        if self._upper_bound_pattern:
+            res = re.search(self._upper_bound_pattern, log)
+            if res:
+                ub = float(res.group(1))
+                self._solver._upper_bound = ub
+                self._solver._objective_value = ub
 
-        status = (
+        if self._lower_bound_pattern:
+            res = re.search(self._lower_bound_pattern, log)
+            if res:
+                self._solver._lower_bound = float(res.group(1))
+
+    def _parse_objective_value(self, log: str) -> None:
+        """Parse objective value and solver status from the normalized log."""
+        res = re.search(self._objective_pattern, log)
+
+        if not res:
+            self._solver._status = "Failed"
+            self._solver._objective_value = np.nan
+            self._solver._lower_bound = np.nan
+            self._solver._upper_bound = np.nan
+            return
+
+        objective_value = float(res.group(1))
+
+        res = re.search(self._solver_status_pattern, log)
+        smspp_status = res.group(1) if res else "unknown"
+
+        self._solver._status = (
             f"Success ({smspp_status})"
             if np.isfinite(objective_value)
             else f"Failed ({smspp_status})"
         )
-
-        return {
-            "status": status,
-            "objective_value": objective_value,
-            "lower_bound": np.nan,
-            "upper_bound": np.nan,
-        }
+        self._solver._objective_value = objective_value
+        self._solver._lower_bound = np.nan
+        self._solver._upper_bound = np.nan
 
 
 class SMSPPSolverTool:
@@ -237,9 +204,18 @@ class SMSPPSolverTool:
     Base class for the SMS++ solver tools.
     """
 
-    # Subclasses set this to a SolverLogParser instance appropriate for their
-    # log output format.
-    _log_parser: SolverLogParser | None = None
+    # Class-level attributes for log parsing.
+    # Subclasses configure these to avoid overriding parse_solver_log.
+    #
+    # Status + bounds mode (UCBlockSolver, TSSBlockSolver):
+    #   set _log_status_pattern, _log_upper_bound_pattern, _log_lower_bound_pattern.
+    # Objective value mode (InvestmentBlockSolver, SDDPSolver,
+    #   InvestmentBlockTestSolver): set _log_objective_pattern.
+    _log_status_pattern: str | None = None
+    _log_upper_bound_pattern: str | None = None
+    _log_lower_bound_pattern: str | None = None
+    _log_objective_pattern: str | None = None
+    _log_solver_status_pattern: str = "Solver status: (.*)\n"
 
     def __init__(
         self,
@@ -485,42 +461,33 @@ class SMSPPSolverTool:
         """
         Parse the solver output log and update the solver's result attributes.
 
-        Delegates to the :class:`SolverLogParser` instance assigned to
-        ``_log_parser``.  After parsing, the following attributes are updated:
-
-        - :attr:`status`
-        - :attr:`objective_value`
-        - :attr:`lower_bound`
-        - :attr:`upper_bound`
+        Constructs a :class:`SolverLogParserAccessor` from the class-level
+        pattern attributes and calls it to update :attr:`status`,
+        :attr:`objective_value`, :attr:`lower_bound`, and :attr:`upper_bound`
+        in-place.
 
         Raises
         ------
         ValueError
             If :meth:`optimize` has not been called yet (``_log`` is ``None``).
         NotImplementedError
-            If ``_log_parser`` is not set and the method is not overridden by a
+            If neither ``_log_status_pattern`` nor ``_log_objective_pattern``
+            is configured on the class and the method is not overridden by a
             subclass.
 
         Notes
         -----
-        Subclasses that require custom parsing logic may override this method
-        directly instead of setting ``_log_parser``.
+        Subclasses that require fully custom parsing logic may override this
+        method directly instead of setting the class-level pattern attributes.
         """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        if self._log_parser is None:
-            raise NotImplementedError(
-                "A SolverLogParser must be assigned to the '_log_parser' class "
-                "attribute, or 'parse_solver_log' must be overridden in the "
-                "derived class."
-            )
-
-        result = self._log_parser.parse(self._log)
-        self._status = result["status"]
-        self._objective_value = result["objective_value"]
-        self._lower_bound = result["lower_bound"]
-        self._upper_bound = result["upper_bound"]
+        SolverLogParserAccessor(
+            self,
+            status_pattern=self._log_status_pattern,
+            upper_bound_pattern=self._log_upper_bound_pattern,
+            lower_bound_pattern=self._log_lower_bound_pattern,
+            objective_pattern=self._log_objective_pattern,
+            solver_status_pattern=self._log_solver_status_pattern,
+        )()
 
     @property
     def status(self):
@@ -584,11 +551,9 @@ class UCBlockSolver(SMSPPSolverTool):
     Class to interact with the UCBlockSolver tool from SMS++.
     """
 
-    _log_parser = StatusBoundsSolverLogParser(
-        status_pattern="Status = (.*)\n",
-        upper_bound_pattern="Upper bound = (.*)\n",
-        lower_bound_pattern="Lower bound = (.*)\n",
-    )
+    _log_status_pattern = "Status = (.*)\n"
+    _log_upper_bound_pattern = "Upper bound = (.*)\n"
+    _log_lower_bound_pattern = "Lower bound = (.*)\n"
 
     def __init__(
         self,
@@ -640,9 +605,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
     Class to interact with the InvestmentBlockTestSolver tool from SMS++, with executable file "InvestmentBlock_test".
     """
 
-    _log_parser = ObjectiveValueSolverLogParser(
-        objective_pattern=r"Fi\* = (.*)\n",
-    )
+    _log_objective_pattern = r"Fi\* = (.*)\n"
 
     def __init__(
         self,
@@ -694,9 +657,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
     Class to interact with the InvestmentBlockSolver tool from SMS++, with name "investment_solver".
     """
 
-    _log_parser = ObjectiveValueSolverLogParser(
-        objective_pattern="Solution value: (.*)\n",
-    )
+    _log_objective_pattern = "Solution value: (.*)\n"
 
     def __init__(
         self,
@@ -748,9 +709,7 @@ class SDDPSolver(SMSPPSolverTool):
     Class to interact with the SDDPSolver tool from SMS++, with name "sddp_solver".
     """
 
-    _log_parser = ObjectiveValueSolverLogParser(
-        objective_pattern="Solution value: (.*)\n",
-    )
+    _log_objective_pattern = "Solution value: (.*)\n"
 
     def __init__(
         self,
@@ -804,11 +763,9 @@ class TSSBlockSolver(SMSPPSolverTool):
     Class to interact with the TSSBlockSolver tool from SMS++, with name "tssb_solver".
     """
 
-    _log_parser = StatusBoundsSolverLogParser(
-        status_pattern="Status = (.*)\n",
-        upper_bound_pattern="Upper bound = (.*)\n",
-        lower_bound_pattern="Lower bound = (.*)\n",
-    )
+    _log_status_pattern = "Status = (.*)\n"
+    _log_upper_bound_pattern = "Upper bound = (.*)\n"
+    _log_lower_bound_pattern = "Lower bound = (.*)\n"
 
     def __init__(
         self,
