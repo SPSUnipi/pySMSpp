@@ -112,7 +112,7 @@ def test_optimize_ucsolver_all_components(force_smspp):
     configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
 
     if UCBlockSolver().is_available() or force_smspp:
-        result = b.optimize(configfile, fp_temp, fp_log, logging=True)
+        result = b.optimize(configfile, fp_temp, fp_log)
 
         assert "success" in result.status.lower()
         assert "error" not in result.log.lower()
@@ -185,15 +185,15 @@ def test_optimize_tssbsolver(force_smspp):
     from pysmspp import TSSBlockSolver
 
     tssb_solver = TSSBlockSolver(
-        configfile=str(configfile),
         fp_network=fp_network,
         fp_log=fp_log,
+        configfile=str(configfile),
     )
 
     tssb_solver_new = TSSBlockSolver(
-        configfile=str(configfile),
         fp_network=fp_tssb_new,
         fp_log=fp_log_new,
+        configfile=str(configfile),
     )
 
     if tssb_solver.is_available() or force_smspp:
