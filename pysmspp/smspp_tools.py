@@ -19,8 +19,10 @@ class SMSPPSolverTool:
         help_option: str = "-h",
         fp_network: Path | str = None,
         configfile: Path | str = None,
+        configsolution: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        **kwargs,
     ):
         """
         Constructor for an abstract SMSPPSolverTool.
@@ -28,30 +30,37 @@ class SMSPPSolverTool:
         Parameters
         ----------
         exec_file : str
-            The name of the executable file.
+            The name or parth of the executable file.
         help_option : str, optional
             The option to display the help message, by default "-h".
         fp_network : Path | str, optional
             Path to the SMSpp network to solve, by default None.
         configfile : Path | str, optional
             Path to the configuration file, by default None.
+            This option specifies the solver configuration with option "-S" when provided.
         fp_solution : Path | str, optional
             Path to the solution file, by default None.
+            When provided, options "-o" and "-O" are added to the executable call to specify the output solution file.
+        configsolution : Path | str, optional
+            Path to the configuration solution file, by default None.
+            When provided, option "-C" is added to the executable call to specify the configuration solution file.
         fp_log : Path | str, optional
-            Path to the log file, by default None.
+            When provided, the solver log is saved to the specified solver, by default None.
+        **kwargs
+            Additional keyword arguments to pass as options to the function.
+            The keys of the kwargs should be the option name, and the value should be the option value.
+            For example, if the function has an option "-x" that takes a value, the kwargs should include {"x": value}.
         """
         self._exec_file = exec_file
         self._help_option = help_option
 
         self.fp_network = str(Path(fp_network).resolve())
-        self.configdir = str(Path(configfile).resolve().parent.resolve())
-        self.configfile = str(Path(configfile).resolve().name)
+        self.configfile = str(Path(configfile).resolve())
+        self.configsolution = str(Path(configsolution).resolve().name)
         self.fp_log = None if fp_log is None else str(Path(fp_log).resolve())
         self.fp_solution = (
             None if fp_solution is None else str(Path(fp_solution).resolve())
         )
-        if not self.configdir.endswith("/"):
-            self.configdir += "/"
 
         self._status = None
         self._log = None
@@ -62,21 +71,28 @@ class SMSPPSolverTool:
         self._subprocess_time = None
         self._solution_time = None
         self._computational_time = None
+        self._kwargs = kwargs
 
     def calculate_executable_call(self):
         """
-        Calculate the executable call to run the solver tool.
+        Generate the command-line call for the UCBlock solver.
 
-        This method is meant to be overridden by subclasses. The base class
-        implementation calls the function provided during initialization.
-
-        Notes
-        -----
-        Subclasses override this method to return solver-specific command strings.
+        Returns
+        -------
+        str
+            The command string to execute the ucblock_solver.
         """
-        raise NotImplementedError(
-            "Method calculate_executable_call must be implemented in the derived class."
-        )
+        configdir, configfile = os.path.split(Path(self.configfile).resolve())
+        networkdir, networkfile = os.path.split(Path(self.fp_network).resolve())
+        exec_path = f"{self._exec_file} {networkfile} -p {networkdir} -c {configdir} -S {configfile}"
+        if self.fp_solution is not None:
+            exec_path += f" -o -O {self.fp_solution}"
+        if self.configsolution is not None:
+            exec_path += f" -C {self.configsolution}"
+        for option, value in self._kwargs.items():
+            exec_path += f" -{option} {value}"
+
+        return exec_path
 
     def __repr__(self):
         """
@@ -352,47 +368,28 @@ class UCBlockSolver(SMSPPSolverTool):
 
     def __init__(
         self,
-        fp_network: Path | str = "",
-        configfile: Path | str = "",
+        exec_file: str = "ucblock_solver",
+        help_option: str = "-h",
+        fp_network: Path | str = None,
+        configfile: Path | str = None,
+        configsolution: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
         **kwargs,
     ):
         """
-        Parameters
-        ----------
-        fp_network : Path | str
-            Path to the SMSpp network to solve.
-        configfile : Path | str
-            Path to the configuration file.
-        fp_solution : Path | str, optional
-            Path to the solution file, by default None.
-        fp_log : Path | str, optional
-            Path to the log file, by default None.
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
         """
         super().__init__(
-            exec_file="ucblock_solver",
+            exec_file=exec_file,
+            help_option=help_option,
             fp_network=fp_network,
             configfile=configfile,
+            configsolution=configsolution,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            **kwargs,
         )
-
-    def calculate_executable_call(self):
-        """
-        Generate the command-line call for the UCBlock solver.
-
-        Returns
-        -------
-        str
-            The command string to execute the ucblock_solver.
-        """
-        exec_path = (
-            f"ucblock_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
-        )
-        if self.fp_solution is not None:
-            exec_path += f" -o -O {self.fp_solution}"
-        return exec_path
 
 
 class InvestmentBlockTestSolver(SMSPPSolverTool):
@@ -402,47 +399,30 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
 
     def __init__(
         self,
-        fp_network: Path | str = "",
-        configfile: Path | str = "",
+        exec_file: str = "InvestmentBlock_test",
+        help_option: str = "-h",
+        fp_network: Path | str = None,
+        configfile: Path | str = None,
+        configsolution: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
         **kwargs,
     ):
         """
-        Constructor for the InvestmentBlockTestSolver, with executable file "InvestmentBlock_test".
-
-        Parameters
-        ----------
-        fp_network : Path | str
-            Path to the SMSpp network to solve.
-        configfile : Path | str
-            Path to the configuration file.
-        fp_solution : Path | str, optional
-            Path to the solution file, by default None.
-        fp_log : Path | str, optional
-            Path to the log file, by default None.
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
         """
+        if "v" not in self._kwargs:
+            kwargs["v"] = ""
         super().__init__(
-            exec_file="InvestmentBlock_test",
+            exec_file=exec_file,
+            help_option=help_option,
             fp_network=fp_network,
             configfile=configfile,
+            configsolution=configsolution,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            **kwargs,
         )
-
-    def calculate_executable_call(self):
-        """
-        Generate the command-line call for the InvestmentBlock test solver.
-
-        Returns
-        -------
-        str
-            The command string to execute the InvestmentBlock_test solver.
-        """
-        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile} -v -o"
-        if self.fp_solution is not None:
-            exec_path += f" -O {self.fp_solution}"
-        return exec_path
 
     def parse_solver_log(
         self,
@@ -489,47 +469,28 @@ class InvestmentBlockSolver(SMSPPSolverTool):
 
     def __init__(
         self,
-        fp_network: Path | str = "",
-        configfile: Path | str = "",
+        exec_file: str = "investment_solver",
+        help_option: str = "-h",
+        fp_network: Path | str = None,
+        configfile: Path | str = None,
+        configsolution: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
         **kwargs,
     ):
         """
-        Constructor for the InvestmentBlockSolver, with executable file "investment_solver".
-
-        Parameters
-        ----------
-        fp_network : Path | str
-            Path to the SMSpp network to solve.
-        configfile : Path | str
-            Path to the configuration file.
-        fp_solution : Path | str, optional
-            Path to the solution file, by default None.
-        fp_log : Path | str, optional
-            Path to the log file, by default None.
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
         """
         super().__init__(
-            exec_file="investment_solver",
+            exec_file=exec_file,
+            help_option=help_option,
             fp_network=fp_network,
             configfile=configfile,
+            configsolution=configsolution,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            **kwargs,
         )
-
-    def calculate_executable_call(self):
-        """
-        Generate the command-line call for the Investment solver.
-
-        Returns
-        -------
-        str
-            The command string to execute the investment_solver.
-        """
-        exec_path = f"investment_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
-        if self.fp_solution is not None:
-            exec_path += f" -o -O {self.fp_solution}"
-        return exec_path
 
 
 class SDDPSolver(SMSPPSolverTool):
@@ -539,49 +500,28 @@ class SDDPSolver(SMSPPSolverTool):
 
     def __init__(
         self,
-        fp_network: Path | str = "",
-        configfile: Path | str = "",
+        exec_file: str = "sddp_solver",
+        help_option: str = "-h",
+        fp_network: Path | str = None,
+        configfile: Path | str = None,
+        configsolution: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
         **kwargs,
     ):
         """
-        Constructor for the SDDPSolver, with executable file "sddp_solver".
-
-        Parameters
-        ----------
-        fp_network : Path | str
-            Path to the SMSpp network to solve.
-        configfile : Path | str
-            Path to the configuration file.
-        fp_solution : Path | str, optional
-            Path to the solution file, by default None.
-        fp_log : Path | str, optional
-            Path to the log file, by default None.
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
         """
         super().__init__(
-            exec_file="sddp_solver",
+            exec_file=exec_file,
+            help_option=help_option,
             fp_network=fp_network,
             configfile=configfile,
+            configsolution=configsolution,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            **kwargs,
         )
-
-    def calculate_executable_call(self):
-        """
-        Generate the command-line call for the SDDP solver.
-
-        Returns
-        -------
-        str
-            The command string to execute the sddp_solver.
-        """
-        exec_path = (
-            f"sddp_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
-        )
-        if self.fp_solution is not None:
-            exec_path += f" -o -O {self.fp_solution}"
-        return exec_path
 
     def parse_solver_log(
         self,
@@ -628,48 +568,28 @@ class TSSBlockSolver(SMSPPSolverTool):
 
     def __init__(
         self,
-        fp_network: Path | str = "",
-        configfile: Path | str = "",
+        exec_file: str = "tssb_solver",
+        help_option: str = "-h",
+        fp_network: Path | str = None,
+        configfile: Path | str = None,
+        configsolution: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
         **kwargs,
     ):
         """
-        Constructor for the TSSBlockSolver, with executable file "tssb_solver".
-
-        Parameters
-        ----------
-        fp_network : Path | str
-            Path to the SMSpp network to solve.
-        configfile : Path | str
-            Path to the configuration file.
-        fp_solution : Path | str, optional
-            Path to the solution file, by default None.
-        fp_log : Path | str, optional
-            Path to the log file, by default None.
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
         """
         super().__init__(
-            exec_file="tssb_solver",
+            exec_file=exec_file,
+            help_option=help_option,
             fp_network=fp_network,
             configfile=configfile,
+            configsolution=configsolution,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            **kwargs,
         )
-
-    def calculate_executable_call(self):
-        """
-        Generate the command-line call for the TSSB solver.
-
-        Returns
-        -------
-        str
-            The command string to execute the tssb_solver.
-        """
-        fp_dir, fp_name = os.path.split(self.fp_network)
-        exec_path = f"tssb_solver {fp_name} -p {fp_dir}/ -c {self.configdir} -S {self.configfile}"
-        if self.fp_solution is not None:
-            exec_path += f" -o -O {self.fp_solution}"
-        return exec_path
 
 
 def is_smspp_installed(solvers: list[SMSPPSolverTool] = [UCBlockSolver()]) -> bool:
