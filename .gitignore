@@ -167,6 +167,7 @@ cython_debug/
 
 # testing temporary folders
 test/temp*
+test/test/
 
 # lp files
 *.lp
