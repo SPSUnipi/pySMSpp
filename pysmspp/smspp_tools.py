@@ -30,7 +30,7 @@ class SMSPPSolverTool:
         Parameters
         ----------
         exec_file : str
-            The name or parth of the executable file.
+            The name or path of the executable file.
         help_option : str, optional
             The option to display the help message, by default "-h".
         fp_network : Path | str, optional
