@@ -8,23 +8,238 @@ import time
 import psutil
 
 
+class SolverLogParser:
+    """
+    Base class for parsing SMS++ solver output logs.
+
+    Subclasses implement the :meth:`parse` method to extract solver results
+    (status, objective value, bounds) from solver-specific log output.
+
+    Subclasses are associated with solver classes via the ``_log_parser``
+    class attribute on :class:`SMSPPSolverTool`.
+
+    See Also
+    --------
+    StatusBoundsSolverLogParser : Parser for solvers reporting status and bounds.
+    ObjectiveValueSolverLogParser : Parser for solvers reporting an objective value.
+    """
+
+    def parse(self, log: str) -> dict:
+        """
+        Parse the solver log string and return a result dictionary.
+
+        Parameters
+        ----------
+        log : str
+            The full solver log output.
+
+        Returns
+        -------
+        dict
+            A dictionary with the following keys:
+
+            - ``"status"`` : str – solver status string.
+            - ``"objective_value"`` : float – best objective value
+              (``nan`` when unavailable).
+            - ``"lower_bound"`` : float – lower bound
+              (``nan`` when unavailable).
+            - ``"upper_bound"`` : float – upper bound
+              (``nan`` when unavailable).
+        """
+        raise NotImplementedError(
+            "Method parse must be implemented in the derived class."
+        )
+
+
+class StatusBoundsSolverLogParser(SolverLogParser):
+    """
+    Log parser for SMS++ solvers that report a status string, an upper bound,
+    and a lower bound.
+
+    This parser is used by solvers whose logs contain lines of the form::
+
+        Status = <value>
+        Upper bound = <value>
+        Lower bound = <value>
+
+    If the status pattern is not found, the parser returns a ``"Failed"``
+    result with ``nan`` for all numeric fields.
+
+    Parameters
+    ----------
+    status_pattern : str
+        Regular expression (with one capture group) to extract the status.
+    upper_bound_pattern : str
+        Regular expression (with one capture group) to extract the upper bound.
+    lower_bound_pattern : str
+        Regular expression (with one capture group) to extract the lower bound.
+
+    Examples
+    --------
+    >>> parser = StatusBoundsSolverLogParser(
+    ...     status_pattern="Status = (.*)\\n",
+    ...     upper_bound_pattern="Upper bound = (.*)\\n",
+    ...     lower_bound_pattern="Lower bound = (.*)\\n",
+    ... )
+    >>> result = parser.parse("Status = kOpt\\nUpper bound = 100.0\\nLower bound = 90.0\\n")
+    >>> result["status"]
+    'kOpt'
+    >>> result["objective_value"]
+    100.0
+    """
+
+    def __init__(
+        self,
+        status_pattern: str,
+        upper_bound_pattern: str,
+        lower_bound_pattern: str,
+    ):
+        self.status_pattern = status_pattern
+        self.upper_bound_pattern = upper_bound_pattern
+        self.lower_bound_pattern = lower_bound_pattern
+
+    def parse(self, log: str) -> dict:
+        """
+        Parse a solver log to extract status, upper bound, and lower bound.
+
+        Parameters
+        ----------
+        log : str
+            The full solver log output.
+
+        Returns
+        -------
+        dict
+            Dictionary with keys ``"status"``, ``"objective_value"``,
+            ``"lower_bound"``, and ``"upper_bound"``.
+        """
+        res = re.search(self.status_pattern, log)
+
+        if not res:
+            return {
+                "status": "Failed",
+                "objective_value": np.nan,
+                "lower_bound": np.nan,
+                "upper_bound": np.nan,
+            }
+
+        status = res.group(1).replace("\r", "")
+        objective_value = np.nan
+        upper_bound = np.nan
+        lower_bound = np.nan
+
+        res = re.search(self.upper_bound_pattern, log)
+        if res:
+            upper_bound = float(res.group(1).replace("\r", ""))
+            objective_value = upper_bound
+
+        res = re.search(self.lower_bound_pattern, log)
+        if res:
+            lower_bound = float(res.group(1).replace("\r", ""))
+
+        return {
+            "status": status,
+            "objective_value": objective_value,
+            "lower_bound": lower_bound,
+            "upper_bound": upper_bound,
+        }
+
+
+class ObjectiveValueSolverLogParser(SolverLogParser):
+    """
+    Log parser for SMS++ solvers that report an objective value and a solver
+    status string.
+
+    This parser is used by solvers whose logs contain lines of the form::
+
+        <objective_label> <value>
+        Solver status: <value>
+
+    If the objective pattern is not found, the parser returns a ``"Failed"``
+    result with ``nan`` for all numeric fields.  Lower and upper bounds are
+    always ``nan`` for this parser type.
+
+    Parameters
+    ----------
+    objective_pattern : str
+        Regular expression (with one capture group) to extract the objective
+        value.
+    solver_status_pattern : str, optional
+        Regular expression (with one capture group) to extract the solver
+        status string.  Defaults to ``"Solver status: (.*)\\n"``.
+
+    Examples
+    --------
+    >>> parser = ObjectiveValueSolverLogParser(
+    ...     objective_pattern="Solution value: (.*)\\n",
+    ... )
+    >>> result = parser.parse("Solution value: 42.5\\nSolver status: kOpt\\n")
+    >>> result["status"]
+    'Success (kOpt)'
+    >>> result["objective_value"]
+    42.5
+    """
+
+    def __init__(
+        self,
+        objective_pattern: str,
+        solver_status_pattern: str = "Solver status: (.*)\n",
+    ):
+        self.objective_pattern = objective_pattern
+        self.solver_status_pattern = solver_status_pattern
+
+    def parse(self, log: str) -> dict:
+        """
+        Parse a solver log to extract objective value and solver status.
+
+        Parameters
+        ----------
+        log : str
+            The full solver log output.
+
+        Returns
+        -------
+        dict
+            Dictionary with keys ``"status"``, ``"objective_value"``,
+            ``"lower_bound"``, and ``"upper_bound"``.
+        """
+        res = re.search(self.objective_pattern, log)
+
+        if not res:
+            return {
+                "status": "Failed",
+                "objective_value": np.nan,
+                "lower_bound": np.nan,
+                "upper_bound": np.nan,
+            }
+
+        objective_value = float(res.group(1).replace("\r", ""))
+
+        res = re.search(self.solver_status_pattern, log)
+        smspp_status = res.group(1).replace("\r", "") if res else "unknown"
+
+        status = (
+            f"Success ({smspp_status})"
+            if np.isfinite(objective_value)
+            else f"Failed ({smspp_status})"
+        )
+
+        return {
+            "status": status,
+            "objective_value": objective_value,
+            "lower_bound": np.nan,
+            "upper_bound": np.nan,
+        }
+
+
 class SMSPPSolverTool:
     """
     Base class for the SMS++ solver tools.
     """
 
-    # Class-level attributes for log parsing.
-    # Subclasses configure these to avoid overriding parse_solver_log.
-    #
-    # Pattern A (UCBlockSolver, TSSBlockSolver): set _log_status_pattern,
-    #   _log_upper_bound_pattern, and _log_lower_bound_pattern.
-    # Pattern B (InvestmentBlockSolver, SDDPSolver, InvestmentBlockTestSolver):
-    #   set _log_objective_pattern (and optionally _log_solver_status_pattern).
-    _log_status_pattern = None
-    _log_objective_pattern = None
-    _log_upper_bound_pattern = None
-    _log_lower_bound_pattern = None
-    _log_solver_status_pattern = "Solver status: (.*)\n"
+    # Subclasses set this to a SolverLogParser instance appropriate for their
+    # log output format.
+    _log_parser: SolverLogParser | None = None
 
     def __init__(
         self,
@@ -268,81 +483,44 @@ class SMSPPSolverTool:
 
     def parse_solver_log(self):
         """
-        Check the output of the SolverTool.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
+        Parse the solver output log and update the solver's result attributes.
 
-        The parsing behaviour is controlled by class-level pattern attributes:
+        Delegates to the :class:`SolverLogParser` instance assigned to
+        ``_log_parser``.  After parsing, the following attributes are updated:
 
-        - **Pattern A** (e.g. UCBlockSolver, TSSBlockSolver): set
-          ``_log_status_pattern``, ``_log_upper_bound_pattern``, and
-          ``_log_lower_bound_pattern``.
-        - **Pattern B** (e.g. InvestmentBlockSolver, SDDPSolver,
-          InvestmentBlockTestSolver): set ``_log_objective_pattern`` and,
-          optionally, ``_log_solver_status_pattern``.
+        - :attr:`status`
+        - :attr:`objective_value`
+        - :attr:`lower_bound`
+        - :attr:`upper_bound`
 
-        Subclasses that require custom parsing logic may still override this
-        method directly.
+        Raises
+        ------
+        ValueError
+            If :meth:`optimize` has not been called yet (``_log`` is ``None``).
+        NotImplementedError
+            If ``_log_parser`` is not set and the method is not overridden by a
+            subclass.
+
+        Notes
+        -----
+        Subclasses that require custom parsing logic may override this method
+        directly instead of setting ``_log_parser``.
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
 
-        if self._log_status_pattern is not None:
-            # Pattern A: extract status, upper bound, and lower bound
-            res = re.search(self._log_status_pattern, self._log)
-
-            if not res:
-                self._status = "Failed"
-                self._objective_value = np.nan
-                self._lower_bound = np.nan
-                self._upper_bound = np.nan
-                return
-
-            self._status = res.group(1).replace("\r", "")
-
-            if self._log_upper_bound_pattern:
-                res = re.search(self._log_upper_bound_pattern, self._log)
-                if res:
-                    ub = float(res.group(1).replace("\r", ""))
-                    self._upper_bound = ub
-                    self._objective_value = ub
-
-            if self._log_lower_bound_pattern:
-                res = re.search(self._log_lower_bound_pattern, self._log)
-                if res:
-                    lb = float(res.group(1).replace("\r", ""))
-                    self._lower_bound = lb
-
-        elif self._log_objective_pattern is not None:
-            # Pattern B: extract objective value and solver status
-            res = re.search(self._log_objective_pattern, self._log)
-
-            if not res:
-                self._status = "Failed"
-                self._objective_value = np.nan
-                self._lower_bound = np.nan
-                self._upper_bound = np.nan
-                return
-
-            self._objective_value = float(res.group(1).replace("\r", ""))
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-
-            res = re.search(self._log_solver_status_pattern, self._log)
-            if res:
-                smspp_status = res.group(1).replace("\r", "")
-            else:
-                smspp_status = "unknown"
-
-            if np.isfinite(self._objective_value):
-                self._status = f"Success ({smspp_status})"
-            else:
-                self._status = f"Failed ({smspp_status})"
-
-        else:
+        if self._log_parser is None:
             raise NotImplementedError(
-                "Method parse_solver_log must be implemented in the derived class "
-                "or log patterns must be configured via class attributes."
+                "A SolverLogParser must be assigned to the '_log_parser' class "
+                "attribute, or 'parse_solver_log' must be overridden in the "
+                "derived class."
             )
+
+        result = self._log_parser.parse(self._log)
+        self._status = result["status"]
+        self._objective_value = result["objective_value"]
+        self._lower_bound = result["lower_bound"]
+        self._upper_bound = result["upper_bound"]
 
     @property
     def status(self):
@@ -406,9 +584,11 @@ class UCBlockSolver(SMSPPSolverTool):
     Class to interact with the UCBlockSolver tool from SMS++.
     """
 
-    _log_status_pattern = "Status = (.*)\n"
-    _log_upper_bound_pattern = "Upper bound = (.*)\n"
-    _log_lower_bound_pattern = "Lower bound = (.*)\n"
+    _log_parser = StatusBoundsSolverLogParser(
+        status_pattern="Status = (.*)\n",
+        upper_bound_pattern="Upper bound = (.*)\n",
+        lower_bound_pattern="Lower bound = (.*)\n",
+    )
 
     def __init__(
         self,
@@ -460,7 +640,9 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
     Class to interact with the InvestmentBlockTestSolver tool from SMS++, with executable file "InvestmentBlock_test".
     """
 
-    _log_objective_pattern = r"Fi\* = (.*)\n"
+    _log_parser = ObjectiveValueSolverLogParser(
+        objective_pattern=r"Fi\* = (.*)\n",
+    )
 
     def __init__(
         self,
@@ -512,7 +694,9 @@ class InvestmentBlockSolver(SMSPPSolverTool):
     Class to interact with the InvestmentBlockSolver tool from SMS++, with name "investment_solver".
     """
 
-    _log_objective_pattern = "Solution value: (.*)\n"
+    _log_parser = ObjectiveValueSolverLogParser(
+        objective_pattern="Solution value: (.*)\n",
+    )
 
     def __init__(
         self,
@@ -564,7 +748,9 @@ class SDDPSolver(SMSPPSolverTool):
     Class to interact with the SDDPSolver tool from SMS++, with name "sddp_solver".
     """
 
-    _log_objective_pattern = "Solution value: (.*)\n"
+    _log_parser = ObjectiveValueSolverLogParser(
+        objective_pattern="Solution value: (.*)\n",
+    )
 
     def __init__(
         self,
@@ -618,9 +804,11 @@ class TSSBlockSolver(SMSPPSolverTool):
     Class to interact with the TSSBlockSolver tool from SMS++, with name "tssb_solver".
     """
 
-    _log_status_pattern = "Status = (.*)\n"
-    _log_upper_bound_pattern = "Upper bound = (.*)\n"
-    _log_lower_bound_pattern = "Lower bound = (.*)\n"
+    _log_parser = StatusBoundsSolverLogParser(
+        status_pattern="Status = (.*)\n",
+        upper_bound_pattern="Upper bound = (.*)\n",
+        lower_bound_pattern="Lower bound = (.*)\n",
+    )
 
     def __init__(
         self,
