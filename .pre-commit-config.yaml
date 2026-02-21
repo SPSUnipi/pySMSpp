@@ -27,8 +27,8 @@ repos:
   - id: codespell
     # Ignore capital case words, e.g. country codes
     args: ['--ignore-regex="(\b[A-Z]+\b)"', '--ignore-words=.codespell.ignore']
-    types_or: [python, rst, markdown]
-    files: ^(scripts|doc)/
+    types_or: [python, markdown]
+    files: ^(docs|scripts)/
 
 # Remove output from Jupyter notebooks
 - repo: https://github.com/aflc/pre-commit-jupyter

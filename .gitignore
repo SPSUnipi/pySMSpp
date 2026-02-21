@@ -174,3 +174,4 @@ test/temp*
 # SMS and pypsa files
 *.nc
 *.txt
+/site
