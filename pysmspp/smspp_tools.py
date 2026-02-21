@@ -21,6 +21,7 @@ class SMSPPSolverTool:
         configfile: Path | str = None,
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        solver_path: Path | str = None,
     ):
         """
         Constructor for an abstract SMSPPSolverTool.
@@ -39,8 +40,14 @@ class SMSPPSolverTool:
             Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
+        solver_path : Path | str, optional
+            Custom path to the solver executable. When provided, this overrides
+            the default executable name resolved from the system PATH, by default None.
         """
-        self._exec_file = exec_file
+        if solver_path is not None:
+            self._exec_file = str(Path(solver_path).resolve())
+        else:
+            self._exec_file = exec_file
         self._help_option = help_option
 
         self.fp_network = str(Path(fp_network).resolve())
@@ -249,8 +256,15 @@ class SMSPPSolverTool:
 
     def is_available(self):
         """
-        Check if the SMS++ tool is available in the PATH.
+        Check if the SMS++ tool is available.
+
+        When a custom ``solver_path`` was provided at construction time the
+        executable is looked up by its absolute path; otherwise the system
+        PATH is searched.
         """
+        p = Path(self._exec_file)
+        if p.is_absolute():
+            return p.is_file() and os.access(str(p), os.X_OK)
         return shutil.which(self._exec_file) is not None
 
     def parse_solver_log(self):
@@ -335,6 +349,7 @@ class UCBlockSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        solver_path: Path | str = None,
         **kwargs,
     ):
         """
@@ -348,6 +363,8 @@ class UCBlockSolver(SMSPPSolverTool):
             Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
+        solver_path : Path | str, optional
+            Custom path to the solver executable, by default None.
         """
         super().__init__(
             exec_file="ucblock_solver",
@@ -355,6 +372,7 @@ class UCBlockSolver(SMSPPSolverTool):
             configfile=configfile,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            solver_path=solver_path,
         )
 
     def calculate_executable_call(self):
@@ -367,7 +385,7 @@ class UCBlockSolver(SMSPPSolverTool):
             The command string to execute the ucblock_solver.
         """
         exec_path = (
-            f"ucblock_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
+            f"{self._exec_file} {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
@@ -420,6 +438,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        solver_path: Path | str = None,
         **kwargs,
     ):
         """
@@ -435,6 +454,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
+        solver_path : Path | str, optional
+            Custom path to the solver executable, by default None.
         """
         super().__init__(
             exec_file="InvestmentBlock_test",
@@ -442,6 +463,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             configfile=configfile,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            solver_path=solver_path,
         )
 
     def calculate_executable_call(self):
@@ -453,7 +475,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         str
             The command string to execute the InvestmentBlock_test solver.
         """
-        exec_path = f"InvestmentBlock_test {self.fp_network} -c {self.configdir} -S {self.configfile} -v -o"
+        exec_path = f"{self._exec_file} {self.fp_network} -c {self.configdir} -S {self.configfile} -v -o"
         if self.fp_solution is not None:
             exec_path += f" -O {self.fp_solution}"
         return exec_path
@@ -507,6 +529,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        solver_path: Path | str = None,
         **kwargs,
     ):
         """
@@ -522,6 +545,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
+        solver_path : Path | str, optional
+            Custom path to the solver executable, by default None.
         """
         super().__init__(
             exec_file="investment_solver",
@@ -529,6 +554,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
             configfile=configfile,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            solver_path=solver_path,
         )
 
     def calculate_executable_call(self):
@@ -540,7 +566,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         str
             The command string to execute the investment_solver.
         """
-        exec_path = f"investment_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
+        exec_path = f"{self._exec_file} {self.fp_network} -c {self.configdir} -S {self.configfile}"
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
@@ -594,6 +620,7 @@ class SDDPSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        solver_path: Path | str = None,
         **kwargs,
     ):
         """
@@ -609,6 +636,8 @@ class SDDPSolver(SMSPPSolverTool):
             Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
+        solver_path : Path | str, optional
+            Custom path to the solver executable, by default None.
         """
         super().__init__(
             exec_file="sddp_solver",
@@ -616,6 +645,7 @@ class SDDPSolver(SMSPPSolverTool):
             configfile=configfile,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            solver_path=solver_path,
         )
 
     def calculate_executable_call(self):
@@ -628,7 +658,7 @@ class SDDPSolver(SMSPPSolverTool):
             The command string to execute the sddp_solver.
         """
         exec_path = (
-            f"sddp_solver {self.fp_network} -c {self.configdir} -S {self.configfile}"
+            f"{self._exec_file} {self.fp_network} -c {self.configdir} -S {self.configfile}"
         )
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
@@ -683,6 +713,7 @@ class TSSBlockSolver(SMSPPSolverTool):
         configfile: Path | str = "",
         fp_solution: Path | str = None,
         fp_log: Path | str = None,
+        solver_path: Path | str = None,
         **kwargs,
     ):
         """
@@ -698,6 +729,8 @@ class TSSBlockSolver(SMSPPSolverTool):
             Path to the solution file, by default None.
         fp_log : Path | str, optional
             Path to the log file, by default None.
+        solver_path : Path | str, optional
+            Custom path to the solver executable, by default None.
         """
         super().__init__(
             exec_file="tssb_solver",
@@ -705,6 +738,7 @@ class TSSBlockSolver(SMSPPSolverTool):
             configfile=configfile,
             fp_solution=fp_solution,
             fp_log=fp_log,
+            solver_path=solver_path,
         )
 
     def calculate_executable_call(self):
@@ -717,7 +751,7 @@ class TSSBlockSolver(SMSPPSolverTool):
             The command string to execute the tssb_solver.
         """
         fp_dir, fp_name = os.path.split(self.fp_network)
-        exec_path = f"tssb_solver {fp_name} -p {fp_dir}/ -c {self.configdir} -S {self.configfile}"
+        exec_path = f"{self._exec_file} {fp_name} -p {fp_dir}/ -c {self.configdir} -S {self.configfile}"
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path

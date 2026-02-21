@@ -166,6 +166,50 @@ def test_is_smspp_installed(force_smspp):
         )
 
 
+def test_solver_path_invalid_path(force_smspp):
+    """Test that is_available() returns False when solver_path points to a non-existent file."""
+    ucs = UCBlockSolver(solver_path="/nonexistent/path/ucblock_solver")
+    assert ucs.is_available() is False
+
+
+def test_solver_path_non_executable(force_smspp, tmp_path):
+    """Test that is_available() returns False when solver_path points to a non-executable file."""
+    non_exec = tmp_path / "not_an_exec"
+    non_exec.write_text("not an executable")
+    ucs = UCBlockSolver(solver_path=str(non_exec))
+    assert ucs.is_available() is False
+
+
+def test_solver_path_executable(force_smspp, tmp_path):
+    """Test that is_available() returns True when solver_path points to an executable file."""
+    import os
+
+    fake_exec = tmp_path / "fake_solver"
+    fake_exec.write_text("#!/bin/sh\necho hello")
+    os.chmod(str(fake_exec), 0o755)
+    ucs = UCBlockSolver(solver_path=str(fake_exec))
+    assert ucs.is_available() is True
+
+
+def test_solver_path_used_in_command(force_smspp, tmp_path):
+    """Test that a custom solver_path is reflected in the executable call."""
+    import os
+
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+    fp_network = get_network()
+    custom_exec = tmp_path / "my_ucblock_solver"
+    custom_exec.write_text("#!/bin/sh\necho hello")
+    os.chmod(str(custom_exec), 0o755)
+
+    ucs = UCBlockSolver(
+        fp_network=fp_network,
+        configfile=str(configfile),
+        solver_path=str(custom_exec),
+    )
+    cmd = ucs.calculate_executable_call()
+    assert str(custom_exec.resolve()) in cmd
+
+
 def test_optimize_tssbsolver(force_smspp):
     fp_network = get_network("TSSB_EC_CO_Test_TUB_simple.nc4")
     fp_log = get_temp_file("test_optimize_tssbsolver.txt")
