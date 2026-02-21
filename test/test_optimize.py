@@ -153,7 +153,7 @@ def test_is_smspp_installed(force_smspp):
     assert isinstance(result, bool)
 
     # Test with multiple solvers
-    result_multi = is_smspp_installed([UCBlockSolver, InvestmentBlockTestSolver])
+    result_multi = is_smspp_installed([UCBlockSolver(), InvestmentBlockTestSolver()])
     assert isinstance(result_multi, bool)
 
     # When force_smspp is True, is_smspp_installed must return True

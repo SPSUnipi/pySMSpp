@@ -255,7 +255,7 @@ class SMSPPSolverTool:
 
     def parse_solver_log(self):
         """
-        Check the output of the SolverTool.
+        Check the output of the Solver.
         It will extract the status, upper bound, lower bound, and objective value from the log.
 
         Parameters
@@ -263,9 +263,30 @@ class SMSPPSolverTool:
         log : str
             The path to the solution file.
         """
-        raise NotImplementedError(
-            "Method parse_solver_log must be implemented in the derived class."
-        )
+        if self._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        res = re.search("Status = (.*)\n", self._log)
+
+        if not res:  # if success not found
+            self._status = "Failed"
+            self._objective_value = np.nan
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+            return
+
+        smspp_status = res.group(1).replace("\r", "")
+        self._status = smspp_status
+
+        res = re.search("Upper bound = (.*)\n", self._log)
+        ub = float(res.group(1).replace("\r", ""))
+
+        res = re.search("Lower bound = (.*)\n", self._log)
+        lb = float(res.group(1).replace("\r", ""))
+
+        self._objective_value = ub
+        self._lower_bound = lb
+        self._upper_bound = ub
 
     @property
     def status(self):
@@ -372,41 +393,6 @@ class UCBlockSolver(SMSPPSolverTool):
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
-
-    def parse_solver_log(self):
-        """
-        Check the output of the UCBlockSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Status = (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        smspp_status = res.group(1).replace("\r", "")
-        self._status = smspp_status
-
-        res = re.search("Upper bound = (.*)\n", self._log)
-        ub = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Lower bound = (.*)\n", self._log)
-        lb = float(res.group(1).replace("\r", ""))
-
-        self._objective_value = ub
-        self._lower_bound = lb
-        self._upper_bound = ub
 
 
 class InvestmentBlockTestSolver(SMSPPSolverTool):
@@ -544,43 +530,6 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         if self.fp_solution is not None:
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
-
-    def parse_solver_log(
-        self,
-    ):  # TODO: needs revision to better capture the output
-        """
-        Check the output of the InvestmentBlockSolver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
-
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Solution value: (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        self._objective_value = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Solver status: (.*)\n", self._log)
-        smspp_status = res.group(1).replace("\r", "")
-
-        if np.isfinite(self._objective_value):
-            self._status = f"Success ({smspp_status})"
-        else:
-            self._status = f"Failed ({smspp_status})"
-
-        self._lower_bound = np.nan
-        self._upper_bound = np.nan
 
 
 class SDDPSolver(SMSPPSolverTool):
@@ -722,46 +671,8 @@ class TSSBlockSolver(SMSPPSolverTool):
             exec_path += f" -o -O {self.fp_solution}"
         return exec_path
 
-    def parse_solver_log(
-        self,
-    ):  # TODO: needs revision to better capture the output
-        """
-        Check the output of the TSSBlockSolver.
-        It extracts the solver status, upper bound, lower bound, and objective value
-        from the internal log string stored in ``self._log``.
 
-        Parameters
-        ----------
-        log : str
-            The path to the solution file.
-        """
-        if self._log is None:
-            raise ValueError("Optimization was not launched.")
-
-        res = re.search("Status = (.*)\n", self._log)
-
-        if not res:  # if success not found
-            self._status = "Failed"
-            self._objective_value = np.nan
-            self._lower_bound = np.nan
-            self._upper_bound = np.nan
-            return
-
-        smspp_status = res.group(1).replace("\r", "")
-        self._status = smspp_status
-
-        res = re.search("Upper bound = (.*)\n", self._log)
-        ub = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Lower bound = (.*)\n", self._log)
-        lb = float(res.group(1).replace("\r", ""))
-
-        self._objective_value = ub
-        self._lower_bound = lb
-        self._upper_bound = ub
-
-
-def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -> bool:
+def is_smspp_installed(solvers: list[SMSPPSolverTool] = [UCBlockSolver()]) -> bool:
     """
     Check if SMS++ is installed by verifying that the specified solver executables
     can be found in the PATH.
@@ -791,4 +702,4 @@ def is_smspp_installed(solvers: list[type[SMSPPSolverTool]] = [UCBlockSolver]) -
     ...     print("Both solvers are available")
     """
     # Check if all specified solvers are available
-    return all(solver().is_available() for solver in solvers)
+    return all(solver.is_available() for solver in solvers)
