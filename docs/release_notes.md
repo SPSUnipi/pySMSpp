@@ -4,16 +4,7 @@
 
 ### New Features and Major Changes
 
-*
-
-### Minor Changes and Bug Fixes
-
-*
-
-## Version v0.0.2
-
-### New Features and Major Changes
-
+* [Generalize solver_log #72](https://github.com/SPSUnipi/pySMSpp/pull/72)
 * [Convert documentation from Sphinx/RST to MkDocs PR #68](https://github.com/SPSUnipi/pySMSpp/pull/68)
 * [Add `plot()` methods to `Variable` and `Block` PR #66](https://github.com/SPSUnipi/pySMSpp/pull/66)
 * [Enable functional building of a TSSB block with test PR #64](https://github.com/SPSUnipi/pySMSpp/pull/64)
@@ -35,7 +26,7 @@
 * [Use conda package smspp-project for ReadTheDocs builds PR #43](https://github.com/SPSUnipi/pySMSpp/pull/43)
 * [Fixed test.yml for macOS PR #38](https://github.com/SPSUnipi/pySMSpp/pull/38)
 
-## Version v0.0.1 - Initial Release
+## Version v0.0.2
 
 ### New Features and Major Changes
 
@@ -56,6 +47,15 @@
 * [Avoid use of match PR #19](https://github.com/SPSUnipi/pySMSpp/pull/19)
 * [Update creation of path in windows PR #32](https://github.com/SPSUnipi/pySMSpp/pull/32)
 * [Fix CI PR #28](https://github.com/SPSUnipi/pySMSpp/pull/28)
+
+## Version v0.0.1 - Initial Release
+
+### New Features and Major Changes
+
+* Prototype definition of `Attribute`, `Variable`, `Block`, and `SMSNetwork` classes.
+* Initial implementation of `SMSPPSolverTool` for UCBlock and InvestmentBlock.
+* Documentation with Sphinx and ReadTheDocs.
+* Implementation of proper CI with GitHub Actions, including testing on Linux, Windows, and macOS.
 
 ## Release Process
 
