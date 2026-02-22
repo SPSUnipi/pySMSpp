@@ -97,19 +97,28 @@ class SMSPPSolverTool:
             raise ValueError("fp_network must be provided (non-None).")
         configdir, configfile = os.path.split(Path(self.configfile).resolve())
         networkdir, networkfile = os.path.split(Path(self.fp_network).resolve())
-        exec_path = f"{self._fp_solver} {networkfile} -p {networkdir}/ -c {configdir}/ -S {configfile}"
+        command = [
+            self._fp_solver,
+            networkfile,
+            "-p",
+            networkdir + "/",
+            "-c",
+            configdir + "/",
+            "-S",
+            configfile,
+        ]
         if self.fp_solution is not None:
-            exec_path += f" -O {self.fp_solution}"
+            command += ["-O", self.fp_solution]
         if self.configsolution is not None:
-            exec_path += f" -C {self.configsolution}"
+            command += ["-C", self.configsolution]
 
         for option, value in self._kwargs.items():
             if value == "" or value is None:
-                exec_path += f" -{option}"
+                command += [f"-{option}"]
             else:
-                exec_path += f" -{option} {value}"
+                command += [f"-{option}", str(value)]
 
-        return exec_path
+        return command
 
     def __repr__(self):
         """
@@ -138,7 +147,7 @@ class SMSPPSolverTool:
         The help message.
         """
         result = subprocess.run(
-            f"{self._fp_solver} {self._help_option}", capture_output=True, shell=True
+            [self._fp_solver, self._help_option], capture_output=True
         )
         msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
         if print_message:
@@ -176,7 +185,6 @@ class SMSPPSolverTool:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            shell=True,
         )
         os.set_blocking(process.stdout.fileno(), False)  # set non-blocking read
         os.set_blocking(process.stderr.fileno(), False)  # set non-blocking read
