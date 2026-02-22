@@ -35,7 +35,7 @@ class SMSPPSolverTool:
             Path to the configuration file, by default None.
             This option specifies the solver configuration with option "-S" when provided.
         fp_log : Path | str, optional
-            When provided, the solver log is saved to the specified solver, by default None.
+            When provided, the solver log is saved to the specified log file, by default None.
         fp_solution : Path | str, optional
             Path to the solution file, by default None.
             When provided, option "-O" is added to the executable call to specify the output solution file.
@@ -91,6 +91,10 @@ class SMSPPSolverTool:
         str
             The command string to execute the solver.
         """
+        if self.configfile is None:
+            raise ValueError("configfile must be provided (non-None)")
+        if self.fp_network is None:
+            raise ValueError("fp_network must be provided (non-None).")
         configdir, configfile = os.path.split(Path(self.configfile).resolve())
         networkdir, networkfile = os.path.split(Path(self.fp_network).resolve())
         exec_path = f"{self._fp_solver} {networkfile} -p {networkdir}/ -c {configdir}/ -S {configfile}"
@@ -151,8 +155,6 @@ class SMSPPSolverTool:
             When true, logging is provided, including the executable call.
         tracking_period : float
             Delay in seconds between resource usage tracking samples.
-        **kwargs
-            Additional keyword arguments to pass to the function.
         """
         from pysmspp import SMSNetwork
 
