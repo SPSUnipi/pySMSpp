@@ -112,7 +112,7 @@ def test_optimize_ucsolver_all_components(force_smspp):
     configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
 
     if UCBlockSolver().is_available() or force_smspp:
-        result = b.optimize(configfile, fp_temp, fp_log)
+        result = b.optimize(configfile, fp_temp, fp_log, logging=True)
 
         assert "success" in result.status.lower()
         assert "error" not in result.log.lower()

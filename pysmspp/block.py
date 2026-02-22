@@ -1422,6 +1422,8 @@ class SMSNetwork(Block):
         fp_solution: Path | str = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
         inner_block_name: str = "Block_0",
+        logging=True,
+        tracking_period=0.1,
         **kwargs,
     ):
         """
@@ -1447,8 +1449,12 @@ class SMSNetwork(Block):
 
         inner_block_name : str (default: "Block_0")
             The name of the inner block, to decide on the automatic solver to use.
+        logging : bool (default: True)
+            Whether to enable logging during optimization.
+        tracking_period : float (default: 0.1)
+            The period (in seconds) to track optimization progress when logging is enabled.
         kwargs : dict
-            The arguments to pass to the optimization function.
+            The arguments to pass to the solver.
         """
 
         # Map block type to default solver (for 'auto' mode)
@@ -1491,4 +1497,4 @@ class SMSNetwork(Block):
             )
 
         self.to_netcdf(fp_temp, force=True)
-        return smspp_solver.optimize(**kwargs)
+        return smspp_solver.optimize(logging=logging, tracking_period=tracking_period)

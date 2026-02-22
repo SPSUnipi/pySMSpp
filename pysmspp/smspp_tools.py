@@ -16,8 +16,8 @@ class SMSPPSolverTool:
     def __init__(
         self,
         fp_network: Path | str = None,
-        fp_log: Path | str = None,
         configfile: Path | str = None,
+        fp_log: Path | str = None,
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         fp_solver: str = "",
@@ -25,7 +25,7 @@ class SMSPPSolverTool:
         **kwargs,
     ):
         """
-        Constructor for an abstract SMSPPSolverTool.
+        Constructor for an abstract SMSPPSolverTool. Option arguments coincide with the options of the SMS++ solver tools, and additional options can be passed through kwargs. Option "-o" is automatically added to kwargs with value None if not provided, to allow logging the solution.
 
         Parameters
         ----------
@@ -34,14 +34,14 @@ class SMSPPSolverTool:
         configfile : Path | str, optional
             Path to the configuration file, by default None.
             This option specifies the solver configuration with option "-S" when provided.
+        fp_log : Path | str, optional
+            When provided, the solver log is saved to the specified solver, by default None.
         fp_solution : Path | str, optional
             Path to the solution file, by default None.
-            When provided, options "-o" and "-O" are added to the executable call to specify the output solution file.
+            When provided, option "-O" is added to the executable call to specify the output solution file.
         configsolution : Path | str, optional
             Path to the configuration solution file, by default None.
             When provided, option "-C" is added to the executable call to specify the configuration solution file.
-        fp_log : Path | str, optional
-            When provided, the solver log is saved to the specified solver, by default None.
         fp_solver : str
             The name or path of the executable file.
         help_option : str, optional
@@ -61,7 +61,7 @@ class SMSPPSolverTool:
             None if configfile is None else str(Path(configfile).resolve())
         )
         self.configsolution = (
-            None if configsolution is None else str(configsolution.resolve().name)
+            None if configsolution is None else str(Path(configsolution).resolve())
         )
         self.fp_log = None if fp_log is None else str(Path(fp_log).resolve())
         self.fp_solution = (
@@ -80,26 +80,30 @@ class SMSPPSolverTool:
         self._kwargs = kwargs
 
         if "o" not in self._kwargs:
-            self._kwargs["o"] = ""
+            self._kwargs["o"] = None
 
     def calculate_executable_call(self):
         """
-        Generate the command-line call for the UCBlock solver.
+        Generate the standard command-line call for SMS++ solvers and can be customized by subclasses.
 
         Returns
         -------
         str
-            The command string to execute the ucblock_solver.
+            The command string to execute the solver.
         """
         configdir, configfile = os.path.split(Path(self.configfile).resolve())
         networkdir, networkfile = os.path.split(Path(self.fp_network).resolve())
         exec_path = f"{self._fp_solver} {networkfile} -p {networkdir}/ -c {configdir}/ -S {configfile}"
         if self.fp_solution is not None:
-            exec_path += f" -o -O {self.fp_solution}"
+            exec_path += f" -O {self.fp_solution}"
         if self.configsolution is not None:
             exec_path += f" -C {self.configsolution}"
+
         for option, value in self._kwargs.items():
-            exec_path += f" -{option} {value}"
+            if value == "" or value is None:
+                exec_path += f" -{option}"
+            else:
+                exec_path += f" -{option} {value}"
 
         return exec_path
 
@@ -137,7 +141,7 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, logging=True, tracking_period=0.1, **kwargs):
+    def optimize(self, logging=True, tracking_period=0.1):
         """
         Run the SMSPP Solver tool.
 
@@ -378,8 +382,8 @@ class UCBlockSolver(SMSPPSolverTool):
     def __init__(
         self,
         fp_network: Path | str = None,
-        fp_log: Path | str = None,
         configfile: Path | str = None,
+        fp_log: Path | str = None,
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         fp_solver: str = "ucblock_solver",
@@ -391,8 +395,8 @@ class UCBlockSolver(SMSPPSolverTool):
         """
         super().__init__(
             fp_network=fp_network,
-            fp_log=fp_log,
             configfile=configfile,
+            fp_log=fp_log,
             fp_solution=fp_solution,
             configsolution=configsolution,
             fp_solver=fp_solver,
@@ -409,8 +413,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
     def __init__(
         self,
         fp_network: Path | str = None,
-        fp_log: Path | str = None,
         configfile: Path | str = None,
+        fp_log: Path | str = None,
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         fp_solver: str = "InvestmentBlock_test",
@@ -422,8 +426,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         """
         super().__init__(
             fp_network=fp_network,
-            fp_log=fp_log,
             configfile=configfile,
+            fp_log=fp_log,
             fp_solution=fp_solution,
             configsolution=configsolution,
             fp_solver=fp_solver,
@@ -479,8 +483,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
     def __init__(
         self,
         fp_network: Path | str = None,
-        fp_log: Path | str = None,
         configfile: Path | str = None,
+        fp_log: Path | str = None,
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         fp_solver: str = "investment_solver",
@@ -492,8 +496,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         """
         super().__init__(
             fp_network=fp_network,
-            fp_log=fp_log,
             configfile=configfile,
+            fp_log=fp_log,
             fp_solution=fp_solution,
             configsolution=configsolution,
             fp_solver=fp_solver,
@@ -510,8 +514,8 @@ class SDDPSolver(SMSPPSolverTool):
     def __init__(
         self,
         fp_network: Path | str = None,
-        fp_log: Path | str = None,
         configfile: Path | str = None,
+        fp_log: Path | str = None,
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         fp_solver: str = "sddp_solver",
@@ -523,8 +527,8 @@ class SDDPSolver(SMSPPSolverTool):
         """
         super().__init__(
             fp_network=fp_network,
-            fp_log=fp_log,
             configfile=configfile,
+            fp_log=fp_log,
             fp_solution=fp_solution,
             configsolution=configsolution,
             fp_solver=fp_solver,
@@ -578,8 +582,8 @@ class TSSBlockSolver(SMSPPSolverTool):
     def __init__(
         self,
         fp_network: Path | str = None,
-        fp_log: Path | str = None,
         configfile: Path | str = None,
+        fp_log: Path | str = None,
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         fp_solver: str = "tssb_solver",
@@ -591,8 +595,8 @@ class TSSBlockSolver(SMSPPSolverTool):
         """
         super().__init__(
             fp_network=fp_network,
-            fp_log=fp_log,
             configfile=configfile,
+            fp_log=fp_log,
             fp_solution=fp_solution,
             configsolution=configsolution,
             fp_solver=fp_solver,
