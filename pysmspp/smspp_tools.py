@@ -92,7 +92,7 @@ class SMSPPSolverTool:
             The command array to execute the solver.
         """
         if self.configfile is None:
-            raise ValueError("configfile must be provided (non-None)")
+            raise ValueError("configfile must be provided (non-None).")
         if self.fp_network is None:
             raise ValueError("fp_network must be provided (non-None).")
         configdir, configfile = os.path.split(self.configfile)
