@@ -25,7 +25,7 @@ class SMSPPSolverTool:
         **kwargs,
     ):
         """
-        Constructor for an abstract SMSPPSolverTool. Option arguments coincide with the options of the SMS++ solver tools, and additional options can be passed through kwargs. Option "-o" is automatically added to kwargs with value None if not provided, to allow logging the solution.
+        Constructor for an abstract SMSPPSolverTool. Option arguments coincide with the options of the SMS++ solver tools. Additional options can be passed through kwargs. Option "-o" is automatically added to kwargs with value None if not provided, to allow logging the solution.
 
         Parameters
         ----------
@@ -88,15 +88,15 @@ class SMSPPSolverTool:
 
         Returns
         -------
-        str
-            The command string to execute the solver.
+        list[str]
+            The command array to execute the solver.
         """
         if self.configfile is None:
             raise ValueError("configfile must be provided (non-None)")
         if self.fp_network is None:
             raise ValueError("fp_network must be provided (non-None).")
-        configdir, configfile = os.path.split(Path(self.configfile).resolve())
-        networkdir, networkfile = os.path.split(Path(self.fp_network).resolve())
+        configdir, configfile = os.path.split(self.configfile)
+        networkdir, networkfile = os.path.split(self.fp_network)
         command = [
             self._fp_solver,
             networkfile,
@@ -167,7 +167,7 @@ class SMSPPSolverTool:
         """
         from pysmspp import SMSNetwork
 
-        if not Path(Path(self.configfile)).exists():
+        if not Path(self.configfile).exists():
             raise FileNotFoundError(
                 f"Configuration file {self.configfile} does not exist."
             )
@@ -444,8 +444,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             help_option=help_option,
             **kwargs,
         )
-        if "v" not in self._kwargs:
-            self._kwargs["v"] = "0"
+        if "-v" not in self._kwargs:
+            self._kwargs["-v"] = "1"
 
     def parse_solver_log(
         self,
