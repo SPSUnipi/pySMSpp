@@ -4,7 +4,7 @@ from pysmspp.smspp_tools import (
     UCBlockSolver,
     InvestmentBlockTestSolver,
     InvestmentBlockSolver,
-    TSSBlockSolver,
+    TSSBSolver,
 )
 from enum import IntEnum
 
@@ -1455,7 +1455,7 @@ class SMSNetwork(Block):
         tracking_period : float (default: 0.1)
             The period (in seconds) to track optimization progress when logging is enabled.
         kwargs : dict
-            The arguments to pass to the solver.
+            Optional arguments to pass to the solver constructor. These can include any additional parameters required by specific solvers.
         """
 
         # Map block type to default solver (for 'auto' mode)
@@ -1463,7 +1463,7 @@ class SMSNetwork(Block):
             "UCBlock": "UCBlockSolver",
             "InvestmentBlock": "InvestmentBlockTestSolver",
             "SDDPBlock": "InvestmentBlockSolver",
-            "TwoStageStochasticBlock": "InvestmentBlockSolver",
+            "TwoStageStochasticBlock": "TSSBSolver",
         }
 
         # Map solver names to actual solver classes
@@ -1471,7 +1471,7 @@ class SMSNetwork(Block):
             "UCBlockSolver": UCBlockSolver,
             "InvestmentBlockTestSolver": InvestmentBlockTestSolver,
             "InvestmentBlockSolver": InvestmentBlockSolver,
-            "TwoStageStochasticBlock": TSSBlockSolver,
+            "TSSBSolver": TSSBSolver,
         }
 
         if isinstance(smspp_solver, str) and smspp_solver == "auto":

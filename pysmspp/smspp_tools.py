@@ -444,8 +444,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
             help_option=help_option,
             **kwargs,
         )
-        if "-v" not in self._kwargs:
-            self._kwargs["-v"] = "1"
+        if "v" not in self._kwargs:
+            self._kwargs["v"] = "1"
 
     def parse_solver_log(
         self,
@@ -584,9 +584,9 @@ class SDDPSolver(SMSPPSolverTool):
         self._upper_bound = np.nan
 
 
-class TSSBlockSolver(SMSPPSolverTool):
+class TSSBSolver(SMSPPSolverTool):
     """
-    Class to interact with the TSSBlockSolver tool from SMS++, with name "tssb_solver".
+    Class to interact with the TSSBSolver tool from SMS++, with name "tssb_solver".
     """
 
     def __init__(
