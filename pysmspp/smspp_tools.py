@@ -128,9 +128,9 @@ class SMSPPSolverTool:
             configfile,
         ]
         if len(configdir) > 0:
-            command += ["-c", configdir + "/"]
+            command += ["-c", os.path.join(configdir, "")]
         if len(networkdir) > 0:
-            command += ["-p", networkdir + "/"]
+            command += ["-p", os.path.join(networkdir, "")]
         if self.fp_solution is not None:
             command += ["-O", self.fp_solution]
         if self.configsolution is not None:
