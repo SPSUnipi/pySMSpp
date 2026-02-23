@@ -34,9 +34,11 @@ class SMSPPSolverTool:
             The name of the executable file.
         fp_network : Path | str, optional
             Path to the SMSpp network to solve, by default None.
+            When provided, automatically the option "-p" is added to the executable call to specify the folder of the network file.
         configfile : Path | str, optional
             Path to the configuration file, by default None.
             This option specifies the solver configuration with option "-S" when provided.
+            The folder of the configuration file is also specified automatically with option "-c" when provided.
         fp_log : Path | str, optional
             When provided, the solver log is saved to the specified log file, by default None.
         fp_solution : Path | str, optional
@@ -97,6 +99,12 @@ class SMSPPSolverTool:
 
         if "o" not in self._kwargs:
             self._kwargs["o"] = None
+        if "c" in self._kwargs:
+            raise ValueError(
+                "Option 'c' is reserved for the configuration file directory."
+            )
+        if "p" in self._kwargs:
+            raise ValueError("Option 'p' is reserved for the network file directory.")
 
     def calculate_executable_call(self):
         """
@@ -116,13 +124,13 @@ class SMSPPSolverTool:
         command = [
             self._solver_path,
             networkfile,
-            "-p",
-            networkdir + "/",
-            "-c",
-            configdir + "/",
             "-S",
             configfile,
         ]
+        if len(configdir) > 0:
+            command += ["-c", configdir + "/"]
+        if len(networkdir) > 0:
+            command += ["-p", networkdir + "/"]
         if self.fp_solution is not None:
             command += ["-O", self.fp_solution]
         if self.configsolution is not None:
