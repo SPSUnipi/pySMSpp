@@ -400,6 +400,8 @@ def build_tssb_block(fp_tssb):
     SizeElements_perScenario = 4  # for StochBlock
     PathDim2 = 9  # for AbstractPath in StochasticBlock
 
+    # Variables of DiscreteScenarioSet
+
     pool_weights = (
         sn_benchmark.blocks["Block_0"]
         .blocks["DiscreteScenarioSet"]
@@ -414,19 +416,17 @@ def build_tssb_block(fp_tssb):
         .data
     )
 
-    path_element_indices = (
-        sn_benchmark.blocks["Block_0"]
-        .blocks["StaticAbstractPath"]
-        .variables["PathElementIndices"]
-        .data
-    )
+    # Variables of StaticAbstractPath
 
-    path_range_indices = (
-        sn_benchmark.blocks["Block_0"]
-        .blocks["StaticAbstractPath"]
-        .variables["PathRangeIndices"]
-        .data
-    )
+    path_node_types = np.tile(["B", "V"], TotalLength // 2)
+
+    def mask_by_node_type(arr, path_node_types):
+        return np.ma.masked_array(arr, mask=path_node_types == "B")
+
+    path_element_indices = mask_by_node_type(np.zeros(TotalLength), path_node_types)
+    path_range_indices = mask_by_node_type(np.ones(TotalLength), path_node_types)
+
+    # Variables of StochasticBlock
 
     set_size = (
         sn_benchmark.blocks["Block_0"]
@@ -497,7 +497,7 @@ def build_tssb_block(fp_tssb):
                 "PathNodeTypes",
                 "c",
                 ("TotalLength",),
-                np.tile(["B", "V"], TotalLength // 2),
+                path_node_types,
             ),
             PathRangeIndices=Variable(
                 "PathRangeIndices",
@@ -509,7 +509,7 @@ def build_tssb_block(fp_tssb):
                 "PathStart",
                 "u4",
                 ("PathDim",),
-                np.array(range(0, 10, 2), dtype=np.uint32),  # ignored missing values
+                np.arange(0, TotalLength, 2, dtype=np.uint32),  # ignored missing values
             ),
         ),
         StochasticBlock=Block(
