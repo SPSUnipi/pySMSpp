@@ -182,15 +182,15 @@ def test_optimize_tssbsolver(force_smspp):
     fp_ec_copy = get_temp_file("EC_CO_Test_TUB.nc4")
     shutil.copy(fp_ec, fp_ec_copy)
 
-    from pysmspp import TSSBlockSolver
+    from pysmspp import TSSBSolver
 
-    tssb_solver = TSSBlockSolver(
+    tssb_solver = TSSBSolver(
         fp_network=fp_network,
         fp_log=fp_log,
         configfile=str(configfile),
     )
 
-    tssb_solver_new = TSSBlockSolver(
+    tssb_solver_new = TSSBSolver(
         fp_network=fp_tssb_new,
         fp_log=fp_log_new,
         configfile=str(configfile),
