@@ -1,4 +1,5 @@
 import shutil
+from pathlib import Path
 from pysmspp import (
     SMSConfig,
     SMSNetwork,
@@ -59,6 +60,29 @@ def test_optimize_example(force_smspp):
         configfile=str(configfile),
         fp_network=fp_network,
         fp_log=fp_log,
+    )
+
+    if ucs.is_available() or force_smspp:
+        ucs.optimize(logging=False)
+
+        assert "Success" in ucs.status
+        assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)
+    else:
+        pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_optimize_example_custom_solver_path(force_smspp):
+    fp_network = get_network()
+    fp_log = get_temp_file("test_optimize_example.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+
+    path_ucsolver = shutil.which("ucblock_solver")
+
+    ucs = UCBlockSolver(
+        configfile=str(configfile),
+        fp_network=fp_network,
+        fp_log=fp_log,
+        solver_dir=Path(path_ucsolver).parent,
     )
 
     if ucs.is_available() or force_smspp:
