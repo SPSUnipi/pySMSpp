@@ -1,3 +1,4 @@
+import os
 import shutil
 from pathlib import Path
 from pysmspp import (
@@ -38,6 +39,29 @@ def test_help_ucblocksolver(force_smspp):
         )
     else:
         pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_shell_ucblocksolver():
+    # skip if not linux os
+    if os.name != "posix":
+        pytest.skip("Shell command test only applicable on Linux/Unix systems")
+
+    fp_network = get_network("microgrid_ALLbutStore_1N.nc4")
+    fp_config = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+
+    solver_cmd = "bash -lc \"printf 'Status = Success\\nUpper bound = 123.0\\nLower bound = 120.0\\n'\""
+
+    ucs = UCBlockSolver(
+        solver_path=solver_cmd,
+        fp_network=str(fp_network),
+        configfile=str(fp_config),
+    )
+
+    ucs.optimize(logging=False, shell=True)
+
+    assert "Success" in ucs.status
+    assert ucs.objective_value == pytest.approx(123.0)
+    assert ucs.lower_bound == pytest.approx(120.0)
 
 
 def test_help_investmentblocktestsolver(force_smspp):
@@ -82,10 +106,10 @@ def test_optimize_example_custom_solver_path(force_smspp):
     path_ucsolver = shutil.which("ucblock_solver")
 
     ucs = UCBlockSolver(
+        solver_path=Path(path_ucsolver),
         configfile=str(configfile),
         fp_network=fp_network,
         fp_log=fp_log,
-        solver_dir=Path(path_ucsolver).parent,
     )
 
     ucs.optimize(logging=False)
