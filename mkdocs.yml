@@ -52,6 +52,7 @@ nav:
   - Unit Commitment (2 thermal, line): examples/ucblock_2thermal_line.ipynb
   - Navigating SMS Blocks: examples/navigating_sms_blocks.ipynb
   - Plotting Variables and Blocks: examples/plotting_variables_and_blocks.ipynb
+  - Input/Output Operations: examples/io_operations.ipynb
 - User Guide:
   - API Reference: api_reference.md
 - Release Notes: release_notes.md

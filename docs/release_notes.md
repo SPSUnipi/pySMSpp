@@ -4,6 +4,7 @@
 
 ### New Features and Major Changes
 
+* [Introduce example on input/output operations and introduce solution object into the example #80](https://github.com/SPSUnipi/pySMSpp/pull/80)
 * [Revise SMSPPSolverTool.is_available to support shell option and move shell option to constructor of SMSPPSolverTool #78](https://github.com/SPSUnipi/pySMSpp/pull/78)
 * [Enable shell option in SMSNetwork.optimize #77](https://github.com/SPSUnipi/pySMSpp/pull/77)
 * [Enable shell option in subprocess of tools and generalize options: add explicit solverconfig option and kwargs to generalize options #73](https://github.com/SPSUnipi/pySMSpp/pull/73)
