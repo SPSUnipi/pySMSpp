@@ -1,4 +1,6 @@
+import os
 import shutil
+from pathlib import Path
 from pysmspp import (
     SMSConfig,
     SMSNetwork,
@@ -39,6 +41,29 @@ def test_help_ucblocksolver(force_smspp):
         pytest.skip("UCBlockSolver not available in PATH")
 
 
+def test_shell_ucblocksolver():
+    # skip if not linux os
+    if os.name != "posix":
+        pytest.skip("Shell command test only applicable on Linux/Unix systems")
+
+    fp_network = get_network("microgrid_ALLbutStore_1N.nc4")
+    fp_config = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+
+    solver_cmd = "bash -lc \"printf 'Status = Success\\nUpper bound = 123.0\\nLower bound = 120.0\\n'\""
+
+    ucs = UCBlockSolver(
+        solver_path=solver_cmd,
+        fp_network=str(fp_network),
+        configfile=str(fp_config),
+    )
+
+    ucs.optimize(logging=False, shell=True)
+
+    assert "Success" in ucs.status
+    assert ucs.objective_value == pytest.approx(123.0)
+    assert ucs.lower_bound == pytest.approx(120.0)
+
+
 def test_help_investmentblocktestsolver(force_smspp):
     ibts = InvestmentBlockTestSolver()
 
@@ -68,6 +93,29 @@ def test_optimize_example(force_smspp):
         assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)
     else:
         pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_optimize_example_custom_solver_path(force_smspp):
+    if not UCBlockSolver().is_available() and not force_smspp:
+        pytest.skip("UCBlockSolver not available in PATH and --force-smspp not set")
+
+    fp_network = get_network()
+    fp_log = get_temp_file("test_optimize_example.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+
+    path_ucsolver = shutil.which("ucblock_solver")
+
+    ucs = UCBlockSolver(
+        solver_path=Path(path_ucsolver),
+        configfile=str(configfile),
+        fp_network=fp_network,
+        fp_log=fp_log,
+    )
+
+    ucs.optimize(logging=False)
+
+    assert "Success" in ucs.status
+    assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)
 
 
 def test_optimize_ucsolver(force_smspp):
@@ -182,18 +230,18 @@ def test_optimize_tssbsolver(force_smspp):
     fp_ec_copy = get_temp_file("EC_CO_Test_TUB.nc4")
     shutil.copy(fp_ec, fp_ec_copy)
 
-    from pysmspp import TSSBlockSolver
+    from pysmspp import TSSBSolver
 
-    tssb_solver = TSSBlockSolver(
-        configfile=str(configfile),
+    tssb_solver = TSSBSolver(
         fp_network=fp_network,
         fp_log=fp_log,
+        configfile=str(configfile),
     )
 
-    tssb_solver_new = TSSBlockSolver(
-        configfile=str(configfile),
+    tssb_solver_new = TSSBSolver(
         fp_network=fp_tssb_new,
         fp_log=fp_log_new,
+        configfile=str(configfile),
     )
 
     if tssb_solver.is_available() or force_smspp:

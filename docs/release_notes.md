@@ -4,6 +4,7 @@
 
 ### New Features and Major Changes
 
+* [Avoid shell=true in subprocess and generalize options: add explicit solverconfig option and kwargs to generalize options #73](https://github.com/SPSUnipi/pySMSpp/pull/73)
 * [Generalize solver_log #72](https://github.com/SPSUnipi/pySMSpp/pull/72)
 * [Convert documentation from Sphinx/RST to MkDocs PR #68](https://github.com/SPSUnipi/pySMSpp/pull/68)
 * [Add `plot()` methods to `Variable` and `Block` PR #66](https://github.com/SPSUnipi/pySMSpp/pull/66)
