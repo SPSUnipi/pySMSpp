@@ -1425,6 +1425,7 @@ class SMSNetwork(Block):
         inner_block_name: str = "Block_0",
         logging=True,
         tracking_period=0.1,
+        shell=False,
         **kwargs,
     ):
         """
@@ -1454,6 +1455,8 @@ class SMSNetwork(Block):
             Whether to enable logging during optimization.
         tracking_period : float (default: 0.1)
             The period (in seconds) to track optimization progress when logging is enabled.
+        shell : bool (default: False)
+            Whether to run the optimization in a shell environment. This can be useful for certain solvers that require shell execution. However, it may introduce security risks if the command includes untrusted input, so use with caution.
         kwargs : dict
             Optional arguments to pass to the solver constructor. These can include any additional parameters required by specific solvers.
         """
@@ -1500,4 +1503,6 @@ class SMSNetwork(Block):
             )
 
         self.to_netcdf(fp_temp, force=True)
-        return smspp_solver.optimize(logging=logging, tracking_period=tracking_period)
+        return smspp_solver.optimize(
+            logging=logging, tracking_period=tracking_period, shell=shell
+        )
