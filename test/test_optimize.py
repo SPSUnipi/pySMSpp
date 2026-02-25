@@ -55,9 +55,10 @@ def test_shell_ucblocksolver():
         solver_path=solver_cmd,
         fp_network=str(fp_network),
         configfile=str(fp_config),
+        shell=True,
     )
 
-    ucs.optimize(logging=False, shell=True)
+    ucs.optimize(logging=False)
 
     assert "Success" in ucs.status
     assert ucs.objective_value == pytest.approx(123.0)
