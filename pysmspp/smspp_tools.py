@@ -323,13 +323,18 @@ class SMSPPSolverTool:
         bool
             True if the tool is available, False otherwise.
         """
-        proc = subprocess.run(
-            [self._solver_path, self._help_option],
-            capture_output=True,
-            text=True,
-            shell=self._shell,
-        )
-        return proc.returncode == 0
+        try:
+            proc = subprocess.run(
+                [self._solver_path, self._help_option],
+                check=False,
+                shell=self._shell,
+            )
+            return proc.returncode == 0
+        except FileNotFoundError:
+            return False
+        except Exception as e:
+            logger.warning(f"Error checking availability of {self._solver_path}: {e}")
+            return False
 
     def parse_solver_log(self):
         """
