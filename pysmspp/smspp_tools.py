@@ -1,4 +1,3 @@
-import shutil
 from pathlib import Path
 import subprocess
 import re
@@ -307,11 +306,27 @@ class SMSPPSolverTool:
 
         return self
 
-    def is_available(self):
+    def is_available(self, shell=False):
         """
         Check if the SMS++ tool is available in the PATH.
+
+        Parameters
+        ----------
+        shell : bool, optional
+            Whether to execute the command through the shell. Defaults to False.
+
+        Returns
+        -------
+        bool
+            True if the tool is available, False otherwise.
         """
-        return shutil.which(self._solver_path) is not None
+        proc = subprocess.run(
+            [self._solver_path, self._help_option],
+            capture_output=True,
+            text=True,
+            shell=shell,
+        )
+        return proc.returncode == 0
 
     def parse_solver_log(self):
         """
