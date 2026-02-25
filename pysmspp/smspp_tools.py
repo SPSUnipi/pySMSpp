@@ -1,4 +1,3 @@
-import shutil
 from pathlib import Path
 import subprocess
 import re
@@ -25,6 +24,7 @@ class SMSPPSolverTool:
         fp_solution: Path | str = None,
         configsolution: Path | str = None,
         help_option: str = "-h",
+        shell: bool = False,
         **kwargs,
     ):
         """
@@ -51,6 +51,8 @@ class SMSPPSolverTool:
             When provided, option "-C" is added to the executable call to specify the configuration solution file.
         help_option : str, optional
             The option to display the help message, by default "-h".
+        shell : bool, optional
+            Whether to execute the command through the shell. Defaults to False.
         **kwargs
             Additional keyword arguments to pass as options to the function.
             The keys of the kwargs should be the option name, and the value should be the option value.
@@ -75,6 +77,8 @@ class SMSPPSolverTool:
         self.fp_solution = (
             None if fp_solution is None else str(Path(fp_solution).resolve())
         )
+
+        self._shell = shell
 
         self._status = None
         self._log = None
@@ -145,7 +149,7 @@ class SMSPPSolverTool:
         """
         return f"{type(self).__name__}\n\t\n\tsolver_name={self._solver_path}\n\tstatus={self.status}\n\tconfigfile={self.configfile}\n\tfp_network={self.fp_network}\n\tfp_solution={self.fp_solution}"
 
-    def help(self, print_message=True, shell=False):
+    def help(self, print_message=True):
         """
         Print the help message of the SMS++ solver tool.
 
@@ -155,22 +159,22 @@ class SMSPPSolverTool:
         ----------
         print_message : bool, optional
             Whether to print the message, by default True.
-        shell : bool, optional
-            Whether to execute the command through the shell. Defaults to False.
 
         Returns
         -------
         The help message.
         """
         result = subprocess.run(
-            [self._solver_path, self._help_option], capture_output=True, shell=shell
+            [self._solver_path, self._help_option],
+            capture_output=True,
+            shell=self._shell,
         )
         msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
         if print_message:
             print(msg)
         return msg
 
-    def optimize(self, logging=True, tracking_period=0.1, shell=False):
+    def optimize(self, logging=True, tracking_period=0.1):
         """
         Run the SMSPP Solver tool.
 
@@ -180,8 +184,6 @@ class SMSPPSolverTool:
             When true, logging is provided, including the executable call.
         tracking_period : float
             Delay in seconds between resource usage tracking samples.
-        shell : bool
-            Whether to execute the command through the shell. Defaults to False.
         """
         from pysmspp import SMSNetwork
 
@@ -193,7 +195,7 @@ class SMSPPSolverTool:
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
 
         command = self.calculate_executable_call()
-        if shell:
+        if self._shell:
             command = " ".join(command)
 
         start_time = time.time()
@@ -205,7 +207,7 @@ class SMSPPSolverTool:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            shell=shell,
+            shell=self._shell,
         )
         os.set_blocking(process.stdout.fileno(), False)  # set non-blocking read
         os.set_blocking(process.stderr.fileno(), False)  # set non-blocking read
@@ -310,8 +312,29 @@ class SMSPPSolverTool:
     def is_available(self):
         """
         Check if the SMS++ tool is available in the PATH.
+
+        Parameters
+        ----------
+        shell : bool, optional
+            Whether to execute the command through the shell. Defaults to False.
+
+        Returns
+        -------
+        bool
+            True if the tool is available, False otherwise.
         """
-        return shutil.which(self._solver_path) is not None
+        try:
+            proc = subprocess.run(
+                [self._solver_path, self._help_option],
+                check=False,
+                shell=self._shell,
+            )
+            return proc.returncode == 0
+        except FileNotFoundError:
+            return False
+        except Exception as e:
+            logger.warning(f"Error checking availability of {self._solver_path}: {e}")
+            return False
 
     def parse_solver_log(self):
         """
