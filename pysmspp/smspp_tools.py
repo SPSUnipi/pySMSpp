@@ -91,8 +91,6 @@ class SMSPPSolverTool:
         self._computational_time = None
         self._kwargs = kwargs
 
-        if "o" not in self._kwargs:
-            self._kwargs["o"] = None
         if "c" in self._kwargs:
             raise ValueError(
                 "Option 'c' is reserved for the configuration file directory."
