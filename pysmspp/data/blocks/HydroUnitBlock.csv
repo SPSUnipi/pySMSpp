@@ -1,6 +1,7 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
 HydroUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 HydroUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+HydroUnitBlock,name,Attribute,Attribute,str,-,-,,optional,Name of the block
 HydroUnitBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,required,Number of reservoirs
 HydroUnitBlock,NumberArcs,Dimension,Dimension,int,-,-,,required,Number of arcs
 HydroUnitBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,required,Total number of pieces
