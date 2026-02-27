@@ -1365,6 +1365,7 @@ class SMSNetwork(Block):
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
+        show_all: bool = False,
         _indent: str = "",
         _is_last: bool = True,
         _is_root: bool = True,
@@ -1384,6 +1385,8 @@ class SMSNetwork(Block):
             Whether to display variables (default: False).
         show_attributes : bool, optional
             Whether to display attributes (default: False).
+        show_all : bool, optional
+            If True, show dimensions, variables, and attributes (default: False). Overrides individual show_* flags.
         _indent : str, optional
             Internal parameter for indentation (default: "").
         _is_last : bool, optional
@@ -1403,6 +1406,10 @@ class SMSNetwork(Block):
         # Use "SMSNetwork" as default name for SMSNetwork objects
         if name is None:
             name = "SMSNetwork"
+        if show_all:
+            show_dimensions = True
+            show_variables = True
+            show_attributes = True
 
         # Call parent class method
         super().print_tree(
