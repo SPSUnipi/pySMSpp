@@ -192,13 +192,13 @@ class SMSPPSolverTool:
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
 
-        command = self.calculate_executable_call()
-        if self._shell:
-            command = " ".join(command)
+        command_raw = self.calculate_executable_call()
+        command_str = " ".join(command_raw)
+        command = command_raw if not self._shell else command_str
 
         start_time = time.time()
         if logging:
-            print(f"Executing command:\n{command}\n")
+            print(f"Executing command:\n{command_str}\n")
 
         process = psutil.Popen(
             command,
