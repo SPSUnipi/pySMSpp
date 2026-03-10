@@ -21,6 +21,7 @@
 
 ### Minor Changes and Bug Fixes
 
+* [Revise tssb definition PR #83](https://github.com/SPSUnipi/pySMSpp/pull/83)
 * [Add NodeName and LineName to UCBlock, name to UnitBlocks PR #81](https://github.com/SPSUnipi/pySMSpp/pull/81)
 * [Add show_all to print_tree commit a8127da](https://github.com/SPSUnipi/pySMSpp/commit/a8127da0e056c0a58c872b0f66b2fc4116747530)
 * [Improve print_tree: add counts and drop brackets when block_type is missing PR #45](https://github.com/SPSUnipi/pySMSpp/pull/45)
