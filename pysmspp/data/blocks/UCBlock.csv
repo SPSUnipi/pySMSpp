@@ -11,6 +11,8 @@ UCBlock,NumberNetworks,Dimension,Dimension,int,-,-,,optional,"Number of networks
 UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs
 UCBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,optional,Number of reservoirs
 UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces of the power flow function
+UCBlock,NodeName,Variable,Variable,str,NumberNodes,str,,optional,Name of the nodes
+UCBlock,LineName,Variable,Variable,str,NumberLines,str,,optional,Name of the lines
 UCBlock,GeneratorNode,Variable,Variable,int,-|NumberElectricalGenerators,-,,optional,List of buses of connection by unit
 UCBlock,StartLine,Variable,Variable,int,-|NumberLines|NumberBranches,-,,optional,Start buses of lines
 UCBlock,EndLine,Variable,Variable,int,-|NumberLines|NumberBranches,-,,optional,End buses of lines

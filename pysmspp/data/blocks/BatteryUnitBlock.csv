@@ -1,6 +1,7 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
 BatteryUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 BatteryUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+BatteryUnitBlock,name,Attribute,Attribute,str,-,-,,optional,Name of the block
 BatteryUnitBlock,MinPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Minimum power output of the unit
 BatteryUnitBlock,MaxPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum power output of the unit
 BatteryUnitBlock,InitialPower,Variable,Variable,double,-,MW,,optional,Initial power output of the unit

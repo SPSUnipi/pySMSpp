@@ -21,6 +21,8 @@
 
 ### Minor Changes and Bug Fixes
 
+* [Add NodeName and LineName to UCBlock, name to UnitBlocks PR #81](https://github.com/SPSUnipi/pySMSpp/pull/81)
+* [Add show_all to print_tree commit a8127da](https://github.com/SPSUnipi/pySMSpp/commit/a8127da0e056c0a58c872b0f66b2fc4116747530)
 * [Improve print_tree: add counts and drop brackets when block_type is missing PR #45](https://github.com/SPSUnipi/pySMSpp/pull/45)
 * [Improve docstrings and package-level documentation PR #47](https://github.com/SPSUnipi/pySMSpp/pull/47)
 * [Clean smspp tools options PR #48](https://github.com/SPSUnipi/pySMSpp/pull/48)
