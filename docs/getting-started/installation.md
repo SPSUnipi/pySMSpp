@@ -14,10 +14,10 @@ As common practice, it is highly recommend to use dedicated [conda/mamba environ
 If you are using conda, you can create a new environment with:
 
 ```bash
-conda create -n pysmspp python=3.10 pip
+conda create -n pysmspp python=3.12 pip
 ```
 
-This will create a new environment named `pysmspp` with Python 3.10 and pip package manager installed.
+This will create a new environment named `pysmspp` with Python 3.12 and pip package manager installed.
 
 If you prefer mamba, please execute the same command with `mamba` instead of `conda`. For alternative package managers, please refer to their respective documentation.
 
@@ -44,6 +44,7 @@ pip install .
 If you aim to develop the package, we recommend to install the package in editable mode (option `-e`), install the development dependencies (option `[dev]`), and install the pre-commit to ensure code quality:
 
 ```bash
+cd /path/to/your/folder/pySMSpp
 pip install -e .[dev]
 pre-commit install
 ```
