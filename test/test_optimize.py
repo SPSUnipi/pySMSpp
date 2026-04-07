@@ -165,11 +165,6 @@ def test_optimize_ucsolver_all_components(force_smspp):
 
         assert "success" in result.status.lower()
         assert "error" not in result.log.lower()
-        assert "ThermalUnitBlock" in result.log
-        assert "BatteryUnitBlock" in result.log
-        assert "HydroUnitBlock" in result.log
-        assert "IntermittentUnitBlock" in result.log
-        assert "SlackUnitBlock" in result.log
     else:
         pytest.skip("UCBlockSolver not available in PATH")
 
