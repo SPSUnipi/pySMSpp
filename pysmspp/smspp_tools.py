@@ -529,7 +529,77 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
 
 class InvestmentBlockSolver(SMSPPSolverTool):
     """
-    Class to interact with the InvestmentBlockSolver tool from SMS++, with name "investment_solver".
+    Class to interact with the InvestmentBlockSolver tool from SMS++, with executable file "investmentblock_solver".
+    """
+
+    def __init__(
+        self,
+        solver_path: Path | str = "investmentblock_solver",
+        fp_network: Path | str = None,
+        configfile: Path | str = None,
+        fp_log: Path | str = None,
+        fp_solution: Path | str = None,
+        configsolution: Path | str = None,
+        help_option: str = "-h",
+        **kwargs,
+    ):
+        """
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
+        """
+        super().__init__(
+            solver_path=solver_path,
+            fp_network=fp_network,
+            configfile=configfile,
+            fp_log=fp_log,
+            fp_solution=fp_solution,
+            configsolution=configsolution,
+            help_option=help_option,
+            **kwargs,
+        )
+        if "v" not in self._kwargs:
+            self._kwargs["v"] = "1"
+
+    def parse_solver_log(
+        self,
+    ):  # TODO: needs revision to better capture the output
+        """
+        Check the output of the InvestmentBlockSolver.
+        It will extract the status, upper bound, lower bound, and objective value from the log.
+
+        Parameters
+        ----------
+        log : str
+            The path to the solution file.
+        """
+        if self._log is None:
+            raise ValueError("Optimization was not launched.")
+
+        res = re.search(r"Fi\* = (.*)\n", self._log)
+
+        if not res:  # if success not found
+            self._status = "Failed"
+            self._objective_value = np.nan
+            self._lower_bound = np.nan
+            self._upper_bound = np.nan
+            return
+
+        self._objective_value = float(res.group(1).replace("\r", ""))
+
+        res = re.search("Solver status: (.*)\n", self._log)
+        smspp_status = res.group(1).replace("\r", "")
+
+        if np.isfinite(self._objective_value):
+            self._status = f"Success ({smspp_status})"
+        else:
+            self._status = f"Failed ({smspp_status})"
+
+        self._lower_bound = np.nan
+        self._upper_bound = np.nan
+
+
+class InvestmentSolver(SMSPPSolverTool):
+    """
+    Class to interact with the InvestmentSolver tool from SMS++, with name "investment_solver".
     """
 
     def __init__(

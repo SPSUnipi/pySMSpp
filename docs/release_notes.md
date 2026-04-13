@@ -4,11 +4,11 @@
 
 ### New Features and Major Changes
 
-* 
+* [Provide InvestmentBlockSolver and InvestmentSolver #87](https://github.com/SPSUnipi/pySMSpp/pull/87)
 
 ### Minor Changes and Bug Fixes
 
-* 
+* [Enhance block support for block.add #9e5106d](https://github.com/SPSUnipi/pySMSpp/commit/9e5106d7fd9114f6916b23e04582700c52e235ab)
 
 ## Version v0.0.3
 
