@@ -872,7 +872,12 @@ class Block:
         # Add the variables
         for key, value in self.variables.items():
             var = grp.createVariable(key, value.var_type, value.dimensions)
-            var[:] = value.data
+    
+            if value.var_type == "str":
+                for i, item in enumerate(value.data):
+                    var[i] = item
+            else:
+                var[:] = value.data
 
         # Save each sub-Block as a subgroup
         for key, sub_block in self.blocks.items():
