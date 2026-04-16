@@ -4,6 +4,7 @@ from pysmspp.smspp_tools import (
     UCBlockSolver,
     InvestmentBlockTestSolver,
     InvestmentBlockSolver,
+    InvestmentSolver,
     TSSBSolver,
 )
 from enum import IntEnum
@@ -1469,7 +1470,7 @@ class SMSNetwork(Block):
         default_solver_map = {
             "UCBlock": "UCBlockSolver",
             "InvestmentBlock": "InvestmentBlockTestSolver",
-            "SDDPBlock": "InvestmentBlockSolver",
+            "SDDPBlock": "InvestmentSolver",
             "TwoStageStochasticBlock": "TSSBSolver",
         }
 
@@ -1478,6 +1479,7 @@ class SMSNetwork(Block):
             "UCBlockSolver": UCBlockSolver,
             "InvestmentBlockTestSolver": InvestmentBlockTestSolver,
             "InvestmentBlockSolver": InvestmentBlockSolver,
+            "InvestmentSolver": InvestmentSolver,
             "TSSBSolver": TSSBSolver,
         }
 
