@@ -872,7 +872,7 @@ class Block:
         # Add the variables
         for key, value in self.variables.items():
             var = grp.createVariable(key, value.var_type, value.dimensions)
-    
+
             if value.var_type == "str":
                 for i, item in enumerate(value.data):
                     var[i] = item
