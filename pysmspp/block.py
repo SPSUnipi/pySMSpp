@@ -872,12 +872,7 @@ class Block:
         # Add the variables
         for key, value in self.variables.items():
             var = grp.createVariable(key, value.var_type, value.dimensions)
-    
-            if value.var_type == "str":
-                for i, item in enumerate(value.data):
-                    var[i] = item
-            else:
-                var[:] = value.data
+            var[:] = value.data
 
         # Save each sub-Block as a subgroup
         for key, sub_block in self.blocks.items():
@@ -1473,7 +1468,7 @@ class SMSNetwork(Block):
         # Map block type to default solver (for 'auto' mode)
         default_solver_map = {
             "UCBlock": "UCBlockSolver",
-            "InvestmentBlock": "InvestmentBlockTestSolver",
+            "InvestmentBlock": "InvestmentBlockSolver",
             "SDDPBlock": "InvestmentBlockSolver",
             "TwoStageStochasticBlock": "TSSBSolver",
         }
