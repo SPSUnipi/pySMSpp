@@ -10,6 +10,7 @@
 
 * [Enhance block support for block.add #9e5106d](https://github.com/SPSUnipi/pySMSpp/commit/9e5106d7fd9114f6916b23e04582700c52e235ab)
 * [Improved Unit commitment parameters for ThermalUnitBlock, correct LineName in UCBlock #88](https://github.com/SPSUnipi/pySMSpp/pull/88)
+* [Include MaxGeneration and MinGeneration for IntermittentUnitBlock #89](https://github.com/SPSUnipi/pySMSpp/pull/89)
 
 ## Version v0.0.3
 

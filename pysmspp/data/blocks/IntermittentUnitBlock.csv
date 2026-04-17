@@ -11,3 +11,5 @@ IntermittentUnitBlock,Kappa,Variable,Variable,double,-,-,,optional,Capacity expa
 IntermittentUnitBlock,InvestmentCost,Variable,Variable,double,-,-,,optional,Investment cost of the unit
 IntermittentUnitBlock,MaxCapacityDesign,Variable,Variable,double,-,-,,optional,Maximum installed capacity of the unit
 IntermittentUnitBlock,MinCapacityDesign,Variable,Variable,double,-,-,,optional,Minimum installed capacity of the unit
+IntermittentUnitBlock,MaxGeneration,Variable,Variable,double,-,MWh,,optional,Maximum generation of the unit
+IntermittentUnitBlock,MinGeneration,Variable,Variable,double,-,MWh,,optional,Minimum generation of the unit
