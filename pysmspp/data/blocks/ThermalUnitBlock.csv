@@ -1,6 +1,7 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
 ThermalUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 ThermalUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+ThermalUnitBlock,name,Attribute,Attribute,str,-,-,,optional,Name of the block
 ThermalUnitBlock,MinPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Minimum power output of the unit
 ThermalUnitBlock,MaxPower,Variable,Variable,double,-|TimeHorizon,MW,,optional,Maximum power output of the unit
 ThermalUnitBlock,StartUpCost,Variable,Variable,double,-|TimeHorizon,USD,,optional,Start-up cost of the unit
