@@ -3,6 +3,7 @@
 [![Tests](https://github.com/SPSUnipi/pySMSpp/actions/workflows/test.yml/badge.svg)](https://github.com/SPSUnipi/pySMSpp/actions/workflows/test.yml)
 [![Documentation Status](https://readthedocs.org/projects/pysmspp/badge/?version=latest)](https://pysmspp.readthedocs.io/en/latest/?badge=latest)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/SPSUnipi/pySMSpp/main.svg)](https://results.pre-commit.ci/latest/github/SPSUnipi/pySMSpp/main)
+![Size](https://img.shields.io/github/repo-size/SPSUnipi/pysmspp)
 
 This package aims at providing a python interface to create [SMS++](https://gitlab.com/smspp/smspp-project) models using a simple python interface.
 The package aims to support:
