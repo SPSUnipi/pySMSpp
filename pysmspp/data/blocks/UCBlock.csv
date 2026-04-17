@@ -7,7 +7,7 @@ UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number 
 UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1,optional,Number of nodes
 UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
 UCBlock,NumberBranches,Dimension,Dimension,int,-,-,,optional,"Number of branches: when hyperarcs are used, this is the number of hyperarc branches and it is higher than NumberLines"
-UCBlock,NumberNetworks,Dimension,Dimension,int,-,-,,optional,"Number of networks in the problem; if not provided it is taken as TimeHorizon"
+UCBlock,NumberNetworks,Dimension,Dimension,int,-,-,,optional,Number of networks in the problem; if not provided it is taken as TimeHorizon
 UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs
 UCBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,optional,Number of reservoirs
 UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces of the power flow function
@@ -21,7 +21,6 @@ UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Maximum
 UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines,Siemens,,optional,Susceptance of lines
 UCBlock,LineResistance,Variable,Variable,double,-|NumberLines,Ohm,,optional,Resistance of lines
 UCBlock,Efficiency,Variable,Variable,double,-|NumberLines|NumberBranches,Ohm,,optional,Efficiency of lines or hyperarc branches; functional only for HVDC lines (default 1.0)
-UCBlock,LineName,Variable,Variable,str,-|NumberLines,str,,optional,Name of the line
 UCBlock,HyperArcID,Variable,Variable,double,-|NumberBranches,MW,,optional,Hyperarch ID of each branch: it is the line id corresponding to the branch being added
 UCBlock,NetworkCost,Variable,Variable,double,-|NumberLines,€/MWh,,optional,Marginal cost of the network flows
 UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
