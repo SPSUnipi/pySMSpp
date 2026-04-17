@@ -19,5 +19,5 @@ ThermalUnitBlock,DeltaRampDown,Variable,Variable,double,-,-,,optional,Delta ramp
 ThermalUnitBlock,Availability,Variable,Variable,double,-,-,,optional,-
 ThermalUnitBlock,PrimaryRho,Variable,Variable,double,-,-,,optional,Efficiency of primary reserves
 ThermalUnitBlock,SecondaryRho,Variable,Variable,double,-,-,,optional,Efficiency of secondary reserves
-ThermalUnitBlock,StartUpLimit,Variable,Variable,double,-,-,,optional,Ramp in start t
-ThermalUnitBlock,ShutDownLimit,Variable,Variable,double,-,-,,optional,Ramp in shut t
+ThermalUnitBlock,StartUpLimit,Variable,Variable,double,-,-,,optional,Start-up ramp limit of the unit during the start-up time period
+ThermalUnitBlock,ShutDownLimit,Variable,Variable,double,-,-,,optional,Shut-down ramp limit of the unit during the shut-down time period
