@@ -9,6 +9,7 @@ BatteryUnitBlock,DeltaRampUp,Variable,Variable,double,-|TimeHorizon,-,,optional,
 BatteryUnitBlock,DeltaRampDown,Variable,Variable,double,-|TimeHorizon,-,,optional,Rump-down limit
 BatteryUnitBlock,ExtractingBatteryRho,Variable,Variable,double,-|TimeHorizon,-,,optional,Discharge efficiency
 BatteryUnitBlock,StoringBatteryRho,Variable,Variable,double,-|TimeHorizon,-,,optional,Charge efficiency
+BatteryUnitBlock,StandingBatteryRho,Variable,Variable,double,-|TimeHorizon,-,,optional,Self-discharge efficiency
 BatteryUnitBlock,Demand,Variable,Variable,double,-|TimeHorizon,-,,optional,Demand
 BatteryUnitBlock,MinStorage,Variable,Variable,double,-|TimeHorizon,-,,required,Minimum storage level
 BatteryUnitBlock,MaxStorage,Variable,Variable,double,-|TimeHorizon,-,,required,Maximum storage level
