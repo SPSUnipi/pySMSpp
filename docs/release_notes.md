@@ -4,6 +4,16 @@
 
 ### New Features and Major Changes
 
+* 
+
+### Minor Changes and Bug Fixes
+
+*
+
+## Version v0.0.4
+
+### New Features and Major Changes
+
 * [Provide InvestmentBlockSolver and InvestmentSolver #87](https://github.com/SPSUnipi/pySMSpp/pull/87)
 
 ### Minor Changes and Bug Fixes
