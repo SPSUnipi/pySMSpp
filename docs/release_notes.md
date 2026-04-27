@@ -1,5 +1,6 @@
 # Release Notes
 
+
 ## Upcoming Release
 
 ### New Features and Major Changes
@@ -9,6 +10,14 @@
 ### Minor Changes and Bug Fixes
 
 *
+
+
+## Version v0.0.5
+
+### New Features and Major Changes
+
+* [Introduce StandingBatteryRho #6bed141](https://github.com/SPSUnipi/pySMSpp/tree/6bed141bad8a414f960f58f954b77ab052f7d00d)
+
 
 ## Version v0.0.4
 
@@ -21,6 +30,7 @@
 * [Enhance block support for block.add #9e5106d](https://github.com/SPSUnipi/pySMSpp/commit/9e5106d7fd9114f6916b23e04582700c52e235ab)
 * [Improved Unit commitment parameters for ThermalUnitBlock, correct LineName in UCBlock #88](https://github.com/SPSUnipi/pySMSpp/pull/88)
 * [Include MaxGeneration and MinGeneration for IntermittentUnitBlock #89](https://github.com/SPSUnipi/pySMSpp/pull/89)
+
 
 ## Version v0.0.3
 
@@ -55,6 +65,7 @@
 * [Use conda package smspp-project for ReadTheDocs builds PR #43](https://github.com/SPSUnipi/pySMSpp/pull/43)
 * [Fixed test.yml for macOS PR #38](https://github.com/SPSUnipi/pySMSpp/pull/38)
 
+
 ## Version v0.0.2
 
 ### New Features and Major Changes
@@ -77,6 +88,7 @@
 * [Update creation of path in windows PR #32](https://github.com/SPSUnipi/pySMSpp/pull/32)
 * [Fix CI PR #28](https://github.com/SPSUnipi/pySMSpp/pull/28)
 
+
 ## Version v0.0.1 - Initial Release
 
 ### New Features and Major Changes
@@ -85,6 +97,7 @@
 * Initial implementation of `SMSPPSolverTool` for UCBlock and InvestmentBlock.
 * Documentation with Sphinx and ReadTheDocs.
 * Implementation of proper CI with GitHub Actions, including testing on Linux, Windows, and macOS.
+
 
 ## Release Process
 
