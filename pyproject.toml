@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pysmspp"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
   { name="Unipi developers", email="davide.fioriti@unipi.it" },
 ]
@@ -13,6 +13,7 @@ readme = "README.md"
 classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Operating System :: OS Independent",
 ]

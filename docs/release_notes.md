@@ -5,11 +5,18 @@
 
 ### New Features and Major Changes
 
-* [Add quantities for time-variant quantities of DCNetworkBlock #91](https://github.com/SPSUnipi/pySMSpp/pull/91)
+* 
 
 ### Minor Changes and Bug Fixes
 
 *
+
+
+## Version v0.0.6
+
+### New Features and Major Changes
+
+* [Add quantities for time-variant quantities of DCNetworkBlock #91](https://github.com/SPSUnipi/pySMSpp/pull/91)
 
 
 ## Version v0.0.5
