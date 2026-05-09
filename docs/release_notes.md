@@ -12,6 +12,13 @@
 *
 
 
+## Version v0.0.7
+
+### Minor Changes and Bug Fixes
+
+* [Include and update BSCfg and BSPar for InvestmentBlock #8afcf45](https://github.com/SPSUnipi/pySMSpp/commit/8afcf450d1084113ecffc6b1db146a15853add0f)
+
+
 ## Version v0.0.6
 
 ### New Features and Major Changes
