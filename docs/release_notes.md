@@ -5,7 +5,7 @@
 
 ### New Features and Major Changes
 
-* 
+* [Add draft config for SDDPBlock #93](https://github.com/SPSUnipi/pySMSpp/pull/93)
 
 ### Minor Changes and Bug Fixes
 
