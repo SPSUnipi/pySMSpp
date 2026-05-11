@@ -1,0 +1,10 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+ScenarioSet,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+ScenarioSet,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+ScenarioSet,TimeHorizon,Dimension,Dimension,int,-,-,,required,Time horizon
+ScenarioSet,NumberScenarios,Dimension,Dimension,int,-,-,,required,Number of scenarios
+ScenarioSet,ScenarioSize,Dimension,Dimension,int,-,-,,required,Size of a single scenario which spans all stages
+ScenarioSet,NumberRandomDataGroups,Dimension,Dimension,int,-,-,1,optional,Number of groups of related random data within each sub-scenario; meaningful only if all sub-scenarios have the same size
+ScenarioSet,SubScenarioSize,Variable,Variable,int,TimeHorizon,-,,optional,Size of the sub-scenario associated with each stage; if not provided all sub-scenarios have size ScenarioSize/TimeHorizon
+ScenarioSet,Scenarios,Variable,Variable,double,NumberScenarios-ScenarioSize,-,,required,The scenarios; i-th row contains the i-th scenario where Scenarios[i][j] is the j-th component of the i-th scenario
+ScenarioSet,SizeRandomDataGroups,Variable,Variable,int,NumberRandomDataGroups,-,,optional,Size of each group of related random data in each sub-scenario; required only if NumberRandomDataGroups > 1
