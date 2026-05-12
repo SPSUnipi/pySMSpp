@@ -9,7 +9,7 @@
 
 ### Minor Changes and Bug Fixes
 
-*
+* [Add architecture to documentation #94](https://github.com/SPSUnipi/pySMSpp/pull/94)
 
 
 ## Version v0.0.7

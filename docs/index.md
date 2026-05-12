@@ -40,11 +40,13 @@ pySMSpp is a Python package to interface [Structured Modeling System for mathema
 
 <div class="grid cards" markdown>
 
--   :octicons-code-16:{ .lg .middle } **API Reference**
+-   :octicons-code-16:{ .lg .middle } **User Guide**
 
     ---
 
-    The API Reference is generated automatically from the docstrings in the code. It provides a detailed description of all modules, classes and functions, their parameters and usage.
+    Learn how pySMSpp represents SMS++ models in Python, how the block hierarchy maps to netCDF4 files, and where to find detailed API documentation.
+
+    [:octicons-arrow-right-24: Architecture](user-guide/architecture.md)
 
     [:octicons-arrow-right-24: API Reference](api_reference.md)
 
