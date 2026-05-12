@@ -54,6 +54,7 @@ nav:
   - Plotting Variables and Blocks: examples/plotting_variables_and_blocks.ipynb
   - Input/Output Operations: examples/io_operations.ipynb
 - User Guide:
+  - Architecture: user-guide/architecture.md
   - API Reference: api_reference.md
 - Release Notes: release_notes.md
 - Contributing: contributing.md
