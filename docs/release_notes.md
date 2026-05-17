@@ -5,7 +5,7 @@
 
 ### New Features and Major Changes
 
-* 
+* [Add HydroSystemsUnitBlock #97](https://github.com/SPSUnipi/pySMSpp/pull/97)
 
 ### Minor Changes and Bug Fixes
 
