@@ -5,67 +5,67 @@
 
 ### New Features and Major Changes
 
-* 
+* [Add HydroSystemsUnitBlock #97](https://github.com/SPSUnipi/pySMSpp/pull/97)
 
 ### Minor Changes and Bug Fixes
 
-* Enable logging in template gurobi [PR #96](https://github.com/SPSUnipi/pySMSpp/pull/96)
+* [Enable logging in template gurobi #96](https://github.com/SPSUnipi/pySMSpp/pull/96)
 
 
 ## Version v0.0.8
 
 ### New Features and Major Changes
 
-* [Add draft config for SDDPBlock #93](https://github.com/SPSUnipi/pySMSpp/pull/93)
+* [Add draft config for SDDPBlock PR #93](https://github.com/SPSUnipi/pySMSpp/pull/93)
 
 ### Minor Changes and Bug Fixes
 
-* [Add architecture to documentation #94](https://github.com/SPSUnipi/pySMSpp/pull/94)
+* [Add architecture to documentation PR #94](https://github.com/SPSUnipi/pySMSpp/pull/94)
 
 
 ## Version v0.0.7
 
 ### Minor Changes and Bug Fixes
 
-* [Include and update BSCfg and BSPar for InvestmentBlock #8afcf45](https://github.com/SPSUnipi/pySMSpp/commit/8afcf450d1084113ecffc6b1db146a15853add0f)
+* [Include and update BSCfg and BSPar for InvestmentBlock commit #8afcf45](https://github.com/SPSUnipi/pySMSpp/commit/8afcf450d1084113ecffc6b1db146a15853add0f)
 
 
 ## Version v0.0.6
 
 ### New Features and Major Changes
 
-* [Add quantities for time-variant quantities of DCNetworkBlock #91](https://github.com/SPSUnipi/pySMSpp/pull/91)
+* [Add quantities for time-variant quantities of DCNetworkBlock PR #91](https://github.com/SPSUnipi/pySMSpp/pull/91)
 
 
 ## Version v0.0.5
 
 ### New Features and Major Changes
 
-* [Introduce StandingBatteryRho #6bed141](https://github.com/SPSUnipi/pySMSpp/tree/6bed141bad8a414f960f58f954b77ab052f7d00d)
+* [Introduce StandingBatteryRho commit #6bed141](https://github.com/SPSUnipi/pySMSpp/tree/6bed141bad8a414f960f58f954b77ab052f7d00d)
 
 
 ## Version v0.0.4
 
 ### New Features and Major Changes
 
-* [Provide InvestmentBlockSolver and InvestmentSolver #87](https://github.com/SPSUnipi/pySMSpp/pull/87)
+* [Provide InvestmentBlockSolver and InvestmentSolver PR #87](https://github.com/SPSUnipi/pySMSpp/pull/87)
 
 ### Minor Changes and Bug Fixes
 
-* [Enhance block support for block.add #9e5106d](https://github.com/SPSUnipi/pySMSpp/commit/9e5106d7fd9114f6916b23e04582700c52e235ab)
-* [Improved Unit commitment parameters for ThermalUnitBlock, correct LineName in UCBlock #88](https://github.com/SPSUnipi/pySMSpp/pull/88)
-* [Include MaxGeneration and MinGeneration for IntermittentUnitBlock #89](https://github.com/SPSUnipi/pySMSpp/pull/89)
+* [Enhance block support for block.add commit #9e5106d](https://github.com/SPSUnipi/pySMSpp/commit/9e5106d7fd9114f6916b23e04582700c52e235ab)
+* [Improved Unit commitment parameters for ThermalUnitBlock, correct LineName in UCBlock PR #88](https://github.com/SPSUnipi/pySMSpp/pull/88)
+* [Include MaxGeneration and MinGeneration for IntermittentUnitBlock PR #89](https://github.com/SPSUnipi/pySMSpp/pull/89)
 
 
 ## Version v0.0.3
 
 ### New Features and Major Changes
 
-* [Introduce example on input/output operations and introduce solution object into the example #80](https://github.com/SPSUnipi/pySMSpp/pull/80)
-* [Revise SMSPPSolverTool.is_available to support shell option and move shell option to constructor of SMSPPSolverTool #78](https://github.com/SPSUnipi/pySMSpp/pull/78)
-* [Enable shell option in SMSNetwork.optimize #77](https://github.com/SPSUnipi/pySMSpp/pull/77)
-* [Enable shell option in subprocess of tools and generalize options: add explicit solverconfig option and kwargs to generalize options #73](https://github.com/SPSUnipi/pySMSpp/pull/73)
-* [Generalize solver_log #72](https://github.com/SPSUnipi/pySMSpp/pull/72)
+* [Introduce example on input/output operations and introduce solution object into the example PR #80](https://github.com/SPSUnipi/pySMSpp/pull/80)
+* [Revise SMSPPSolverTool.is_available to support shell option and move shell option to constructor of SMSPPSolverTool PR #78](https://github.com/SPSUnipi/pySMSpp/pull/78)
+* [Enable shell option in SMSNetwork.optimize PR #77](https://github.com/SPSUnipi/pySMSpp/pull/77)
+* [Enable shell option in subprocess of tools and generalize options: add explicit solverconfig option and kwargs to generalize options PR #73](https://github.com/SPSUnipi/pySMSpp/pull/73)
+* [Generalize solver_log PR #72](https://github.com/SPSUnipi/pySMSpp/pull/72)
 * [Convert documentation from Sphinx/RST to MkDocs PR #68](https://github.com/SPSUnipi/pySMSpp/pull/68)
 * [Add `plot()` methods to `Variable` and `Block` PR #66](https://github.com/SPSUnipi/pySMSpp/pull/66)
 * [Enable functional building of a TSSB block with test PR #64](https://github.com/SPSUnipi/pySMSpp/pull/64)

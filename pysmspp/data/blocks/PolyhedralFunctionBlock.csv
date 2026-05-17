@@ -1,0 +1,13 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+PolyhedralFunctionBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+PolyhedralFunctionBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+PolyhedralFunctionBlock,name,Attribute,Attribute,str,-,-,,optional,Name of the block
+PolyhedralFunctionBlock,PolyFunction_NumVar,Dimension,Dimension,int,-,-,,required,Number of active variables; number of columns of the A matrix
+PolyhedralFunctionBlock,PolyFunction_NumRow,Dimension,Dimension,int,-,-,0,optional,Number of rows of the A matrix
+PolyhedralFunctionBlock,PolyFunction_sign,Dimension,Dimension,int,-,-,true,optional,Verse of the function; missing or nonzero means convex max-function and zero means concave min-function
+PolyhedralFunctionBlock,PolyFunction_A,Variable,Variable,double,PolyFunction_NumRow-PolyFunction_NumVar,-,,optional,Row-major A matrix; required when PolyFunction_NumRow is greater than 0
+PolyhedralFunctionBlock,PolyFunction_b,Variable,Variable,double,PolyFunction_NumRow,-,,optional,Constant vector b; required when PolyFunction_NumRow is greater than 0
+PolyhedralFunctionBlock,PolyFunction_lb,Variable,Variable,double,-,-,,optional,Global lower bound for convex functions or upper bound for concave functions
+PolyhedralFunctionBlock,Model,Variable,Variable,str,-,-,,optional,LP or MPS representation of the arbitrary AbstractBlock part; may have ModelType attribute L or M
+PolyhedralFunctionBlock,NumberInnerBlock,Dimension,Dimension,int,-,-,0,optional,Number of inner blocks in the arbitrary AbstractBlock part
+PolyhedralFunctionBlock,Block_*,Block,Group,Block,list,-.-,,optional,Inner blocks in the arbitrary AbstractBlock part
