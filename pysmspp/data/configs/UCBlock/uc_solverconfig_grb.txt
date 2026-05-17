@@ -14,7 +14,7 @@ ComputeConfig  # Type of the object
 1  # differential
 
 3  # Number of integer parameters
-intLogVerb 0
+intLogVerb 1
 Method 2
 Crossover 0
 
