@@ -9,7 +9,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* 
+* Enable logging in template gurobi [PR #96](https://github.com/SPSUnipi/pySMSpp/pull/96)
 
 
 ## Version v0.0.8
