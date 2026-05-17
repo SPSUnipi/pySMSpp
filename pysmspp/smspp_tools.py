@@ -1,13 +1,44 @@
 from pathlib import Path
 import subprocess
+import queue
 import re
 import numpy as np
 import os
 import time
 import psutil
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
+
+
+def _enqueue_pipe_lines(pipe, stream_name, messages):
+    try:
+        for line in iter(pipe.readline, ""):
+            messages.put((stream_name, line))
+    finally:
+        pipe.close()
+
+
+def _drain_pipe_messages(messages, logging=False):
+    msg_out = ""
+    msg_err = ""
+
+    while True:
+        try:
+            stream_name, msg = messages.get_nowait()
+        except queue.Empty:
+            break
+
+        if stream_name == "stderr":
+            msg_err += msg
+        else:
+            msg_out += msg
+
+        if logging:
+            print(msg, end="")
+
+    return msg_out, msg_err
 
 
 class SMSPPSolverTool:
@@ -207,25 +238,20 @@ class SMSPPSolverTool:
             text=True,
             shell=self._shell,
         )
-        os.set_blocking(process.stdout.fileno(), False)  # set non-blocking read
-        os.set_blocking(process.stderr.fileno(), False)  # set non-blocking read
+        pipe_messages = queue.Queue()
+        stdout_thread = threading.Thread(
+            target=_enqueue_pipe_lines,
+            args=(process.stdout, "stdout", pipe_messages),
+            daemon=True,
+        )
+        stderr_thread = threading.Thread(
+            target=_enqueue_pipe_lines,
+            args=(process.stderr, "stderr", pipe_messages),
+            daemon=True,
+        )
+        stdout_thread.start()
+        stderr_thread.start()
         process.cpu_percent()  # initialize cpu percent calculation
-
-        def _get_msg_from_pipe(pipe, logging=False, buffer=4096):
-            msg = ""
-            for i in range(10_000):  # avoid infinite loops
-                # read the buffer
-                try:
-                    msg_temp = os.read(pipe.fileno(), buffer).decode("utf-8")
-                    if len(msg_temp) == 0:
-                        break
-                    msg += msg_temp
-                except BlockingIOError:
-                    break
-            # print if requested
-            if logging and len(msg) > 0:
-                print(msg)
-            return msg
 
         self._log = ""
         log_error = ""
@@ -252,8 +278,7 @@ class SMSPPSolverTool:
                     pass
 
             # read from process without stopping it
-            msg_out = _get_msg_from_pipe(process.stdout, logging)
-            msg_err = _get_msg_from_pipe(process.stderr, logging)
+            msg_out, msg_err = _drain_pipe_messages(pipe_messages, logging)
 
             self._log += msg_out + msg_err
             log_error += msg_err
@@ -261,10 +286,11 @@ class SMSPPSolverTool:
             time.sleep(tracking_period)
 
         # finalize logging
-        self._log += _get_msg_from_pipe(process.stdout, logging)
-        msg_err = _get_msg_from_pipe(process.stderr, logging)
+        stdout_thread.join()
+        stderr_thread.join()
+        msg_out, msg_err = _drain_pipe_messages(pipe_messages, logging)
 
-        self._log += msg_err
+        self._log += msg_out + msg_err
         log_error += msg_err
 
         # add memory info to logging

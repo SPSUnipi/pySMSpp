@@ -7,6 +7,8 @@
 
 To use pySMSpp we highly recommend to use a package manager such as [conda](https://docs.conda.io/en/latest/miniconda.html), [mamba](https://github.com/mamba-org/mamba) or [pip](https://pip.pypa.io/en/stable/) as easy-to-use package managers, available for Windows, Mac OS X and GNU/Linux.
 
+pySMSpp supports Python 3.10 and newer.
+
 As common practice, it is highly recommend to use dedicated [conda/mamba environments](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html) or [virtual environments](https://pypi.python.org/pypi/virtualenv) to ensure proper dependency management and isolation.
 
 ## Adoption of conda environments
@@ -14,10 +16,10 @@ As common practice, it is highly recommend to use dedicated [conda/mamba environ
 If you are using conda, you can create a new environment with:
 
 ```bash
-conda create -n pysmspp python=3.12 pip
+conda create -n pysmspp python=3.10 pip
 ```
 
-This will create a new environment named `pysmspp` with Python 3.12 and pip package manager installed.
+This will create a new environment named `pysmspp` with Python 3.10 and pip package manager installed.
 
 If you prefer mamba, please execute the same command with `mamba` instead of `conda`. For alternative package managers, please refer to their respective documentation.
 

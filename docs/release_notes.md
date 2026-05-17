@@ -5,7 +5,7 @@
 
 ### New Features and Major Changes
 
-* 
+* Support python 3.10+: move from os.set_blocking to queue + threading for non-blocking subprocess output [PR #95](https://github.com/SPSUnipi/pySMSpp/pull/95)
 
 ### Minor Changes and Bug Fixes
 
