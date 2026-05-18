@@ -1,0 +1,7 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+HydroSystemUnitBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+HydroSystemUnitBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+HydroSystemUnitBlock,name,Attribute,Attribute,str,-,-,,optional,Name of the block
+HydroSystemUnitBlock,NumberHydroUnits,Dimension,Dimension,int,-,-,,required,Number of hydro units
+HydroSystemUnitBlock,HydroUnitBlock_*,Block,Group,HydroUnitBlock,list,-.-,,required,Hydro unit sub-blocks; one group HydroUnitBlock_i for each i in 0...NumberHydroUnits-1
+HydroSystemUnitBlock,PolyhedralFunctionBlock,Block,Group,PolyhedralFunctionBlock,list,-.-,,optional,Future value of water function over the final reservoir volumes
