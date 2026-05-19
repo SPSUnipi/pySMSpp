@@ -1,24 +1,23 @@
 """Tests for the block tree visualization utility."""
 
-from io import StringIO
-import sys
+import logging
 from conftest import get_network, add_base_ucblock, build_base_tub, build_base_bub
 import pysmspp
 
 
-def capture_print_output(func, *args, **kwargs):
-    """Capture printed output from a function."""
-    old_stdout = sys.stdout
-    sys.stdout = StringIO()
-    try:
+def capture_log_output(caplog, func, *args, **kwargs):
+    """Capture tree output emitted through the package logger."""
+    caplog.clear()
+    with caplog.at_level(logging.INFO, logger="pysmspp.block"):
         func(*args, **kwargs)
-        output = sys.stdout.getvalue()
-    finally:
-        sys.stdout = old_stdout
-    return output
+    return "\n".join(
+        record.getMessage()
+        for record in caplog.records
+        if record.name == "pysmspp.block"
+    )
 
 
-def test_print_tree_structure_and_nesting():
+def test_print_tree_structure_and_nesting(caplog):
     """Test tree structure with nested blocks and tree connectors."""
     parent = pysmspp.Block()
     parent.block_type = "ParentBlock"
@@ -31,7 +30,7 @@ def test_print_tree_structure_and_nesting():
     parent.blocks["Child1"] = child1
     parent.blocks["Child2"] = child2
 
-    output = capture_print_output(parent.print_tree, "Parent")
+    output = capture_log_output(caplog, parent.print_tree, "Parent")
 
     assert "Parent [ParentBlock]" in output
     assert "Child1 [ChildBlock1]" in output
@@ -39,7 +38,7 @@ def test_print_tree_structure_and_nesting():
     assert "└── " in output or "├── " in output
 
 
-def test_print_tree_display_options():
+def test_print_tree_display_options(caplog):
     """Test displaying dimensions, variables, and attributes."""
     block = pysmspp.Block()
     block.block_type = "TestBlock"
@@ -48,7 +47,8 @@ def test_print_tree_display_options():
     block.add_attribute("attr1", "value1")
 
     # Test with all options
-    output = capture_print_output(
+    output = capture_log_output(
+        caplog,
         block.print_tree,
         "MyBlock",
         show_dimensions=True,
@@ -62,7 +62,7 @@ def test_print_tree_display_options():
     assert "Attributes (1):" in output and "attr1=value1" in output
 
 
-def test_print_tree_truncation():
+def test_print_tree_truncation(caplog):
     """Test that long lists are truncated properly."""
     block = pysmspp.Block()
     block.block_type = "TestBlock"
@@ -72,29 +72,29 @@ def test_print_tree_truncation():
         block.add_variable(f"var{i}", "float", (), float(i))
         block.add_attribute(f"attr{i}", i)
 
-    output = capture_print_output(
-        block.print_tree, "MyBlock", show_variables=True, show_attributes=True
+    output = capture_log_output(
+        caplog, block.print_tree, "MyBlock", show_variables=True, show_attributes=True
     )
 
     assert "10 total" in output
     assert "..." in output
 
 
-def test_print_tree_default_naming():
+def test_print_tree_default_naming(caplog):
     """Test default name behavior for Block and SMSNetwork."""
     block = pysmspp.Block()
     block.block_type = "TestBlock"
-    output = capture_print_output(block.print_tree)
+    output = capture_log_output(caplog, block.print_tree)
     assert "TestBlock [TestBlock]" in output
 
     net = pysmspp.SMSNetwork(get_network())
-    output = capture_print_output(net.print_tree)
+    output = capture_log_output(caplog, net.print_tree)
 
     lines = output.splitlines()
     assert len(lines) > 0 and lines[0] == "SMSNetwork"
 
 
-def test_print_tree_real_network():
+def test_print_tree_real_network(caplog):
     """Test with real SMS++ network structure."""
     b = pysmspp.Block()
     add_base_ucblock(b, n_nodes=2, n_lines=1, n_units=2, n_elec_generators=2)
@@ -105,7 +105,7 @@ def test_print_tree_real_network():
     bub = build_base_bub()
     b.blocks["Block_0"].add("BatteryUnitBlock", "UnitBlock_1", block=bub)
 
-    output = capture_print_output(b.print_tree, show_dimensions=True)
+    output = capture_log_output(caplog, b.print_tree, show_dimensions=True)
 
     assert "Block_0 [UCBlock]" in output
     assert "UnitBlock_0 [ThermalUnitBlock]" in output

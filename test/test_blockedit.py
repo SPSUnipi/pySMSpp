@@ -136,7 +136,6 @@ def test_add_iub():
 def test_investment_block():
     b = SMSNetwork()
     build_base_investmentblock(b)
-    print(b)
     assert b.blocks["InvestmentBlock"].block_type == "InvestmentBlock"
     assert b.blocks["InvestmentBlock"].blocks["InnerBlock"].block_type == "UCBlock"
 
