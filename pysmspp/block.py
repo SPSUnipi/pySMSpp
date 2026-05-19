@@ -9,6 +9,7 @@ from pysmspp.smspp_tools import (
 )
 from enum import IntEnum
 
+import logging
 import netCDF4 as nc
 import numpy as np
 import os
@@ -16,6 +17,8 @@ from pathlib import Path
 import pandas as pd
 import warnings
 
+
+logger = logging.getLogger(__name__)
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
@@ -244,7 +247,8 @@ class SMSFileType(IntEnum):
     Examples
     --------
     >>> network = SMSNetwork(file_type=SMSFileType.eBlockFile)
-    >>> print(SMSFileType.eProbFile)  # Output: 0
+    >>> int(SMSFileType.eProbFile)
+    0
     >>> file_type = SMSFileType(1)  # eBlockFile
 
     See Also
@@ -1035,14 +1039,16 @@ class Block:
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
+        use_logging: bool = False,
         _indent: str = "",
         _is_last: bool = True,
         _is_root: bool = True,
+        _lines: list[str] = None,
     ) -> None:
         """
-        Print a tree representation of the block structure.
+        Log a tree representation of the block structure.
 
-        This method displays the hierarchical structure of blocks in a tree format,
+        This method records the hierarchical structure of blocks in a tree format,
         with optional display of dimensions, variables, and attributes.
 
         Parameters
@@ -1085,6 +1091,10 @@ class Block:
         └── Block_0 [UCBlock]
             ...
         """
+        is_outer_call = _lines is None
+        if _lines is None:
+            _lines = []
+
         # Determine the name to use
         if name is None:
             # Use block_type if available, otherwise default to "Block"
@@ -1098,31 +1108,33 @@ class Block:
         if hasattr(self, "block_type") and self.block_type:
             block_type = self.block_type
 
-        # Print the current block
+        # Add the current block
         if _is_root:
             # Root level - no connector
             if block_type:
-                print(f"{name} [{block_type}]")
+                _lines.append(f"{name} [{block_type}]")
             else:
-                print(f"{name}")
+                _lines.append(f"{name}")
             child_indent = ""
         else:
             connector = "└── " if _is_last else "├── "
             if block_type:
-                print(f"{_indent}{connector}{name} [{block_type}]")
+                _lines.append(f"{_indent}{connector}{name} [{block_type}]")
             else:
-                print(f"{_indent}{connector}{name}")
+                _lines.append(f"{_indent}{connector}{name}")
             child_indent = _indent + ("    " if _is_last else "│   ")
 
-        # Print dimensions if requested
+        # Add dimensions if requested
         if show_dimensions and self.dimensions:
             dims_str = ", ".join(
                 f"{key}={value}" for key, value in self.dimensions.items()
             )
             detail_indent = child_indent if not _is_root else "  "
-            print(f"{detail_indent}Dimensions ({len(self.dimensions)}): {dims_str}")
+            _lines.append(
+                f"{detail_indent}Dimensions ({len(self.dimensions)}): {dims_str}"
+            )
 
-        # Print variables if requested
+        # Add variables if requested
         if show_variables and self.variables:
             vars_list = list(self.variables.keys())
             if len(vars_list) <= 5:
@@ -1130,9 +1142,11 @@ class Block:
             else:
                 vars_str = ", ".join(vars_list[:5]) + f", ... ({len(vars_list)} total)"
             detail_indent = child_indent if not _is_root else "  "
-            print(f"{detail_indent}Variables ({len(self.variables)}): {vars_str}")
+            _lines.append(
+                f"{detail_indent}Variables ({len(self.variables)}): {vars_str}"
+            )
 
-        # Print attributes if requested (exclude 'type' since it's shown in brackets)
+        # Add attributes if requested (exclude 'type' since it's shown in brackets)
         if show_attributes and self.attributes:
             attrs = {k: v for k, v in self.attributes.items() if k != "type"}
             if attrs:
@@ -1142,9 +1156,9 @@ class Block:
                 else:
                     attrs_str = ", ".join(attrs_list) + f", ... ({len(attrs)} total)"
                 detail_indent = child_indent if not _is_root else "  "
-                print(f"{detail_indent}Attributes ({len(attrs)}): {attrs_str}")
+                _lines.append(f"{detail_indent}Attributes ({len(attrs)}): {attrs_str}")
 
-        # Recursively print sub-blocks
+        # Recursively add sub-blocks
         if self.blocks:
             sub_blocks = list(self.blocks.items())
             for i, (sub_name, sub_block) in enumerate(sub_blocks):
@@ -1157,7 +1171,14 @@ class Block:
                     child_indent,
                     is_last_child,
                     False,
+                    _lines,
                 )
+
+        msg = "\n".join(_lines)
+        if use_logging and is_outer_call:
+            logger.info("%s", msg)
+        else:
+            print(msg)
 
     def plot(self, variables: list = None, figsize: tuple = None, **kwargs):
         """
@@ -1372,7 +1393,7 @@ class SMSNetwork(Block):
         _is_root: bool = True,
     ) -> None:
         """
-        Print a tree representation of the SMSNetwork structure.
+        Log a tree representation of the SMSNetwork structure.
 
         This method overrides Block.print_tree() to use "SMSNetwork" as the default name.
 

@@ -149,14 +149,14 @@ class SMSPPSolverTool:
 
     def help(self, print_message=True):
         """
-        Print the help message of the SMS++ solver tool.
+        Return the help message of the SMS++ solver tool.
 
         >>> solver.help()
 
         Parameters
         ----------
         print_message : bool, optional
-            Whether to print the message, by default True.
+            Whether to emit the message through the logger, by default True.
 
         Returns
         -------
@@ -169,7 +169,7 @@ class SMSPPSolverTool:
         )
         msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
         if print_message:
-            print(msg)
+            logger.info("%s", msg.rstrip())
         return msg
 
     def optimize(self, logging=True, tracking_period=0.1):
@@ -198,7 +198,7 @@ class SMSPPSolverTool:
 
         start_time = time.time()
         if logging:
-            print(f"Executing command:\n{command_str}\n")
+            logger.info("Executing command:\n%s", command_str)
 
         process = psutil.Popen(
             command,
@@ -211,7 +211,9 @@ class SMSPPSolverTool:
         os.set_blocking(process.stderr.fileno(), False)  # set non-blocking read
         process.cpu_percent()  # initialize cpu percent calculation
 
-        def _get_msg_from_pipe(pipe, logging=False, buffer=4096):
+        def _get_msg_from_pipe(
+            pipe, logging=False, buffer=4096, log_method=logger.info
+        ):
             msg = ""
             for i in range(10_000):  # avoid infinite loops
                 # read the buffer
@@ -222,9 +224,9 @@ class SMSPPSolverTool:
                     msg += msg_temp
                 except BlockingIOError:
                     break
-            # print if requested
+            # log if requested
             if logging and len(msg) > 0:
-                print(msg)
+                log_method("%s", msg.rstrip())
             return msg
 
         self._log = ""
@@ -253,7 +255,9 @@ class SMSPPSolverTool:
 
             # read from process without stopping it
             msg_out = _get_msg_from_pipe(process.stdout, logging)
-            msg_err = _get_msg_from_pipe(process.stderr, logging)
+            msg_err = _get_msg_from_pipe(
+                process.stderr, logging, log_method=logger.warning
+            )
 
             self._log += msg_out + msg_err
             log_error += msg_err
@@ -262,7 +266,7 @@ class SMSPPSolverTool:
 
         # finalize logging
         self._log += _get_msg_from_pipe(process.stdout, logging)
-        msg_err = _get_msg_from_pipe(process.stderr, logging)
+        msg_err = _get_msg_from_pipe(process.stderr, logging, log_method=logger.warning)
 
         self._log += msg_err
         log_error += msg_err
@@ -276,7 +280,7 @@ class SMSPPSolverTool:
 
         self._log += msg
         if logging:
-            print(msg)
+            logger.info("%s", msg.rstrip())
 
         self.parse_solver_log()
 
@@ -331,7 +335,9 @@ class SMSPPSolverTool:
         except FileNotFoundError:
             return False
         except Exception as e:
-            logger.warning(f"Error checking availability of {self._solver_path}: {e}")
+            logger.warning(
+                "Error checking availability of %s: %s", self._solver_path, e
+            )
             return False
 
     def parse_solver_log(self):
@@ -747,14 +753,11 @@ def is_smspp_installed(solvers: list[SMSPPSolverTool] = [UCBlockSolver()]) -> bo
     Examples
     --------
     >>> import pysmspp
-    >>> if pysmspp.is_smspp_installed():
-    ...     print("SMS++ is installed and available")
-    ... else:
-    ...     print("SMS++ is not available")
+    >>> available = pysmspp.is_smspp_installed()
 
     >>> # Check multiple solvers
-    >>> if pysmspp.is_smspp_installed([pysmspp.UCBlockSolver, pysmspp.InvestmentBlockTestSolver]):
-    ...     print("Both solvers are available")
+    >>> solvers = [pysmspp.UCBlockSolver(), pysmspp.InvestmentBlockTestSolver()]
+    >>> all_available = pysmspp.is_smspp_installed(solvers)
     """
     # Check if all specified solvers are available
     return all(solver.is_available() for solver in solvers)

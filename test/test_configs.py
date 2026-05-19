@@ -6,8 +6,6 @@ def test_get_configs():
 
     assert len(list_configs) >= 3
 
-    print(list_configs)
-
 
 def test_get_ucsolverconfig():
     c = SMSConfig(template="UCBlock/uc_solverconfig")
