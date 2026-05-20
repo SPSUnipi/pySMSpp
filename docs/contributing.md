@@ -21,7 +21,7 @@ Thank you for your interest in contributing to pySMSpp! This guide covers how to
     source .venv/bin/activate
 
     # Or using conda
-    conda create -n pysmspp python=3.12
+    conda create -n pysmspp python=3.10
     conda activate pysmspp
     ```
 
