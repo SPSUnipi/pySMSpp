@@ -4,6 +4,8 @@ from pysmspp.smspp_tools import (
     UCBlockSolver,
     InvestmentBlockTestSolver,
     InvestmentBlockSolver,
+    InvestmentSolver,
+    TSSBSolver,
 )
 from enum import IntEnum
 
@@ -12,6 +14,7 @@ import numpy as np
 import os
 from pathlib import Path
 import pandas as pd
+import warnings
 
 
 NC_DOUBLE = "f8"
@@ -133,9 +136,11 @@ class SMSConfig:
         return [str(f.relative_to(dirconfigs)) for f in dirconfigs.glob("**/*.txt")]
 
 
-def get_attr_field(block_type: str, attr_name: str, field: str = None):
+def get_attr_field(
+    block_type: str, attr_name: str, attr_value=None, col_name: str = None
+):
     """
-    Return the attribute value or field from block configuration.
+    Return the entry or the entire attribute row (pandas.Series) from block configuration.
 
     Parameters
     ----------
@@ -143,14 +148,50 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None):
         The type of the block.
     attr_name : str
         The name of the attribute.
-    field : str, optional
-        The specific field to retrieve. If None, returns the entire row.
+    attr_value : any, optional
+        The value used to infer the smspp_object type when ``block_type`` is
+        ``"Block"``. If ``attr_value`` is an instance of ``Block``, ``Variable``,
+        ``Dimension`` or ``Attribute``, the corresponding type name is returned.
+        If ``attr_value`` is ``None`` or any other type when ``block_type`` is
+        ``"Block"``, it is treated as an attribute, a warning is issued, and
+        ``"Attribute"`` is returned. For other ``block_type`` values, this
+        parameter is ignored for type inference.
+    col_name : str, optional
+        The specific entry to retrieve. If None, returns the entire row.
 
     Returns
     -------
     str or pandas.Series
-        The requested field value (str) or entire attribute row (pandas.Series).
+        The requested entry or entire attribute row (pandas.Series).
     """
+    if (block_type == "Block") or (block_type is None) or (block_type not in blocks):
+        if (
+            (block_type is not None)
+            and (block_type not in blocks)
+            and (block_type != "Block")
+        ):
+            warnings.warn(
+                f"Block type {block_type} not found in blocks configuration. "
+                + "Type inference will be based on attribute value only."
+            )
+        if isinstance(attr_value, Block):
+            return "Block"
+        elif isinstance(attr_value, Variable):
+            return "Variable"
+        elif isinstance(attr_value, Dimension):
+            return "Dimension"
+        elif isinstance(attr_value, Attribute):
+            return "Attribute"
+        elif attr_value is not None:
+            warnings.warn(
+                f"Non-specified {attr_name} with value {attr_value} treated as attribute."
+            )
+            return "Attribute"
+        else:
+            raise ValueError(
+                f"Cannot infer type of {attr_name} with value {attr_value} in Block."
+            )
+
     block_attrs = blocks[block_type].query("smspp_object == 'Block'")
     simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
 
@@ -170,10 +211,10 @@ def get_attr_field(block_type: str, attr_name: str, field: str = None):
                 + f"Possible types: {attr_sel.index.tolist()}."
             )
 
-    if field is None:
+    if col_name is None:
         return blocks[block_type].loc[attr]
     else:
-        return blocks[block_type].at[attr, field]
+        return blocks[block_type].at[attr, col_name]
 
 
 class SMSFileType(IntEnum):
@@ -256,6 +297,20 @@ class Attribute:
         self.name = name
         self.value = value
 
+    def __str__(self) -> str:
+        """Return string representation of the attribute value."""
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the attribute."""
+        return f"Attribute(name={self.name!r}, value={self.value!r})"
+
+    def __eq__(self, other) -> bool:
+        """Compare attribute with another value or Attribute object."""
+        if isinstance(other, Attribute):
+            return self.name == other.name and self.value == other.value
+        return self.value == other
+
 
 class Dimension:
     """
@@ -293,6 +348,20 @@ class Dimension:
         """
         self.name = name
         self.value = value
+
+    def __str__(self) -> str:
+        """Return string representation of the dimension value."""
+        return str(self.value)
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the dimension."""
+        return f"Dimension(name={self.name!r}, value={self.value!r})"
+
+    def __eq__(self, other) -> bool:
+        """Compare dimension with another value or Dimension object."""
+        if isinstance(other, Dimension):
+            return self.name == other.name and self.value == other.value
+        return self.value == other
 
 
 class Variable:
@@ -351,6 +420,97 @@ class Variable:
         self.var_type = var_type
         self.dimensions = dimensions
         self.data = data
+
+    def __repr__(self) -> str:
+        """Return detailed representation of the variable."""
+        data_repr = (
+            f"{self.data!r}" if not isinstance(self.data, np.ndarray) else "array(...)"
+        )
+        return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
+
+    def plot(self, ax=None, kind: str = "auto", **kwargs):
+        """
+        Plot the variable data.
+
+        The plot type depends on the variable dimensionality and *kind*:
+
+        - **Scalar** (0-D): bar chart.
+        - **1-D array**: line plot with the dimension name on the x-axis.
+        - **2-D array**: heatmap (``imshow``) with a colorbar when
+          ``kind="heatmap"``, or a line plot where each row is a separate
+          line with a legend when ``kind="line"``.
+          ``kind="auto"`` defaults to ``"heatmap"``.
+
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes, optional
+            Axes to draw on. If *None* a new figure and axes are created.
+        kind : str, optional
+            Plot style for 2-D variables. Accepted values are ``"auto"``,
+            ``"heatmap"`` (default), and ``"line"``. Ignored for 0-D and 1-D
+            variables.
+        **kwargs : dict
+            Additional keyword arguments forwarded to the underlying
+            matplotlib function (``bar``, ``plot``, or ``imshow``).
+
+        Returns
+        -------
+        matplotlib.axes.Axes
+            The axes containing the plot.
+
+        Raises
+        ------
+        ValueError
+            If the variable has more than 2 dimensions, or an unsupported
+            *kind* is given.
+
+        Examples
+        --------
+        >>> var = Variable("ActivePowerDemand", "float", ("NumberNodes", "TimeHorizon"), data)
+        >>> ax = var.plot()
+        >>> ax = var.plot(kind="line")
+        """
+        import matplotlib.pyplot as plt
+
+        data = np.asarray(self.data)
+
+        if ax is None:
+            _, ax = plt.subplots()
+
+        if data.ndim == 0:
+            ax.bar([self.name], [float(data)], **kwargs)
+            ax.set_title(self.name)
+        elif data.ndim == 1:
+            ax.plot(data, **kwargs)
+            ax.set_xlabel(self.dimensions[0])
+            ax.set_ylabel(self.name)
+            ax.set_title(self.name)
+        elif data.ndim == 2:
+            resolved_kind = "heatmap" if kind == "auto" else kind
+            if resolved_kind == "heatmap":
+                im = ax.imshow(data, aspect="auto", **kwargs)
+                ax.set_xlabel(self.dimensions[1])
+                ax.set_ylabel(self.dimensions[0])
+                ax.set_title(self.name)
+                plt.colorbar(im, ax=ax)
+            elif resolved_kind == "line":
+                for i, row in enumerate(data):
+                    ax.plot(row, label=f"{self.dimensions[0]}={i}", **kwargs)
+                ax.set_xlabel(self.dimensions[1])
+                ax.set_ylabel(self.name)
+                ax.set_title(self.name)
+                ax.legend()
+            else:
+                raise ValueError(
+                    f"Unsupported kind '{kind}'. Use 'auto', 'heatmap', or 'line'."
+                )
+        else:
+            raise ValueError(
+                f"Cannot plot variable '{self.name}' with {data.ndim} dimensions. "
+                "Only 0-, 1-, and 2-D variables are supported."
+            )
+
+        return ax
 
 
 class Block:
@@ -520,7 +680,7 @@ class Block:
     def block_type(self, ignore_missing: bool = True) -> str:
         """Return the type of the block."""
         if "type" in self.attributes:
-            return self.attributes["type"]
+            return self.attributes["type"].value
         elif ignore_missing:
             return None
         raise AttributeError("Block type not defined.")
@@ -535,7 +695,7 @@ class Block:
         block_type : str
             The type of the block.
         """
-        self.attributes["type"] = block_type
+        self.attributes["type"] = Attribute("type", block_type)
 
     def add_attribute(self, name: str, value, force: bool = False):
         """
@@ -546,18 +706,23 @@ class Block:
         name : str
             The name of the attribute
         value : any
-            The value of the attribute
+            The value of the attribute. Can be provided as a plain value
+            or as an Attribute object.
         force : bool (default: False)
             If True, overwrite the attribute if it exists.
 
         Returns
         -------
-        Returns the value of the attribute being created.
+        Attribute
+            Returns the Attribute object being created.
         """
         if not force and name in self.attributes:
             raise ValueError(f"Attribute {name} already exists.")
-        self.attributes[name] = value
-        return value
+        if isinstance(value, Attribute):
+            self.attributes[name] = value
+        else:
+            self.attributes[name] = Attribute(name, value)
+        return self.attributes[name]
 
     def add_dimension(self, name: str, value: int, force: bool = False):
         """
@@ -568,18 +733,23 @@ class Block:
         name : str
             The name of the dimension
         value : int
-            The value of the dimension
+            The value of the dimension. Can be provided as a plain value
+            or as a Dimension object.
         force : bool (default: False)
             If True, overwrite the dimension if it exists.
 
         Returns
         -------
-        Returns the value of the dimension being created.
+        Dimension
+            Returns the Dimension object being created.
         """
         if not force and name in self.dimensions:
             raise ValueError(f"Dimension {name} already exists.")
-        self.dimensions[name] = value
-        return value
+        if isinstance(value, Dimension):
+            self.dimensions[name] = value
+        else:
+            self.dimensions[name] = Dimension(name, value)
+        return self.dimensions[name]
 
     def add_variable(
         self,
@@ -655,7 +825,7 @@ class Block:
                 raise ValueError("Non accepted arguments have been passed.")
         else:
             self.blocks[name] = Block().from_kwargs(**kwargs)
-        return self
+        return self.blocks[name]
 
     def from_kwargs(self, **kwargs):
         """
@@ -677,7 +847,7 @@ class Block:
             btype = kwargs.pop("block_type")
             self.block_type = btype
         for key, value in kwargs.items():
-            nc_cmp = get_attr_field(self.block_type, key, "smspp_object")
+            nc_cmp = get_attr_field(self.block_type, key, value, "smspp_object")
             self.add(nc_cmp, key, value)
         return self
 
@@ -693,12 +863,12 @@ class Block:
             The NetCDF dataset or group to write to.
         """
         # Add the block's attributes
-        for key, value in self.attributes.items():
-            grp.setncattr(key, value)
+        for key, attr in self.attributes.items():
+            grp.setncattr(key, attr.value)
 
         # Add the dimensions
-        for key, value in self.dimensions.items():
-            grp.createDimension(key, value)
+        for key, dim in self.dimensions.items():
+            grp.createDimension(key, dim.value)
 
         # Add the variables
         for key, value in self.variables.items():
@@ -989,6 +1159,75 @@ class Block:
                     False,
                 )
 
+    def plot(self, variables: list = None, figsize: tuple = None, **kwargs):
+        """
+        Plot variables of the block.
+
+        Each variable is rendered in its own subplot using :meth:`Variable.plot`.
+        Only variables whose data array has at least 1 dimension are plotted by
+        default; scalar variables are included when they are explicitly listed in
+        *variables*.
+
+        Parameters
+        ----------
+        variables : list of str, optional
+            Names of the variables to plot. If *None*, all variables whose data
+            is a 1-D or 2-D array are included.
+        figsize : tuple of (float, float), optional
+            Figure size ``(width, height)`` in inches passed to
+            ``matplotlib.pyplot.subplots``. If *None* each subplot is given
+            a height of 3 inches and a width of 8 inches.
+        **kwargs : dict
+            Additional keyword arguments forwarded to :meth:`Variable.plot`
+            for each subplot (e.g. ``kind="line"``).
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The figure containing the subplots.
+
+        Raises
+        ------
+        ValueError
+            If no plottable variables are found.
+
+        Examples
+        --------
+        >>> block = Block(fp="model.nc")
+        >>> fig = block.plot()
+
+        >>> fig = block.plot(variables=["ActivePowerDemand", "MaxPowerFlow"])
+
+        >>> fig = block.plot(kind="line")
+        """
+        import matplotlib.pyplot as plt
+
+        if variables is None:
+            vars_to_plot = {
+                name: var
+                for name, var in self.variables.items()
+                if np.asarray(var.data).ndim >= 1
+            }
+        else:
+            vars_to_plot = {name: self.variables[name] for name in variables}
+
+        if not vars_to_plot:
+            raise ValueError(
+                "No plottable variables found in the block. "
+                "Use 'variables' to explicitly specify variable names."
+            )
+
+        n = len(vars_to_plot)
+        if figsize is None:
+            figsize = (8, 3 * n)
+        fig, axes = plt.subplots(n, 1, figsize=figsize, squeeze=False)
+
+        for ax, (name, var) in zip(axes[:, 0], vars_to_plot.items()):
+            var.plot(ax=ax, **kwargs)
+
+        fig.tight_layout()
+        return fig
+
 
 class SMSNetwork(Block):
     """
@@ -1101,12 +1340,12 @@ class SMSNetwork(Block):
     @property
     def file_type(self) -> SMSFileType:
         """Return the file type of the SMS file."""
-        return SMSFileType(self._attributes["SMS++_file_type"])
+        return SMSFileType(self.attributes["SMS++_file_type"].value)
 
     @file_type.setter
     def file_type(self, ft: SMSFileType | int):
-        """Return the file type of the SMS file."""
-        self._attributes["SMS++_file_type"] = int(ft)
+        """Set the file type of the SMS file."""
+        self.add_attribute("SMS++_file_type", int(ft), force=True)
 
     @classmethod
     def _from_netcdf(cls, ncfile: nc.Dataset):
@@ -1127,6 +1366,7 @@ class SMSNetwork(Block):
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
+        show_all: bool = False,
         _indent: str = "",
         _is_last: bool = True,
         _is_root: bool = True,
@@ -1146,6 +1386,8 @@ class SMSNetwork(Block):
             Whether to display variables (default: False).
         show_attributes : bool, optional
             Whether to display attributes (default: False).
+        show_all : bool, optional
+            If True, show dimensions, variables, and attributes (default: False). Overrides individual show_* flags.
         _indent : str, optional
             Internal parameter for indentation (default: "").
         _is_last : bool, optional
@@ -1165,6 +1407,10 @@ class SMSNetwork(Block):
         # Use "SMSNetwork" as default name for SMSNetwork objects
         if name is None:
             name = "SMSNetwork"
+        if show_all:
+            show_dimensions = True
+            show_variables = True
+            show_attributes = True
 
         # Call parent class method
         super().print_tree(
@@ -1185,6 +1431,8 @@ class SMSNetwork(Block):
         fp_solution: Path | str = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
         inner_block_name: str = "Block_0",
+        logging=True,
+        tracking_period=0.1,
         **kwargs,
     ):
         """
@@ -1210,15 +1458,20 @@ class SMSNetwork(Block):
 
         inner_block_name : str (default: "Block_0")
             The name of the inner block, to decide on the automatic solver to use.
+        logging : bool (default: True)
+            Whether to enable logging during optimization.
+        tracking_period : float (default: 0.1)
+            The period (in seconds) to track optimization progress when logging is enabled.
         kwargs : dict
-            The arguments to pass to the optimization function.
+            Optional arguments to pass to the solver constructor. These can include any additional parameters required by specific solvers.
         """
 
         # Map block type to default solver (for 'auto' mode)
         default_solver_map = {
             "UCBlock": "UCBlockSolver",
             "InvestmentBlock": "InvestmentBlockTestSolver",
-            "SDDPBlock": "InvestmentBlockSolver",
+            "SDDPBlock": "InvestmentSolver",
+            "TwoStageStochasticBlock": "TSSBSolver",
         }
 
         # Map solver names to actual solver classes
@@ -1226,6 +1479,8 @@ class SMSNetwork(Block):
             "UCBlockSolver": UCBlockSolver,
             "InvestmentBlockTestSolver": InvestmentBlockTestSolver,
             "InvestmentBlockSolver": InvestmentBlockSolver,
+            "InvestmentSolver": InvestmentSolver,
+            "TSSBSolver": TSSBSolver,
         }
 
         if isinstance(smspp_solver, str) and smspp_solver == "auto":
@@ -1254,4 +1509,4 @@ class SMSNetwork(Block):
             )
 
         self.to_netcdf(fp_temp, force=True)
-        return smspp_solver.optimize(**kwargs)
+        return smspp_solver.optimize(logging=logging, tracking_period=tracking_period)

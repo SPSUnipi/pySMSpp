@@ -1,6 +1,7 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
 TwoStageStochasticBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 TwoStageStochasticBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+TwoStageStochasticBlock,NumberScenarios,Dimension,Dimension,int,-,-,,optional,Number of scenarios
 TwoStageStochasticBlock,DiscreteScenarioSet,Block,Group,DiscreteScenarioSet,list,-.-,,required,Discrete scenario set attached to the second stage
 TwoStageStochasticBlock,StaticAbstractPath,Block,Group,StaticAbstractPath,list,-.-,,required,Static abstract path describing the deterministic structure
 TwoStageStochasticBlock,StochasticBlock,Block,Group,StochasticBlock,list,-.-,,required,Stochastic recourse block defined over the scenario set

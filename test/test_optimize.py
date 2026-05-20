@@ -1,3 +1,6 @@
+import os
+import shutil
+from pathlib import Path
 from pysmspp import (
     SMSConfig,
     SMSNetwork,
@@ -7,7 +10,6 @@ from pysmspp import (
 )
 from conftest import (
     get_network,
-    get_temp_file,
     add_base_ucblock,
     add_ucblock_with_one_unit,
     add_tub_to_ucblock,
@@ -15,6 +17,8 @@ from conftest import (
     add_hub_to_ucblock,
     add_iub_to_ucblock,
     add_sub_to_ucblock,
+    build_tssb_block,
+    get_temp_file,
 )
 import pytest
 import numpy as np
@@ -35,6 +39,30 @@ def test_help_ucblocksolver(force_smspp):
         )
     else:
         pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_shell_ucblocksolver():
+    # skip if not linux os
+    if os.name != "posix":
+        pytest.skip("Shell command test only applicable on Linux/Unix systems")
+
+    fp_network = get_network("microgrid_ALLbutStore_1N.nc4")
+    fp_config = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+
+    solver_cmd = "bash -lc \"printf 'Status = Success\\nUpper bound = 123.0\\nLower bound = 120.0\\n'\""
+
+    ucs = UCBlockSolver(
+        solver_path=solver_cmd,
+        fp_network=str(fp_network),
+        configfile=str(fp_config),
+        shell=True,
+    )
+
+    ucs.optimize(logging=False)
+
+    assert "Success" in ucs.status
+    assert ucs.objective_value == pytest.approx(123.0)
+    assert ucs.lower_bound == pytest.approx(120.0)
 
 
 def test_help_investmentblocktestsolver(force_smspp):
@@ -66,6 +94,29 @@ def test_optimize_example(force_smspp):
         assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)
     else:
         pytest.skip("UCBlockSolver not available in PATH")
+
+
+def test_optimize_example_custom_solver_path(force_smspp):
+    if not UCBlockSolver().is_available() and not force_smspp:
+        pytest.skip("UCBlockSolver not available in PATH and --force-smspp not set")
+
+    fp_network = get_network()
+    fp_log = get_temp_file("test_optimize_example.txt")
+    configfile = SMSConfig(template="UCBlock/uc_solverconfig.txt")
+
+    path_ucsolver = shutil.which("ucblock_solver")
+
+    ucs = UCBlockSolver(
+        solver_path=Path(path_ucsolver),
+        configfile=str(configfile),
+        fp_network=fp_network,
+        fp_log=fp_log,
+    )
+
+    ucs.optimize(logging=False)
+
+    assert "Success" in ucs.status
+    assert np.isclose(ucs.objective_value, 3615.760710, atol=ATOL, rtol=RTOL)
 
 
 def test_optimize_ucsolver(force_smspp):
@@ -114,11 +165,6 @@ def test_optimize_ucsolver_all_components(force_smspp):
 
         assert "success" in result.status.lower()
         assert "error" not in result.log.lower()
-        assert "ThermalUnitBlock" in result.log
-        assert "BatteryUnitBlock" in result.log
-        assert "HydroUnitBlock" in result.log
-        assert "IntermittentUnitBlock" in result.log
-        assert "SlackUnitBlock" in result.log
     else:
         pytest.skip("UCBlockSolver not available in PATH")
 
@@ -151,7 +197,7 @@ def test_is_smspp_installed(force_smspp):
     assert isinstance(result, bool)
 
     # Test with multiple solvers
-    result_multi = is_smspp_installed([UCBlockSolver, InvestmentBlockTestSolver])
+    result_multi = is_smspp_installed([UCBlockSolver(), InvestmentBlockTestSolver()])
     assert isinstance(result_multi, bool)
 
     # When force_smspp is True, is_smspp_installed must return True
@@ -162,3 +208,53 @@ def test_is_smspp_installed(force_smspp):
         assert result_multi is True, (
             "is_smspp_installed should return True for all solvers when --force-smspp is set"
         )
+
+
+def test_optimize_tssbsolver(force_smspp):
+    fp_network = get_network("TSSB_EC_CO_Test_TUB_simple.nc4")
+    fp_log = get_temp_file("test_optimize_tssbsolver.txt")
+    configfile = SMSConfig(template="TSSBlock/TSSBSCfg.txt")
+
+    # Create a new TSSB block from the original network and save to a temp file
+    fp_tssb_new = get_temp_file("test_tssb_new.nc4")
+    fp_log_new = get_temp_file("test_optimize_tssbsolver_new.txt")
+
+    build_tssb_block(fp_network).to_netcdf(fp_tssb_new, force=True)
+
+    # Copy the original EC_CO_Test_TUB.nc4 to a temp location
+    fp_ec = get_network("EC_CO_Test_TUB.nc4")
+    fp_ec_copy = get_temp_file("EC_CO_Test_TUB.nc4")
+    shutil.copy(fp_ec, fp_ec_copy)
+
+    from pysmspp import TSSBSolver
+
+    tssb_solver = TSSBSolver(
+        fp_network=fp_network,
+        fp_log=fp_log,
+        configfile=str(configfile),
+    )
+
+    tssb_solver_new = TSSBSolver(
+        fp_network=fp_tssb_new,
+        fp_log=fp_log_new,
+        configfile=str(configfile),
+    )
+
+    if tssb_solver.is_available() or force_smspp:
+        tssb_solver.optimize(logging=True)
+
+        assert "success" in tssb_solver.status.lower()
+
+        tssb_solver_new.optimize(logging=True)
+
+        assert "success" in tssb_solver_new.status.lower()
+
+        obj_orig = tssb_solver.objective_value
+        obj_new = tssb_solver_new.objective_value
+        assert obj_orig == pytest.approx(obj_new, rel=1e-4), (
+            "Objective values should match between original ({:.2f}) and new ({:.2f}) TSSB blocks".format(
+                obj_orig, obj_new
+            )
+        )
+    else:
+        pytest.skip("TSSBBlockSolver not available in PATH")

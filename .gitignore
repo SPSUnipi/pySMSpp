@@ -175,3 +175,4 @@ test/temp*
 *.nc
 *.txt
 pypsa2smspp/
+site/

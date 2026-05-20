@@ -2,24 +2,26 @@ block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,un
 UCBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 UCBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
 UCBlock,TimeHorizon,Dimension,Dimension,int,-,-,,required,Time horizon of the optimization problem
+UCBlock,NumberInstants,Dimension,Dimension,int,-,-,,required,Dimension of the time steps used to map time-dependent MaxPowerFlow MinPowerFlow and Efficiency of network assets 
 UCBlock,NumberUnits,Dimension,Dimension,int,-,-,,required,Number of units
 UCBlock,NumberElectricalGenerators,Dimension,Dimension,int,-,-,,optional,Number of electrical generators
 UCBlock,NumberNodes,Dimension,Dimension,int,-,-,1,optional,Number of nodes
 UCBlock,NumberLines,Dimension,Dimension,int,-,-,,optional,Number of lines
 UCBlock,NumberBranches,Dimension,Dimension,int,-,-,,optional,"Number of branches: when hyperarcs are used, this is the number of hyperarc branches and it is higher than NumberLines"
-UCBlock,NumberNetworks,Dimension,Dimension,int,-,-,,optional,"Number of networks in the problem; if not provided it is taken as TimeHorizon"
+UCBlock,NumberNetworks,Dimension,Dimension,int,-,-,,optional,Number of networks in the problem; if not provided it is taken as TimeHorizon
 UCBlock,NumberArcs,Dimension,Dimension,int,-,-,,optional,Number of arcs
 UCBlock,NumberReservoirs,Dimension,Dimension,int,-,-,,optional,Number of reservoirs
 UCBlock,TotalNumberPieces,Dimension,Dimension,int,-,-,,optional,Number of pieces of the power flow function
+UCBlock,NodeName,Variable,Variable,str,NumberNodes,str,,optional,Name of the nodes
+UCBlock,LineName,Variable,Variable,str,NumberLines,str,,optional,Name of the lines
 UCBlock,GeneratorNode,Variable,Variable,int,-|NumberElectricalGenerators,-,,optional,List of buses of connection by unit
 UCBlock,StartLine,Variable,Variable,int,-|NumberLines|NumberBranches,-,,optional,Start buses of lines
 UCBlock,EndLine,Variable,Variable,int,-|NumberLines|NumberBranches,-,,optional,End buses of lines
-UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Minimum power flow of lines
-UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines,MW,,optional,Maximum power flow of lines
+UCBlock,MinPowerFlow,Variable,Variable,double,-|NumberLines|NumberLines-NumberInstants,MW,,optional,Minimum power flow of lines
+UCBlock,MaxPowerFlow,Variable,Variable,double,-|NumberLines|NumberLines-NumberInstants,MW,,optional,Maximum power flow of lines
 UCBlock,LineSusceptance,Variable,Variable,double,-|NumberLines,Siemens,,optional,Susceptance of lines
 UCBlock,LineResistance,Variable,Variable,double,-|NumberLines,Ohm,,optional,Resistance of lines
-UCBlock,Efficiency,Variable,Variable,double,-|NumberLines|NumberBranches,Ohm,,optional,Efficiency of lines or hyperarc branches; functional only for HVDC lines (default 1.0)
-UCBlock,LineName,Variable,Variable,str,-|NumberLines,str,,optional,Name of the line
+UCBlock,Efficiency,Variable,Variable,double,-|NumberLines|NumberBranches|NumberLines-NumberInstants|NumberBranches-NumberInstants,Ohm,,optional,Efficiency of lines or hyperarc branches; functional only for HVDC lines (default 1.0)
 UCBlock,HyperArcID,Variable,Variable,double,-|NumberBranches,MW,,optional,Hyperarch ID of each branch: it is the line id corresponding to the branch being added
 UCBlock,NetworkCost,Variable,Variable,double,-|NumberLines,€/MWh,,optional,Marginal cost of the network flows
 UCBlock,ActivePowerDemand,Variable,Variable,double,-|NumberNodes|TimeHorizon|NumberNodes-TimeHorizon,MW,,optional,Active power demand of nodes
