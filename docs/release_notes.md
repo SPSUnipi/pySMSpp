@@ -1,5 +1,17 @@
 # Release Notes
 
+## Upcoming Release
+
+### New Features and Major Changes
+
+* 
+
+### Minor Changes and Bug Fixes
+
+* 
+
+
+## Version v0.0.9
 
 ## Upcoming Release
 
