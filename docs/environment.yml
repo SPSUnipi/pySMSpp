@@ -3,7 +3,7 @@ channels:
 - conda-forge
 dependencies:
 - python=3.10
-- smspp-project
+- smspp-project>=0.5.1
 - pip
 - pip:
   - -e ..[dev,docs]
