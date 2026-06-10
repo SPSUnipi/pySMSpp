@@ -6,7 +6,7 @@ from pysmspp import (
     SMSNetwork,
     SMSFileType,
     UCBlockSolver,
-    InvestmentBlockTestSolver,
+    InvestmentBlockSolver,
 )
 from conftest import (
     get_network,
@@ -65,15 +65,15 @@ def test_shell_ucblocksolver():
     assert ucs.lower_bound == pytest.approx(120.0)
 
 
-def test_help_investmentblocktestsolver(force_smspp):
-    ibts = InvestmentBlockTestSolver()
+def test_help_investmentblocksolver(force_smspp):
+    ibts = InvestmentBlockSolver()
 
     if ibts.is_available() or force_smspp:
         help_msg = ibts.help()
 
         assert "SMS++ investment solver" in help_msg
     else:
-        pytest.skip("UCBlockSolver not available in PATH")
+        pytest.skip("InvestmentBlockSolver not available in PATH")
 
 
 def test_optimize_example(force_smspp):
@@ -174,30 +174,30 @@ def test_investmentsolvertest(force_smspp):
     fp_log = get_temp_file("test_optimize_investmentsolvertest.txt")
     configfile = SMSConfig(template="InvestmentBlock/BSPar.txt")
 
-    ucs = InvestmentBlockTestSolver(
+    ucs = InvestmentBlockSolver(
         configfile=str(configfile),
         fp_network=fp_network,
         fp_log=fp_log,
     )
 
-    if InvestmentBlockTestSolver().is_available() or force_smspp:
+    if InvestmentBlockSolver().is_available() or force_smspp:
         ucs.optimize(logging=True)
 
         assert "success" in ucs.status.lower()
     else:
-        pytest.skip("InvestmentBlockTestSolver not available in PATH")
+        pytest.skip("InvestmentBlockSolver not available in PATH")
 
 
 def test_is_smspp_installed(force_smspp):
     """Test the is_smspp_installed() function."""
-    from pysmspp import is_smspp_installed, UCBlockSolver, InvestmentBlockTestSolver
+    from pysmspp import is_smspp_installed, UCBlockSolver, InvestmentBlockSolver
 
     # The function should return a boolean
     result = is_smspp_installed()
     assert isinstance(result, bool)
 
     # Test with multiple solvers
-    result_multi = is_smspp_installed([UCBlockSolver(), InvestmentBlockTestSolver()])
+    result_multi = is_smspp_installed([UCBlockSolver(), InvestmentBlockSolver()])
     assert isinstance(result_multi, bool)
 
     # When force_smspp is True, is_smspp_installed must return True

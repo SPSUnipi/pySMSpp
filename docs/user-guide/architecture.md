@@ -128,7 +128,6 @@ Concrete wrappers provide executable defaults and solver-specific log parsing.
 The package currently includes wrappers such as:
 
 - `UCBlockSolver`
-- `InvestmentBlockTestSolver`
 - `InvestmentBlockSolver`
 - `InvestmentSolver`
 - `SDDPSolver`
