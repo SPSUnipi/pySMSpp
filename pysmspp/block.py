@@ -1469,7 +1469,7 @@ class SMSNetwork(Block):
         # Map block type to default solver (for 'auto' mode)
         default_solver_map = {
             "UCBlock": "UCBlockSolver",
-            "InvestmentBlock": "InvestmentBlockTestSolver",
+            "InvestmentBlock": "InvestmentBlockSolver",
             "SDDPBlock": "InvestmentSolver",
             "TwoStageStochasticBlock": "TSSBSolver",
         }

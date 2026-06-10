@@ -515,6 +515,10 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         if "v" not in self._kwargs:
             self._kwargs["v"] = "1"
 
+        logger.warning(
+            "InvestmentBlock_test is deprecated in favor of investmentblock_solver, and it will be dropped in the next release."
+        )
+
     def parse_solver_log(
         self,
     ):  # TODO: needs revision to better capture the output
