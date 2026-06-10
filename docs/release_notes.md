@@ -11,6 +11,13 @@
 * 
 
 
+## Version v0.0.11
+
+### New Features and Major Changes
+
+* [Move default solver TSSB to highs #101](https://github.com/SPSUnipi/pySMSpp/pull/101)
+
+
 ## Version v0.0.10
 
 ### New Features and Major Changes
