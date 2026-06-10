@@ -85,7 +85,7 @@ jobs:
 
     - name: Install smspp-project from conda-forge
       run: |
-        conda install -c conda-forge smspp-project -y
+        conda install -c conda-forge smspp-project>=0.5.1 -y
 
     - name: Install package and dependencies
       run: |
