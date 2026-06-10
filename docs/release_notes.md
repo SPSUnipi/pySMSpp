@@ -4,7 +4,7 @@
 
 ### New Features and Major Changes
 
-* 
+* [Deprecate InvestmentBlockTestSolver #100](https://github.com/SPSUnipi/pySMSpp/pull/100)
 
 ### Minor Changes and Bug Fixes
 
