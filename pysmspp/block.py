@@ -22,6 +22,14 @@ NP_DOUBLE = np.float64
 NC_UINT = "u4"
 NP_UINT = np.uint32
 
+
+def _data_for_netcdf_assignment(data):
+    """Unwrap unmasked MaskedArrays before assigning to netCDF4."""
+    if np.ma.isMaskedArray(data) and not np.ma.is_masked(data):
+        return np.asarray(data)
+    return data
+
+
 dir_name = os.path.dirname(__file__)
 components = pd.read_csv(os.path.join(dir_name, "data", "components.csv"), index_col=0)
 
@@ -873,7 +881,7 @@ class Block:
         # Add the variables
         for key, value in self.variables.items():
             var = grp.createVariable(key, value.var_type, value.dimensions)
-            var[:] = value.data
+            var[:] = _data_for_netcdf_assignment(value.data)
 
         # Save each sub-Block as a subgroup
         for key, sub_block in self.blocks.items():
