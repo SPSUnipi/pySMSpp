@@ -41,6 +41,12 @@ def test_variable_plot_1d():
     plt.close("all")
 
 
+# TODO: Drop this filter when the test/dev minimum no longer includes
+# Matplotlib 3.5.x, which emits this warning from its colorbar internals.
+@pytest.mark.filterwarnings(
+    "ignore:Pickle, copy, and deepcopy support will be removed from itertools "
+    "in Python 3.14.:DeprecationWarning"
+)
 def test_variable_plot_2d_heatmap():
     """Test that a 2-D variable defaults to a heatmap; explicit kind='heatmap' behaves identically."""
     data = np.full((3, 24), 50.0)

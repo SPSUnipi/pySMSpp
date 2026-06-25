@@ -20,6 +20,7 @@ def test_load_save_network():
 
 def test_save_masked_arrays():
     fp = "test/temp/masked_arrays.nc4"
+    os.makedirs(os.path.dirname(fp), exist_ok=True)
 
     net = pysmspp.Block()
     net.add_dimension("Rows", 1)
