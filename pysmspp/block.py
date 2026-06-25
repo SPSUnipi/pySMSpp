@@ -23,11 +23,16 @@ NC_UINT = "u4"
 NP_UINT = np.uint32
 
 
-def _data_for_netcdf_assignment(data):
-    """Unwrap unmasked MaskedArrays before assigning to netCDF4."""
-    if np.ma.isMaskedArray(data) and not np.ma.is_masked(data):
-        return np.asarray(data)
-    return data
+def _data_for_netcdf_assignment(dtype, data):
+    """Convert MaskedArrays before assigning to netCDF4."""
+    if not np.ma.isMaskedArray(data):
+        return data
+    data = data.astype(dtype, copy=False)
+    fill_value = nc.default_fillvals.get(
+        np.dtype(dtype).str[1:],
+        data.fill_value,
+    )
+    return data.filled(fill_value)
 
 
 dir_name = os.path.dirname(__file__)
@@ -881,7 +886,7 @@ class Block:
         # Add the variables
         for key, value in self.variables.items():
             var = grp.createVariable(key, value.var_type, value.dimensions)
-            var[:] = _data_for_netcdf_assignment(value.data)
+            var[:] = _data_for_netcdf_assignment(var.dtype, value.data)
 
         # Save each sub-Block as a subgroup
         for key, sub_block in self.blocks.items():

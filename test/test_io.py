@@ -29,8 +29,8 @@ def test_save_masked_arrays():
 
     demand = np.ma.masked_array(np.arange(24.0).reshape(1, 24), mask=False)
     path_indices = np.ma.masked_array(
-        np.array([0, 1], dtype=np.uint32),
-        mask=np.array([True, False]),
+        np.array([0.0, 1.0]),
+        mask=[True, False],
     )
 
     net.add_variable("Demand", "double", ("Rows", "TimeHorizon"), demand)
