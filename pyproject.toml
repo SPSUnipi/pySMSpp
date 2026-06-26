@@ -23,7 +23,7 @@ classifiers = [
 requires-python = ">=3.10"
 
 dependencies = [
-    "numpy",
+    "numpy<2.4",
     "pandas>=0.24",
     "netcdf4",
     "psutil",
