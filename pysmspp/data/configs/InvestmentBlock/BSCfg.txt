@@ -3,11 +3,12 @@
 #
 # A txt description of a BlockSolverConfig for the inner UCBlock-style block
 # of an InvestmentBlock, to be solved by a :MILPSolver as the LP relaxation
-# (intRelaxIntVars 1) of the underlying MIP. To get reproducible results
-# across CPLEX/Gurobi/HiGHS the LP must be solved without presolve (presolve
-# can transform the model and shift the optimal vertex on degenerate LPs);
-# HiGHS additionally needs IPM rather than simplex because its simplex
-# implementation visits different vertices than CPLEX/Gurobi.
+# (intRelaxIntVars 1) of the underlying MIP. The LP solver is left at its
+# default settings: forcing presolve off together with the IPM method (which
+# would give a reproducible vertex across CPLEX/Gurobi/HiGHS) makes HiGHS abort
+# on the badly-scaled InvestmentBlock inner LPs, whereas the defaults solve
+# them reliably and return the correct objective. The solver-specific options
+# are kept below as commented hints.
 #
 #   Antonio Frangioni, Donato Meoli
 #
@@ -51,17 +52,20 @@ intCutSepPar        7    # separate user cuts + lazy constraints
 #Presolve      0   # 0 = off, 1 = conservative, 2 = aggressive (default -1)
 #NumericFocus  3   # 0 = auto (default), 1..3 = increasing precision focus
 
-2  # number of double parameters
+0  # number of double parameters
 
+# now all the double parameters
 # All specific HiGHS parameter (uncomment based on Solver)
-primal_feasibility_tolerance  1e-9
-dual_feasibility_tolerance    1e-9
+#primal_feasibility_tolerance  1e-9
+#dual_feasibility_tolerance    1e-9
 
-2 # number of string parameters
+0 # number of string parameters
 
-# All specific HiGHS parameter (uncomment based on Solver)
-presolve  off    # disable presolve for reproducibility
-solver    ipm    # interior point: converges to analytic center (unique x*)
+# now all the string parameters
+# All specific HiGHS parameter (uncomment based on Solver). NOTE: enabling both
+# of the following (presolve off + IPM) makes HiGHS abort on these instances.
+#presolve  off    # disable presolve for reproducibility
+#solver    ipm    # interior point: converges to analytic center (unique x*)
 
 #strOutputFile uc_lp.lp
 
