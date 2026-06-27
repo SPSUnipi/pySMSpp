@@ -1,14 +1,13 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - - BSCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - BSCfg_grb.txt - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for the inner UCBlock-style block
-# of an InvestmentBlock, to be solved by a :MILPSolver as the LP relaxation
-# (intRelaxIntVars 1) of the underlying MIP. The LP solver is left at its
-# default settings: forcing presolve off together with the IPM method (which
-# would give a reproducible vertex across CPLEX/Gurobi/HiGHS) makes HiGHS abort
-# on the badly-scaled InvestmentBlock inner LPs, whereas the defaults solve
-# them reliably and return the correct objective. The solver-specific options
-# are kept below as commented hints.
+# Gurobi variant of BSCfg.txt: a BlockSolverConfig for the inner UCBlock-style
+# block of an InvestmentBlock, to be solved by GRBMILPSolver as the LP
+# relaxation (intRelaxIntVars 1) of the underlying MIP. Presolve is disabled
+# for reproducibility (it can transform the model and shift the optimal vertex
+# on degenerate LPs), and NumericFocus is raised because the InvestmentBlock
+# inner LPs are badly scaled (capacities, snapshot-weighted costs and VOLL span
+# many orders of magnitude), which makes HiGHS fail on some iterates.
 #
 #   Antonio Frangioni, Donato Meoli
 #
@@ -22,9 +21,7 @@ BlockSolverConfig     # exact type of the Configuration object
 
 1  # number of (the names of) Solver in this BlockSolverConfig
 # now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
-#CPXMILPSolver    # name of Solver
-#GRBMILPSolver    # name of Solver
-HiGHSMILPSolver   # name of Solver
+GRBMILPSolver     # name of Solver
 
 1  # number of ComputeConfig in this BlockSolverConfig
 
@@ -36,36 +33,26 @@ ComputeConfig # exact type of the ComputeConfig object
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-3  # number of integer parameters
+5  # number of integer parameters
 
 # now all the integer parameters
 intLogVerb          0    # LogVerb, log verbosity of the MILPSolver
 intRelaxIntVars     1    # nonzero if the continuous relaxation is solved
 intCutSepPar        7    # separate user cuts + lazy constraints
 
-# All specific CPLEX parameter (uncomment based on Solver)
-#CPXPARAM_Preprocessing_Presolve  0   # disable presolve for reproducibility
-#CPXPARAM_Emphasis_Numerical      1   # numerical precision emphasis
-
-# All specific GUROBI parameter (uncomment based on Solver)
-#Method        1   # 0 = primal, 1 = dual simplex (matches CPLEX default)
-#Presolve      0   # 0 = off, 1 = conservative, 2 = aggressive (default -1)
-#NumericFocus  3   # 0 = auto (default), 1..3 = increasing precision focus
+# All specific GUROBI parameter
+Presolve      0    # disable presolve for reproducibility
+NumericFocus  3    # maximum numerical precision focus
 
 0  # number of double parameters
 
 # now all the double parameters
-# All specific HiGHS parameter (uncomment based on Solver)
-#primal_feasibility_tolerance  1e-9
-#dual_feasibility_tolerance    1e-9
+# [none]
 
 0 # number of string parameters
 
 # now all the string parameters
-# All specific HiGHS parameter (uncomment based on Solver). NOTE: enabling both
-# of the following (presolve off + IPM) makes HiGHS abort on these instances.
-#presolve  off    # disable presolve for reproducibility
-#solver    ipm    # interior point: converges to analytic center (unique x*)
+# [none]
 
 #strOutputFile uc_lp.lp
 
@@ -92,5 +79,5 @@ intCutSepPar        7    # separate user cuts + lazy constraints
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END BSCfg.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - END BSCfg_grb.txt - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
