@@ -11,6 +11,15 @@
 * 
 
 
+## Version v0.0.12
+
+### Minor Changes and Bug Fixes
+
+* [Add gurobi for inner-solver config for InvestmentBlock #104](https://github.com/SPSUnipi/pySMSpp/pull/104)
+
+* [Limit to numpy 2.3 for deprecations #103](https://github.com/SPSUnipi/pySMSpp/pull/103)
+
+
 ## Version v0.0.11
 
 ### New Features and Major Changes
