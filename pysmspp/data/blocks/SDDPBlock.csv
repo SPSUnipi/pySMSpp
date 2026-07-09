@@ -9,5 +9,6 @@ SDDPBlock,StateSize,Variable,Variable,int,-|TimeHorizon,-,,required,Size of the 
 SDDPBlock,AdmissibleState,Variable,Variable,double,-|StateSize|TimeHorizon-StateSize,-,,required,Admissible state for each stage; feasible final state for the problem at that stage
 SDDPBlock,AbstractPath,Block,Group,AbstractPath,list,-,-,required,Vector of AbstractPath describing PolyhedralFunction for sub-Blocks
 SDDPBlock,ScenarioSet,Block,Group,ScenarioSet,list,-,-,required,Description of the scenario set
+SDDPBlock,MultiStageScenarioGenerator,Block,Group,MultiStageScenarioGenerator,-,-,-,optional,Support for explicit definition of the scenario tree using MultiStageScenarioGenerator
 SDDPBlock,StochasticBlock,Block,Group,StochasticBlock,list,-,-,optional,Default description for sub-Blocks; used when StochasticBlock_t is not provided or incomplete
 SDDPBlock,StochasticBlock_*,Block,Group,StochasticBlock,list,-,-,optional,Description of the t-th sub-Block for each time stage t in {0...TimeHorizon-1}
