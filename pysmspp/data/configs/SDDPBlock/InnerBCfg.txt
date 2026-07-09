@@ -1,0 +1,31 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - InnerBCfg.txt - - - - - - - - - - - - - - -
+#
+# A "meta"-BlockConfig: a map from a Block classname() to the BlockConfig to
+# apply to every sub-Block of that class. config_Block() dispatches it by
+# classname over the whole Block tree, so it configures the inner sub-Blocks
+# that sit deep inside each scenario's UCBlock regardless of where they sit:
+#
+#   ThermalUnitBlock        -> its formulation / P-C parameters (TUBCfg.txt)
+#   DCNetworkBlock          -> its formulation selector (DCNBCfg.txt)
+#   ACNetworkBlock          -> its scaling factors (ACBCfg.txt)
+#   PolyhedralFunctionBlock -> its "linearized" representation (PFBCfg.txt)
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# a "meta"-BlockConfig , i.e., a map classname --> its BlockConfig
+SimpleConfiguration<std::map<std::string,Configuration*>>
+
+4 # the number of elements in the map
+
+ThermalUnitBlock        *config/TUBCfg.txt
+DCNetworkBlock          *config/DCNBCfg.txt
+ACNetworkBlock          *config/ACBCfg.txt
+PolyhedralFunctionBlock *config/PFBCfg.txt
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - END InnerBCfg.txt - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
