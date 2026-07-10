@@ -258,3 +258,24 @@ def test_optimize_tssbsolver(force_smspp):
         )
     else:
         pytest.skip("TSSBBlockSolver not available in PATH")
+
+
+def test_optimize_sddp(force_smspp):
+    fp_network = get_network("sddp/SDDPBlock-new-multi.nc4")
+    fp_log = get_temp_file("test_optimize_sddp.txt")
+    configfile = SMSConfig(template="SDDPBlock/sddp_solver.txt")
+
+    from pysmspp import SDDPSolver
+
+    sddp_solver = SDDPSolver(
+        fp_network=fp_network,
+        fp_log=fp_log,
+        configfile=str(configfile),
+    )
+
+    if sddp_solver.is_available() or force_smspp:
+        sddp_solver.optimize(logging=True)
+
+        assert "success" in sddp_solver.status.lower()
+    else:
+        pytest.skip("SDDPSolver not available in PATH")
