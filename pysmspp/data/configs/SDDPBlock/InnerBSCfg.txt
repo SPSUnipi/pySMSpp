@@ -1,0 +1,30 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - InnerBSCfg.txt- - - - - - - - - - - - - - - -
+#
+# A "meta" BlockSolverConfig for the LagrangianDualSolver (str_LagBF_BSCfg):
+# a map from the classname() of the inner Block of each LagBFunction to the
+# BlockSolverConfig to be used for it, with "*" as the default. This is the
+# optimization (SDDPSolver) variant: only ThermalUnitBlock and
+# HydroSystemUnitBlock are hard components (cf. vintNoEasy as constructed by
+# config_Lagrangian_dual in sddp_solver.cpp), every other component is easy
+# and gets the default LP BlockSolverConfig.
+#
+# All filenames are resolved against the directory the tool is run from
+# (the root of the tools/sddp_solver directory), as in the other tools.
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SimpleConfiguration<std::map<std::string,Configuration*>>
+
+3 # the number of elements in the map
+
+ThermalUnitBlock	*config/TUBSCfg-DP.txt   # specialized DP solver
+HydroSystemUnitBlock	*config/HSUBSCfg.txt  # hard component (primal solution needed)
+*			*config/LPBSCfg.txt   # everything else
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END InnerBSCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

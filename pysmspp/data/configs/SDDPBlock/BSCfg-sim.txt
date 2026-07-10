@@ -1,12 +1,13 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - TUBSCfg-DP.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - BSCfg-sim.txt - - - - - - - - - - - - - - - -
 #
-# A txt description of the BlockSolverConfig for a ThermalUnitBlock inside
-# the Lagrangian decomposition of the UCBlock of each stage of the
-# SDDPBlock: each thermal unit subproblem is solved by the specialized
-# ThermalUnitExtDPSolver.
+# A txt description of a BlockSolverConfig for a SDDPGreedySolver to be used
+# to simulate the SDDPBlock instances in this directory: the inner Block of
+# each stage is Solver-configured lazily (strInnerBSC), just before being
+# solved, so that the callback of sddp_solver can still update the data
+# linking two consecutive stages (e.g. ThermalUnitBlock init up/down time).
 #
-#   Rafael Durbano Lobato, Donato Meoli
+#   Donato Meoli
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -17,33 +18,34 @@ BlockSolverConfig     # exact type of the Configuration object
 
 1  # number of (the names of) Solver in this BlockSolverConfig
 # now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
-ThermalUnitExtDPSolver    # name of 1st Solver
+SDDPGreedySolver    # name of 1st Solver
 
 1  # number of ComputeConfig in this BlockSolverConfig
 
 # now all the ComputeConfig
 # 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# ComputeConfig of the ThermalUnitExtDPSolver
+# ComputeConfig of the SDDPGreedySolver
 
 ComputeConfig # exact type of the ComputeConfig object
 
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-1 # number of integer parameters
+2 # number of integer parameters
 
 # now all the integer parameters
-intLogVerb 0 # log verbosity
+intLogVerb          1 # log verbosity
+intUnregisterSolver 1 # unregister the Solver of the inner Block after solving it
 
 0 # number of double parameters
 
 # now all the double parameters
 # [none]
 
-0 # number of string parameters
+1 # number of string parameters
 
 # now all the string parameters
-# [none]
+strInnerBSC config/UCBSCfg.txt # BlockSolverConfig for the UCBlock
 
 0 # number of vector-of-int parameters
 
@@ -68,5 +70,5 @@ intLogVerb 0 # log verbosity
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END TUBSCfg-DP.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END BSCfg-sim.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

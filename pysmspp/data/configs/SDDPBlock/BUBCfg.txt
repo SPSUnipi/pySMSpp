@@ -1,26 +1,30 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - TSSBCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - BUBCfg.txt- - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockConfig for a TSSBSolver
+# A txt description of the BlockConfig for a BatteryUnitBlock: no negative
+# prices (static variables Configuration == 0), bound constraints generated
+# as OneVarConstraints (static constraints Configuration == 1), plus the
+# is_feasible() tolerances.
 #
 #   Donato Meoli
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-BlockConfig # exact type of the ComputeConfig object
+BlockConfig # exact type of the Configuration object
 
 1  # the BlockConfig is a "differential" one
 
 # static_constraints
 SimpleConfiguration<int>
-0    # 0 = anchor constraints, 1 = sequential constraints
+1    # generate OneVarConstraints
 
 # dynamic_constraints
 *    # [none]
 
 # static_variables
-*    # [none]
+SimpleConfiguration<int>
+0    # no negative prices, hence no intake level variables
 
 # dynamic_variables
 *    # [none]
@@ -29,7 +33,8 @@ SimpleConfiguration<int>
 *    # [none]
 
 # is_feasible
-*    # [none]
+SimpleConfiguration<std::pair<double,int>>
+1e-6 1  # feasibility tolerance, relative violation
 
 # is_optimal
 *    # [none]
@@ -41,5 +46,5 @@ SimpleConfiguration<int>
 *    # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - -END TSSBCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END BUBCfg.txt- - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
