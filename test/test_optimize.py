@@ -261,7 +261,7 @@ def test_optimize_tssbsolver(force_smspp):
 
 
 def test_optimize_sddp(force_smspp):
-    fp_network = get_network("sddp/SDDPBlock-new-multi.nc4")
+    fp_network = get_network("sddp/SDDPBlock.nc4")
     fp_log = get_temp_file("test_optimize_sddp.txt")
     configfile = SMSConfig(template="SDDPBlock/sddp_solver.txt")
 
@@ -279,3 +279,6 @@ def test_optimize_sddp(force_smspp):
         assert "success" in sddp_solver.status.lower()
     else:
         pytest.skip("SDDPSolver not available in PATH")
+
+
+test_optimize_sddp(True)
