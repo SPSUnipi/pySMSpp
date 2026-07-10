@@ -279,6 +279,3 @@ def test_optimize_sddp(force_smspp):
         assert "success" in sddp_solver.status.lower()
     else:
         pytest.skip("SDDPSolver not available in PATH")
-
-
-test_optimize_sddp(True)
