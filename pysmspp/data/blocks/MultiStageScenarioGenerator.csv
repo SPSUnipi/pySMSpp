@@ -1,4 +1,5 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
-IndependentMultiStageScenarioGenerator,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
-IndependentMultiStageScenarioGenerator,NumberStages,Dimension,Dimension,int,-,-,,required,Number of stages in the scenario generator
-IndependentMultiStageScenarioGenerator,Stage_*,Block,Group,ScenarioGenerator|DiscreteScenarioSet,list,-,,required,ScenarioSet block for each stage in the scenario generator
+MultiStageScenarioGenerator,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+MultiStageScenarioGenerator,id,Attribute,Attribute,str,-,-,,optional,Id of the scenario generator
+MultiStageScenarioGenerator,NumberStages,Dimension,Dimension,int,-,-,,required,Number of stages in the scenario generator
+MultiStageScenarioGenerator,Stage_*,Block,Group,ScenarioGenerator,list,-,-,required,ScenarioGenerator for each stage

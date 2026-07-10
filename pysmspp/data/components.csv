@@ -21,3 +21,5 @@ DesignNetworkBlock,Block,blocks,"Design network block useful to enable capacity 
 SDDPBlock,Block,blocks,"SDDP block useful to describe stochastic problems with SDDP approach"
 MultiStageScenarioGenerator,Block,blocks,"Multi-stage scenario generator block useful to describe stochastic problems with explicit scenario tree"
 IndependentMultiStageScenarioGenerator,Block,blocks,"Independent multi-stage scenario generator block useful to describe stochastic problems with explicit scenario tree"
+BendersBlock,Block,blocks,"Block whose objective is represented by a BendersBFunction"
+BendersBFunction,Block,blocks,"Benders function group and its inner optimization block"
