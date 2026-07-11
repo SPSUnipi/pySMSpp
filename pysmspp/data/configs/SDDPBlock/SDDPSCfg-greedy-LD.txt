@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END sddp_greedy-ld.txt- - - - - - - - - - - - - -
+# - - - - - - - - - - - - - SDDPSCfg-greedy-LD.txt- - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a SDDPGreedySolver
 #
@@ -68,5 +68,5 @@ strInnerBSC      config/BSPar-greedy-LD.txt   # BlockSolverConfig for the UCBloc
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END sddp_greedy-ld.txt- - - - - - - - - - - - - -
+# - - - - - - - - - - - - END SDDPSCfg-greedy-LD.txt- - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -263,7 +263,7 @@ def test_optimize_tssbsolver(force_smspp):
 def test_optimize_sddp(force_smspp):
     fp_network = get_network("sddp/SDDPBlock.nc4")
     fp_log = get_temp_file("test_optimize_sddp.txt")
-    configfile = SMSConfig(template="SDDPBlock/sddp_solver.txt")
+    configfile = SMSConfig(template="SDDPBlock/SDDPSCfg.txt")
 
     from pysmspp import SDDPSolver
 

@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END sddp_solver.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - SDDPSCfg.txt- - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a SDDPSolver
 #
@@ -80,5 +80,5 @@ strFilenameSuffix .0
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END sddp_solver.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END SDDPSCfg.txt- - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
