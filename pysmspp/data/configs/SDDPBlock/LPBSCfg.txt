@@ -4,7 +4,7 @@
 # A txt description of the default BlockSolverConfig for any other Block
 # (e.g., a PolyhedralFunctionBlock, a NetworkBlock) inside the Lagrangian
 # decomposition of the UCBlock of each stage of the SDDPBlock: the
-# subproblem is solved as an LP by CPXMILPSolver.
+# subproblem is solved as an LP by HiGHSMILPSolver.
 #
 #   Rafael Durbano Lobato, Donato Meoli
 #
@@ -17,35 +17,35 @@ BlockSolverConfig     # exact type of the Configuration object
 
 1  # number of (the names of) Solver in this BlockSolverConfig
 # now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
-CPXMILPSolver    # name of 1st Solver
+HiGHSMILPSolver    # name of 1st Solver
 
 1  # number of ComputeConfig in this BlockSolverConfig
 
 # now all the ComputeConfig
 # 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# ComputeConfig of the CPXMILPSolver
+# ComputeConfig of the HiGHSMILPSolver
 
 ComputeConfig # exact type of the ComputeConfig object
 
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-6 # number of integer parameters
+0 # number of integer parameters
 
 # now all the integer parameters
 intLogVerb                  0 # log verbosity
-CPXPARAM_Threads            1 # number of threads
-CPXPARAM_LPMethod           2 # dual simplex
-CPXPARAM_Read_Scale         1 # aggressive scaling
-CPX_PARAM_NUMERICALEMPHASIS 1 # numerical emphasis
-CPXPARAM_SolutionType       2 # basic solution
+#CPXPARAM_Threads            1 # number of threads
+#CPXPARAM_LPMethod           2 # dual simplex
+#CPXPARAM_Read_Scale         1 # aggressive scaling
+#CPX_PARAM_NUMERICALEMPHASIS 1 # numerical emphasis
+#CPXPARAM_SolutionType       2 # basic solution
 #CPXPARAM_Preprocessing_Presolve 0
 #intThrowReducedCostException    1
 
-1 # number of double parameters
+0 # number of double parameters
 
 # now all the double parameters
-CPXPARAM_Simplex_Tolerances_Optimality 1e-9 # optimality tolerance
+#CPXPARAM_Simplex_Tolerances_Optimality 1e-9 # optimality tolerance
 #dblAAccSol 1e-04
 #dblMaxTime 20000
 

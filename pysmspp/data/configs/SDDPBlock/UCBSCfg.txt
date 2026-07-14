@@ -29,12 +29,12 @@ ComputeConfig # exact type of the ComputeConfig object
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-3 # number of integer parameters
+2 # number of integer parameters
 
 # now all the integer parameters
 intLogVerb       0 # log verbosity
-CPXPARAM_Threads 1 # number of threads
 intRelaxIntVars  1 # relax the integrality constraints
+# CPXPARAM_Threads 1 # number of threads
 
 0 # number of double parameters
 
