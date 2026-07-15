@@ -690,7 +690,7 @@ class SDDPSolver(SMSPPSolverTool):
 
     def parse_solver_log(
         self,
-    ):  # TODO: needs revision to better capture the output
+    ):
         """
         Check the output of the SDDPSolver.
         It will extract the status, upper bound, lower bound, and objective value from the log.
@@ -703,27 +703,31 @@ class SDDPSolver(SMSPPSolverTool):
         if self._log is None:
             raise ValueError("Optimization was not launched.")
 
-        res = re.search("Solution value: (.*)\n", self._log)
+        lower_log = self._log.lower()
 
-        if not res:  # if success not found
+        error_inf_or_unb = (
+            "error" in lower_log
+            or "unbounded" in lower_log
+            or "infeasible" in lower_log
+        )
+
+        if error_inf_or_unb:  # if success not found
             self._status = "Failed"
             self._objective_value = np.nan
             self._lower_bound = np.nan
             self._upper_bound = np.nan
             return
 
-        self._objective_value = float(res.group(1).replace("\r", ""))
-
-        res = re.search("Solver status: (.*)\n", self._log)
-        smspp_status = res.group(1).replace("\r", "")
+        out = re.search(r"Backward value: (.*)\nForward value: (.*)\n(.*)\n", self._log)
+        self._lower_bound = float(out.group(1).replace("\r", ""))
+        self._upper_bound = float(out.group(2).replace("\r", ""))
+        smspp_status = out.group(3).replace("\r", "")
+        self._objective_value = self._upper_bound
 
         if np.isfinite(self._objective_value):
             self._status = f"Success ({smspp_status})"
         else:
             self._status = f"Failed ({smspp_status})"
-
-        self._lower_bound = np.nan
-        self._upper_bound = np.nan
 
 
 class TSSBSolver(SMSPPSolverTool):
