@@ -1,0 +1,49 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - IUBCfg-LD.txt - - - - - - - - - - - - - - - -
+#
+# A txt description of the BlockConfig for an IntermittentUnitBlock when the
+# SDDPBlock is solved via LagrangianDualSolver: any zero value that the
+# maximum power may assume is replaced by the (tiny) value given by the
+# extra Configuration, plus the is_feasible() tolerances.
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockConfig # exact type of the Configuration object
+
+1  # the BlockConfig is a "differential" one
+
+# static_constraints
+*    # [none]
+
+# dynamic_constraints
+*    # [none]
+
+# static_variables
+*    # [none]
+
+# dynamic_variables
+*    # [none]
+
+# objective
+*    # [none]
+
+# is_feasible
+SimpleConfiguration<std::pair<double,int>>
+1e-6 1  # feasibility tolerance, relative violation
+
+# is_optimal
+*    # [none]
+
+# solution
+*    # [none]
+
+# extra
+SimpleConfiguration<double>
+1e-16   # replaces any zero value of the maximum power
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END IUBCfg-LD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -2,12 +2,21 @@ block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,un
 SDDPBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 SDDPBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
 SDDPBlock,TimeHorizon,Dimension,Dimension,int,-,-,,required,Time horizon of the optimization problem
+SDDPBlock,NumPolyhedralFunctionsPerStage,Dimension,Dimension,int,-,-,1,optional,Fixture-era name for the number of PolyhedralFunction objects in each stage; defaults to one
 SDDPBlock,NumPolyhedralFunctionsPerSubBlock,Dimension,Dimension,int,-,-,1,optional,Number of PolyhedralFunction that are present in each sub-Block
 SDDPBlock,NumSubBlocksPerStage,Dimension,Dimension,int,-,-,1,optional,Number of sub-Blocks that must be constructed for each stage
-SDDPBlock,InitialState,Variable,Variable,double,-,-,,required,Initial state for the first stage problem
+SDDPBlock,NumberScenarios,Dimension,Dimension,int,-,-,,optional,Number of scenarios; required when scenarios are stored inline in Scenarios
+SDDPBlock,SubScenarioSize,Dimension,Dimension,int,-,-,,optional,Size of the sub-scenario associated with each stage when all stages use the same size
+SDDPBlock,ScenarioSize,Dimension,Dimension,int,-,-,,optional,Size of a scenario spanning all stages; required when scenarios are stored inline in Scenarios
+SDDPBlock,NumberRandomDataGroups,Dimension,Dimension,int,-,-,1,optional,Number of related random-data groups in each equal-sized sub-scenario
+SDDPBlock,AdmissibleStateSize,Dimension,Dimension,int,-,-,,required,Total number of entries in AdmissibleState in the fixture layout
+SDDPBlock,InitialStateSize,Dimension,Dimension,int,-,-,,required,Number of entries in the initial state
+SDDPBlock,SizeRandomDataGroups,Variable,Variable,int,NumberRandomDataGroups,-,,optional,Size of each random-data group; required when NumberRandomDataGroups is greater than one
+SDDPBlock,Scenarios,Variable,Variable,double,NumberScenarios-ScenarioSize,-,,optional,Inline scenario matrix; exactly one of Scenarios and ScenarioGenerator must be provided
 SDDPBlock,StateSize,Variable,Variable,int,-|TimeHorizon,-,,required,Size of the states at each stage; scalar or array indexed over TimeHorizon
-SDDPBlock,AdmissibleState,Variable,Variable,double,-|StateSize|TimeHorizon-StateSize,-,,required,Admissible state for each stage; feasible final state for the problem at that stage
+SDDPBlock,AdmissibleState,Variable,Variable,double,AdmissibleStateSize,-,,required,Concatenation of one feasible final state for every stage
+SDDPBlock,InitialState,Variable,Variable,double,InitialStateSize,-,,required,Initial state for the first-stage problem
 SDDPBlock,AbstractPath,Block,Group,AbstractPath,list,-,-,required,Vector of AbstractPath describing PolyhedralFunction for sub-Blocks
-SDDPBlock,ScenarioSet,Block,Group,ScenarioSet,list,-,-,required,Description of the scenario set
-SDDPBlock,StochasticBlock,Block,Group,StochasticBlock,list,-,-,optional,Default description for sub-Blocks; used when StochasticBlock_t is not provided or incomplete
-SDDPBlock,StochasticBlock_*,Block,Group,StochasticBlock,list,-,-,optional,Description of the t-th sub-Block for each time stage t in {0...TimeHorizon-1}
+SDDPBlock,ScenarioGenerator,Block,Group,DiscreteScenarioSet|IndependentMultiStageScenarioGenerator|ScenarioGenerator,-,-,-,optional,Scenario source subgroup; exactly one of ScenarioGenerator and inline Scenarios must be provided
+SDDPBlock,StochasticBlock,Block,Group,StochasticBlock,-,-,-,optional,Default description used for stages whose StochasticBlock_t group is absent or incomplete
+SDDPBlock,StochasticBlock_*,Block,Group,StochasticBlock,list,-,-,optional,Stage-specific StochasticBlock; every stage must be resolved from this group or the default StochasticBlock

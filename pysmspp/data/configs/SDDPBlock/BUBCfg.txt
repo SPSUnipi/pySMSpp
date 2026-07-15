@@ -1,0 +1,50 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - BUBCfg.txt- - - - - - - - - - - - - - - - -
+#
+# A txt description of the BlockConfig for a BatteryUnitBlock: no negative
+# prices (static variables Configuration == 0), bound constraints generated
+# as OneVarConstraints (static constraints Configuration == 1), plus the
+# is_feasible() tolerances.
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockConfig # exact type of the Configuration object
+
+1  # the BlockConfig is a "differential" one
+
+# static_constraints
+SimpleConfiguration<int>
+1    # generate OneVarConstraints
+
+# dynamic_constraints
+*    # [none]
+
+# static_variables
+SimpleConfiguration<int>
+0    # no negative prices, hence no intake level variables
+
+# dynamic_variables
+*    # [none]
+
+# objective
+*    # [none]
+
+# is_feasible
+SimpleConfiguration<std::pair<double,int>>
+1e-6 1  # feasibility tolerance, relative violation
+
+# is_optimal
+*    # [none]
+
+# solution
+*    # [none]
+
+# extra
+*    # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END BUBCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

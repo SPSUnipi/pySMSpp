@@ -1,10 +1,11 @@
 block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
 AbstractPath,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
 AbstractPath,id,Attribute,Attribute,str,-,-,,optional,Id of the block
-AbstractPath,PathDim,Dimension,Dimension,int,-,-,,required,Number of paths
+AbstractPath,PathDim,Dimension,Dimension,int,-,-,1,optional,Number of paths; one path is assumed when absent
 AbstractPath,TotalLength,Dimension,Dimension,int,-,-,,required,Total number of nodes across all paths
-AbstractPath,PathStart,Variable,Variable,int,-|PathDim,-,,required,Start index of each path
-AbstractPath,PathNodeTypes,Variable,Variable,str,-|TotalLength,-,,required,Type of each node
-AbstractPath,PathGroupIndices,Variable,Variable,str,-|TotalLength,-,,required,Group index per node
-AbstractPath,PathElementIndices,Variable,Variable,int,-|TotalLength,-,,required,Element index per node
-AbstractPath,PathRangeIndices,Variable,Variable,int,-|TotalLength,-,,required,Scenario range index per node
+AbstractPath,PathTotalLength,Dimension,Dimension,int,-,-,,optional,Current-format name for the total number of nodes across all paths
+AbstractPath,PathStart,Variable,Variable,int,PathDim,-,,optional,Start index of each path; required when PathDim is provided
+AbstractPath,PathNodeTypes,Variable,Variable,str,TotalLength|PathTotalLength,-,,required,Type of each node
+AbstractPath,PathGroupIndices,Variable,Variable,int|str,TotalLength|PathTotalLength,-,,required,Numeric group index or group name for each node
+AbstractPath,PathElementIndices,Variable,Variable,int,TotalLength|PathTotalLength,-,,optional,Element index per node; an unspecified element is assumed when absent
+AbstractPath,PathRangeIndices,Variable,Variable,int,TotalLength|PathTotalLength,-,,optional,End index of a ranged node; defaults depend on the node type

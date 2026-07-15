@@ -1,0 +1,11 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+BendersBFunction,NumVar,Dimension,Dimension,int,-,-,,required,Number of active variables and columns of the mapping matrix
+BendersBFunction,NumRow,Dimension,Dimension,int,-,-,0,optional,Number of rows of the mapping matrix
+BendersBFunction,NumNonzero,Dimension,Dimension,int,-,-,,optional,Number of nonzero matrix entries; its presence selects sparse storage
+BendersBFunction,NumNonzeroAtRow,Variable,Variable,int,NumRow,-,,optional,Nonzero count per row; required for non-identity sparse matrices
+BendersBFunction,Column,Variable,Variable,int,NumNonzero,-,,optional,Column index of each sparse matrix entry
+BendersBFunction,A,Variable,Variable,double,NumRow-NumVar|NumNonzero,-,,optional,Dense or sparse matrix values; required for nonempty mappings except an implicit sparse identity
+BendersBFunction,b,Variable,Variable,double,NumRow,-,0,optional,Constant vector; zero is assumed when absent
+BendersBFunction,ConstraintSide,Variable,Variable,str,NumRow,-,B,optional,Affected constraint side; both sides are assumed when absent
+BendersBFunction,AbstractPath,Block,Group,AbstractPath,list,-,-,optional,Paths to affected row constraints; required when NumRow is greater than zero
+BendersBFunction,Block,Block,Group,Block,-,-,-,required,Inner optimization block or indirect block reference

@@ -6,6 +6,7 @@ from pysmspp.smspp_tools import (
     InvestmentBlockSolver,
     InvestmentSolver,
     TSSBSolver,
+    SDDPSolver,
 )
 from enum import IntEnum
 
@@ -197,10 +198,21 @@ def get_attr_field(
 
     if attr_name in simple_attrs.index:
         attr = attr_name
+    elif attr_name in block_attrs.index:
+        # Prefer an exact group name over wildcard prefixes. For example,
+        # ``StochasticBlock`` must not be confused with ``StochasticBlock_*``.
+        attr = attr_name
     else:
         attr_sel = block_attrs.loc[
             block_attrs.index.to_series().map(lambda x: attr_name.startswith(x))
         ]
+        if attr_sel.shape[0] > 1:
+            # Wildcard markers are stripped when the CSV files are loaded.
+            # Choosing the longest matching prefix makes the most specific
+            # wildcard deterministic (``StochasticBlock_`` wins over
+            # ``StochasticBlock`` for ``StochasticBlock_0``).
+            prefix_length = attr_sel.index.to_series().str.len()
+            attr_sel = attr_sel.loc[prefix_length == prefix_length.max()]
         if attr_sel.shape[0] == 1:
             attr = attr_sel.index[0]
         elif attr_sel.empty:
@@ -1470,8 +1482,8 @@ class SMSNetwork(Block):
         default_solver_map = {
             "UCBlock": "UCBlockSolver",
             "InvestmentBlock": "InvestmentBlockSolver",
-            "SDDPBlock": "InvestmentSolver",
             "TwoStageStochasticBlock": "TSSBSolver",
+            "SDDPBlock": "SDDPSolver",
         }
 
         # Map solver names to actual solver classes
@@ -1481,6 +1493,7 @@ class SMSNetwork(Block):
             "InvestmentBlockSolver": InvestmentBlockSolver,
             "InvestmentSolver": InvestmentSolver,
             "TSSBSolver": TSSBSolver,
+            "SDDPSolver": SDDPSolver,
         }
 
         if isinstance(smspp_solver, str) and smspp_solver == "auto":

@@ -1,0 +1,6 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+BendersBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+BendersBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+BendersBlock,NumVar,Dimension,Dimension,int,-,-,,required,Number of active column variables
+BendersBlock,ObjectiveSense,Dimension,Dimension,int,-,-,1,optional,Objective sense; zero means maximization while a nonzero value or absence means minimization
+BendersBlock,BendersBFunction,Block,Group,BendersBFunction,-,-,-,required,Benders function used by the real objective

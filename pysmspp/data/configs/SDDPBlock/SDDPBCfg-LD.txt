@@ -1,0 +1,33 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - SDDPBCfg-LD.txt - - - - - - - - - - - - - - - -
+#
+# The default "meta" BlockConfig for the inner Block of each stage of the
+# SDDPBlock when it is solved via LagrangianDualSolver: like SDDPBCfg.txt,
+# except that the ThermalUnitBlock gets the reserve variables in the
+# Objective (the reserve demand constraints are dualized) and the
+# IntermittentUnitBlock gets the zero-max-power replacement.
+#
+# All filenames are resolved against the directory the tool is run from
+# (the root of the tools/sddp_solver directory), as in the other tools.
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SimpleConfiguration<std::map<std::string,Configuration*>>
+
+8 # the number of elements in the map
+
+PolyhedralFunctionBlock	*config/PFBCfg.txt    # linearized representation
+SlackUnitBlock		*config/SUBCfg.txt    # OneVarConstraints
+BatteryUnitBlock	*config/BUBCfg.txt    # OneVarConstraints, no negative prices
+ThermalUnitBlock	*config/TUBCfg-LD.txt # OneVarConstraints + reserves in Objective
+IntermittentUnitBlock	*config/IUBCfg-LD.txt # zero-max-power replacement
+DCNetworkBlock		*config/DCNBCfg.txt   # network formulation (KIRCHHOFF)
+ACNetworkBlock		*config/ACBCfg.txt    # AC Network scaling factors
+*			*config/BCfg.txt      # everything else (is_feasible only)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END SDDPBCfg-LD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

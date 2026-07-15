@@ -1,0 +1,26 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - get_var_solution_bundle.txt - - - - - - - - - - - -
+#
+# A txt description of the Configuration to be passed to get_var_solution()
+# of the [Parallel]BundleSolver when the HydroSystemUnitBlock is treated as
+# an easy component (see the -z option of sddp_solver): the primal solution
+# of the easy component, which lives in the master problem, is recovered for
+# the component with the given index.
+#
+# Note: the component index below assumes that the HydroSystemUnitBlock is
+# the first (index 0) sub-Block of the UCBlock of each stage.
+#
+#   Rafael Durbano Lobato, Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SimpleConfiguration<std::vector<std::pair<int,int>>>
+
+1 # number of elements in this vector
+
+0 1 # component index, get duals
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - END get_var_solution_bundle.txt - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

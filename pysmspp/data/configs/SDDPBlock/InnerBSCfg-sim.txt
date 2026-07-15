@@ -1,0 +1,34 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - InnerBSCfg-sim.txt- - - - - - - - - - - - - - -
+#
+# A "meta" BlockSolverConfig for the LagrangianDualSolver (str_LagBF_BSCfg):
+# a map from the classname() of the inner Block of each LagBFunction to the
+# BlockSolverConfig to be used for it, with "*" as the default. This is the
+# simulation (SDDPGreedySolver) variant: besides ThermalUnitBlock and
+# HydroSystemUnitBlock, also BatteryUnitBlock and IntermittentUnitBlock are
+# hard components, because their primal solutions link two consecutive
+# stages and BundleSolver does not provide primal solutions for easy
+# components (cf. vintNoEasy as constructed by config_Lagrangian_dual in
+# sddp_solver.cpp).
+#
+# All filenames are resolved against the directory the tool is run from
+# (the root of the tools/sddp_solver directory), as in the other tools.
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SimpleConfiguration<std::map<std::string,Configuration*>>
+
+5 # the number of elements in the map
+
+ThermalUnitBlock	*config/TUBSCfg-DP.txt   # specialized DP solver
+HydroSystemUnitBlock	*config/HSUBSCfg.txt  # hard component (primal solution needed)
+BatteryUnitBlock	*config/OUBSCfg.txt   # hard component (links two stages)
+IntermittentUnitBlock	*config/OUBSCfg.txt   # hard component (links two stages)
+*			*config/LPBSCfg.txt   # everything else
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END InnerBSCfg-sim.txt- - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
