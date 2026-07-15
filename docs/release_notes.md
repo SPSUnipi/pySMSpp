@@ -11,6 +11,13 @@
 * 
 
 
+## Version v0.0.13
+
+### Minor Changes and Bug Fixes
+
+* Support for SDDPBlock and SDDPSolver added. See [PR #106](https://github.com/SPSUnipi/pySMSpp/pull/106)
+
+
 ## Version v0.0.12
 
 ### Minor Changes and Bug Fixes
