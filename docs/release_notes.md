@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* 
+* [Fix numpy and matplotlib deprecations during tests. PR #102](https://github.com/SPSUnipi/pySMSpp/pull/102)
 
 
 ## Version v0.0.13
