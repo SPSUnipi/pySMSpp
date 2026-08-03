@@ -1,22 +1,24 @@
 import os
 from pathlib import Path
-from pysmspp import (
-    SMSConfig,
-    SMSNetwork,
-    SMSFileType,
-    UCBlockSolver,
-)
+
+import pytest
 from conftest import (
-    get_temp_file,
     add_base_ucblock,
-    add_tub_to_ucblock,
     add_bub_to_ucblock,
     add_hub_to_ucblock,
     add_iub_to_ucblock,
     add_sub_to_ucblock,
+    add_tub_to_ucblock,
+    get_datafile,
+    get_temp_file,
 )
-from conftest import get_datafile
-import pytest
+
+from pysmspp import (
+    SMSConfig,
+    SMSFileType,
+    SMSNetwork,
+    UCBlockSolver,
+)
 
 RTOL = 1e-4
 ATOL = 1e-2

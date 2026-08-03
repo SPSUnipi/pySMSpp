@@ -1,27 +1,29 @@
 import os
 import shutil
 from pathlib import Path
-from pysmspp import (
-    SMSConfig,
-    SMSNetwork,
-    SMSFileType,
-    UCBlockSolver,
-    InvestmentBlockSolver,
-)
+
+import numpy as np
+import pytest
 from conftest import (
-    get_network,
     add_base_ucblock,
-    add_ucblock_with_one_unit,
-    add_tub_to_ucblock,
     add_bub_to_ucblock,
     add_hub_to_ucblock,
     add_iub_to_ucblock,
     add_sub_to_ucblock,
+    add_tub_to_ucblock,
+    add_ucblock_with_one_unit,
     build_tssb_block,
+    get_network,
     get_temp_file,
 )
-import pytest
-import numpy as np
+
+from pysmspp import (
+    InvestmentBlockSolver,
+    SMSConfig,
+    SMSFileType,
+    SMSNetwork,
+    UCBlockSolver,
+)
 
 RTOL = 1e-4
 ATOL = 1e-2
@@ -190,7 +192,7 @@ def test_investmentsolvertest(force_smspp):
 
 def test_is_smspp_installed(force_smspp):
     """Test the is_smspp_installed() function."""
-    from pysmspp import is_smspp_installed, UCBlockSolver, InvestmentBlockSolver
+    from pysmspp import InvestmentBlockSolver, UCBlockSolver, is_smspp_installed
 
     # The function should return a boolean
     result = is_smspp_installed()
@@ -252,9 +254,7 @@ def test_optimize_tssbsolver(force_smspp):
         obj_orig = tssb_solver.objective_value
         obj_new = tssb_solver_new.objective_value
         assert obj_orig == pytest.approx(obj_new, rel=1e-4), (
-            "Objective values should match between original ({:.2f}) and new ({:.2f}) TSSB blocks".format(
-                obj_orig, obj_new
-            )
+            f"Objective values should match between original ({obj_orig:.2f}) and new ({obj_new:.2f}) TSSB blocks"
         )
     else:
         pytest.skip("TSSBBlockSolver not available in PATH")

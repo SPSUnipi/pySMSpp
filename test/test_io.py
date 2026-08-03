@@ -1,6 +1,8 @@
-from conftest import get_network, check_compare_nc
-import pysmspp
 import os
+
+from conftest import check_compare_nc, get_network
+
+import pysmspp
 
 
 def test_load_save_network():

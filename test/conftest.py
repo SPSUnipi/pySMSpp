@@ -1,8 +1,10 @@
-from pysmspp import SMSFileType, SMSNetwork, Block, Variable, Dimension, Attribute
 import os
 import re
+
 import numpy as np
 import pytest
+
+from pysmspp import Attribute, Block, Dimension, SMSFileType, SMSNetwork, Variable
 
 
 def pytest_addoption(parser):
@@ -117,20 +119,18 @@ def add_base_ucblock(
     if n_lines > 0:
         kwargs = {
             **kwargs,
-            **{
-                "StartLine": Variable(
-                    "StartLine", "int", ("NumberLines",), list(range(n_lines))
-                ),
-                "EndLine": Variable(
-                    "EndLine", "int", ("NumberLines",), list(range(1, n_lines + 1))
-                ),
-                "MinPowerFlow": Variable(
-                    "MinPowerFlow", "float", ("NumberLines",), [0.0] * n_lines
-                ),
-                "MaxPowerFlow": Variable(
-                    "MaxPowerFlow", "float", ("NumberLines",), [max_p] * n_lines
-                ),
-            },
+            "StartLine": Variable(
+                "StartLine", "int", ("NumberLines",), list(range(n_lines))
+            ),
+            "EndLine": Variable(
+                "EndLine", "int", ("NumberLines",), list(range(1, n_lines + 1))
+            ),
+            "MinPowerFlow": Variable(
+                "MinPowerFlow", "float", ("NumberLines",), [0.0] * n_lines
+            ),
+            "MaxPowerFlow": Variable(
+                "MaxPowerFlow", "float", ("NumberLines",), [max_p] * n_lines
+            ),
         }
     if n_elec_generators > 0:
         kwargs["GeneratorNode"] = Variable(

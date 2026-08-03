@@ -1,15 +1,17 @@
 """Tests for Variable.plot() and Block.plot() plotting features."""
 
-import sys
 import os
+import sys
+
 import numpy as np
 import pytest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from pysmspp import Block, Variable
 import matplotlib
 import matplotlib.pyplot as plt
+
+from pysmspp import Block, Variable
 
 matplotlib.use("Agg")  # Use non-interactive backend for testing
 

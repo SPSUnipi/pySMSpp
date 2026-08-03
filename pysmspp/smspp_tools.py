@@ -1,13 +1,14 @@
-from pathlib import Path
-import subprocess
+import logging
+import os
 import queue
 import re
-import numpy as np
-import os
-import time
-import psutil
-import logging
+import subprocess
 import threading
+import time
+from pathlib import Path
+
+import numpy as np
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -270,10 +271,8 @@ class SMSPPSolverTool:
                     cpu = process.cpu_percent()
 
                     # track the peak utilization of the process
-                    if mem > peak_memory:
-                        peak_memory = mem
-                    if cpu > peak_cpu:
-                        peak_cpu = cpu
+                    peak_memory = max(peak_memory, mem)
+                    peak_cpu = max(peak_cpu, cpu)
                 except psutil.NoSuchProcess:
                     pass
 

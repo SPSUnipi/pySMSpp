@@ -40,22 +40,50 @@ Documentation: https://pysmspp.readthedocs.io
 """
 
 from pysmspp.block import (
-    SMSNetwork as SMSNetwork,
-    SMSConfig as SMSConfig,
-    Block as Block,
-    SMSFileType as SMSFileType,
     Attribute as Attribute,
+)
+from pysmspp.block import (
+    Block as Block,
+)
+from pysmspp.block import (
     Dimension as Dimension,
+)
+from pysmspp.block import (
+    SMSConfig as SMSConfig,
+)
+from pysmspp.block import (
+    SMSFileType as SMSFileType,
+)
+from pysmspp.block import (
+    SMSNetwork as SMSNetwork,
+)
+from pysmspp.block import (
     Variable as Variable,
-    components as components,
+)
+from pysmspp.block import (
     blocks as blocks,
+)
+from pysmspp.block import (
+    components as components,
+)
+from pysmspp.smspp_tools import (
+    InvestmentBlockSolver as InvestmentBlockSolver,
+)
+from pysmspp.smspp_tools import (
+    InvestmentBlockTestSolver as InvestmentBlockTestSolver,
+)
+from pysmspp.smspp_tools import (
+    SDDPSolver as SDDPSolver,
 )
 from pysmspp.smspp_tools import (
     SMSPPSolverTool as SMSPPSolverTool,
-    UCBlockSolver as UCBlockSolver,
-    InvestmentBlockTestSolver as InvestmentBlockTestSolver,
-    InvestmentBlockSolver as InvestmentBlockSolver,
+)
+from pysmspp.smspp_tools import (
     TSSBSolver as TSSBSolver,
-    SDDPSolver as SDDPSolver,
+)
+from pysmspp.smspp_tools import (
+    UCBlockSolver as UCBlockSolver,
+)
+from pysmspp.smspp_tools import (
     is_smspp_installed as is_smspp_installed,
 )

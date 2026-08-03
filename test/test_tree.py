@@ -1,8 +1,10 @@
 """Tests for the block tree visualization utility."""
 
-from io import StringIO
 import sys
-from conftest import get_network, add_base_ucblock, build_base_tub, build_base_bub
+from io import StringIO
+
+from conftest import add_base_ucblock, build_base_bub, build_base_tub, get_network
+
 import pysmspp
 
 

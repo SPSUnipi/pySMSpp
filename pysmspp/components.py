@@ -1,5 +1,5 @@
-from typing import Any
 import re
+from typing import Any
 
 
 class Dict(dict):

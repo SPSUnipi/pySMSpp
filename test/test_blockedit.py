@@ -1,18 +1,20 @@
 import os
-from pysmspp import SMSNetwork, Block, Variable, Attribute, Dimension
+
 from conftest import (
     add_base_ucblock,
-    add_ucblock_with_one_unit,
-    add_tub_to_ucblock,
     add_bub_to_ucblock,
     add_hub_to_ucblock,
     add_iub_to_ucblock,
+    add_tub_to_ucblock,
+    add_ucblock_with_one_unit,
     build_base_investmentblock,
+    build_tssb_block,
     check_compare_nc,
     get_datafile,
     get_temp_file,
-    build_tssb_block,
 )
+
+from pysmspp import Attribute, Block, Dimension, SMSNetwork, Variable
 
 
 def test_blocks_entry():

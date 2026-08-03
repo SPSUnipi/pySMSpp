@@ -1,22 +1,22 @@
-from pysmspp.components import Dict
-from pysmspp.smspp_tools import (
-    SMSPPSolverTool,
-    UCBlockSolver,
-    InvestmentBlockTestSolver,
-    InvestmentBlockSolver,
-    InvestmentSolver,
-    TSSBSolver,
-    SDDPSolver,
-)
+import os
+import warnings
 from enum import IntEnum
+from pathlib import Path
 
 import netCDF4 as nc
 import numpy as np
-import os
-from pathlib import Path
 import pandas as pd
-import warnings
 
+from pysmspp.components import Dict
+from pysmspp.smspp_tools import (
+    InvestmentBlockSolver,
+    InvestmentBlockTestSolver,
+    InvestmentSolver,
+    SDDPSolver,
+    SMSPPSolverTool,
+    TSSBSolver,
+    UCBlockSolver,
+)
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
@@ -295,7 +295,7 @@ class Attribute:
     name: str
     value: str | int | float
 
-    def __init__(self, name: str, value: str | int | float):
+    def __init__(self, name: str, value: str | float):
         """
         Initialize an Attribute object.
 
