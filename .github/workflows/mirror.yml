@@ -1,0 +1,59 @@
+name: Mirror to GitLab
+
+# The SMS++ project lives on GitLab, and every one of its repositories is
+# mirrored to GitHub by GitLab itself. pySMSpp is the one that goes the other
+# way round, since it is developed here: GitHub has no mirroring of its own,
+# so this workflow is what keeps the GitLab copy up to date.
+#
+# The copy follows the SMS++ branch convention rather than this repository's:
+# `main` is pushed to both `develop`, the default branch there, and `master`.
+# Nothing is ever pushed back, and nobody should commit on GitLab: a commit
+# made there makes the next run fail rather than being silently overwritten.
+#
+# It needs the secret GITLAB_MIRROR_TOKEN, a GitLab project access token of
+# smspp/pysmspp with the `write_repository` scope and the Maintainer role,
+# which is what it takes to push to the two protected branches.
+
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Push to GitLab
+    runs-on: ubuntu-latest
+    # only the repository this is developed in mirrors: a fork has neither the
+    # secret nor any business writing to GitLab
+    if: github.repository == 'SPSUnipi/pySMSpp'
+
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        # the whole history and the tags: a mirror is not a snapshot
+        fetch-depth: 0
+
+    - name: Push main and the tags to GitLab
+      env:
+        GITLAB_MIRROR_TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+      run: |
+        set -euo pipefail
+
+        remote="https://oauth2:${GITLAB_MIRROR_TOKEN}@gitlab.com/smspp/pysmspp.git"
+
+        # whatever triggered the run, a branch or a tag, what is mirrored is
+        # the tip of main and every tag
+        git fetch --quiet origin main
+
+        # the two branches SMS++ expects, both from main; no --force, so a
+        # GitLab copy that has diverged stops this instead of being discarded
+        git push "${remote}" \
+          "refs/remotes/origin/main:refs/heads/develop" \
+          "refs/remotes/origin/main:refs/heads/master"
+
+        git push --tags "${remote}"

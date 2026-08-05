@@ -4,6 +4,8 @@
 
 ### New Features and Major Changes
 
+* Mirror the repository to its GitLab copy, `smspp/pysmspp`, at every push on `main`: SMS++ lives on GitLab and mirrors itself to GitHub, pySMSpp is the one going the other way round.
+
 * 
 
 ### Minor Changes and Bug Fixes
