@@ -12,7 +12,9 @@ name: Mirror to GitLab
 #
 # It needs the secret GITLAB_MIRROR_TOKEN, a GitLab project access token of
 # smspp/pysmspp with the `write_repository` scope and the Maintainer role,
-# which is what it takes to push to the two protected branches.
+# which is what it takes to push to the two protected branches. Until the
+# secret is there the run is a no-op rather than a failure, so that the
+# workflow can be merged before the token is in place.
 
 on:
   push:
@@ -32,15 +34,25 @@ jobs:
     # secret nor any business writing to GitLab
     if: github.repository == 'SPSUnipi/pySMSpp'
 
+    # the secret is read here so that the steps can be skipped when it is not
+    # set: the `secrets` context is not available in an `if`, the `env` one is
+    env:
+      GITLAB_MIRROR_TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+
     steps:
+    - name: Warn if there is nothing to mirror with
+      if: env.GITLAB_MIRROR_TOKEN == ''
+      run: |
+        echo "::warning::GITLAB_MIRROR_TOKEN is not set, nothing was mirrored"
+
     - uses: actions/checkout@v5
+      if: env.GITLAB_MIRROR_TOKEN != ''
       with:
         # the whole history and the tags: a mirror is not a snapshot
         fetch-depth: 0
 
     - name: Push main and the tags to GitLab
-      env:
-        GITLAB_MIRROR_TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+      if: env.GITLAB_MIRROR_TOKEN != ''
       run: |
         set -euo pipefail
 
