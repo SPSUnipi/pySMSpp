@@ -18,7 +18,7 @@ def test_static():
     block = pysmspp.Block()
     block.block_type = "block"
 
-    for c in block.components.keys():
+    for c in block.components:
         obj = block.static(c)
         if c == "Attribute":
             assert len(obj) == 1

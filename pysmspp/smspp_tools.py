@@ -50,11 +50,11 @@ class SMSPPSolverTool:
     def __init__(
         self,
         solver_path: Path | str,
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         shell: bool = False,
         **kwargs,
@@ -198,6 +198,7 @@ class SMSPPSolverTool:
             [self._solver_path, self._help_option],
             capture_output=True,
             shell=self._shell,
+            check=False,
         )
         msg = result.stdout.decode("utf-8") + os.linesep + result.stderr.decode("utf-8")
         if print_message:
@@ -355,7 +356,7 @@ class SMSPPSolverTool:
             return proc.returncode == 0
         except FileNotFoundError:
             return False
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.warning(f"Error checking availability of {self._solver_path}: {e}")
             return False
 
@@ -459,11 +460,11 @@ class UCBlockSolver(SMSPPSolverTool):
     def __init__(
         self,
         solver_path: Path | str = "ucblock_solver",
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         **kwargs,
     ):
@@ -490,11 +491,11 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
     def __init__(
         self,
         solver_path: Path | str = "InvestmentBlock_test",
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         **kwargs,
     ):
@@ -564,11 +565,11 @@ class InvestmentBlockSolver(SMSPPSolverTool):
     def __init__(
         self,
         solver_path: Path | str = "investmentblock_solver",
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         **kwargs,
     ):
@@ -634,11 +635,11 @@ class InvestmentSolver(SMSPPSolverTool):
     def __init__(
         self,
         solver_path: Path | str = "investment_solver",
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         **kwargs,
     ):
@@ -665,11 +666,11 @@ class SDDPSolver(SMSPPSolverTool):
     def __init__(
         self,
         solver_path: Path | str = "sddp_solver",
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         **kwargs,
     ):
@@ -737,11 +738,11 @@ class TSSBSolver(SMSPPSolverTool):
     def __init__(
         self,
         solver_path: Path | str = "tssb_solver",
-        fp_network: Path | str = None,
-        configfile: Path | str = None,
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
-        configsolution: Path | str = None,
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
         help_option: str = "-h",
         **kwargs,
     ):
@@ -760,7 +761,7 @@ class TSSBSolver(SMSPPSolverTool):
         )
 
 
-def is_smspp_installed(solvers: list[SMSPPSolverTool] = [UCBlockSolver()]) -> bool:
+def is_smspp_installed(solvers: list[SMSPPSolverTool] | None = None) -> bool:
     """
     Check if SMS++ is installed by verifying that the specified solver executables
     can be found in the PATH.
@@ -790,4 +791,6 @@ def is_smspp_installed(solvers: list[SMSPPSolverTool] = [UCBlockSolver()]) -> bo
     ...     print("Both solvers are available")
     """
     # Check if all specified solvers are available
+    if solvers is None:
+        solvers = [UCBlockSolver()]
     return all(solver.is_available() for solver in solvers)

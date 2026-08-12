@@ -20,7 +20,7 @@ from pysmspp import Attribute, Block, Dimension, SMSNetwork, Variable
 def test_blocks_entry():
     from pysmspp import blocks
 
-    assert "ThermalUnitBlock" in blocks.keys()
+    assert "ThermalUnitBlock" in blocks
 
 
 def test_components_entry():
@@ -56,7 +56,7 @@ def test_variable():
         "Variable",
         "test_var",
         var_type="int",
-        dimensions=tuple(),
+        dimensions=(),
         data=1,
     )
     assert b.variables["test_var"].data == 1

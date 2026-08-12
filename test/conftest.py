@@ -42,7 +42,7 @@ def get_temp_file(fname):
     return os.path.join(get_temp_folder(), fname)
 
 
-def check_compare_nc(fp_n1, fp_n2, fp_log=get_temp_file("tmp.txt")):
+def check_compare_nc(fp_n1, fp_n2, fp_log=None):
     """
     Utility function to compare two netCDF files and check if they are the same.
 
@@ -55,6 +55,8 @@ def check_compare_nc(fp_n1, fp_n2, fp_log=get_temp_file("tmp.txt")):
     fp_log : str (optional)
         File path to the log file.
     """
+    if fp_log is None:
+        fp_log = get_temp_file("tmp.txt")
     os.system(
         f"ncompare {fp_n1} {fp_n2} --only-diffs --show-attributes --file-text {fp_log}"
     )

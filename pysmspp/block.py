@@ -72,7 +72,7 @@ class SMSConfig:
     SMSNetwork.optimize : Uses SMSConfig for optimization
     """
 
-    def __init__(self, fp: Path | str = None, template: str = None):
+    def __init__(self, fp: Path | str | None = None, template: str | None = None):
         """
         Initialize a SMSConfig object.
         If an existing fp is provided, it is used as the configuration file; an error is thrown if the file does not exist.
@@ -138,7 +138,7 @@ class SMSConfig:
 
 
 def get_attr_field(
-    block_type: str, attr_name: str, attr_value=None, col_name: str = None
+    block_type: str, attr_name: str, attr_value=None, col_name: str | None = None
 ):
     """
     Return the entry or the entire attribute row (pandas.Series) from block configuration.
@@ -689,13 +689,11 @@ class Block:
         return self._blocks
 
     @property
-    def block_type(self, ignore_missing: bool = True) -> str:
+    def block_type(self) -> str:
         """Return the type of the block."""
         if "type" in self.attributes:
             return self.attributes["type"].value
-        elif ignore_missing:
-            return None
-        raise AttributeError("Block type not defined.")
+        return None
 
     @block_type.setter
     def block_type(self, block_type: str):
@@ -1043,7 +1041,7 @@ class Block:
 
     def print_tree(
         self,
-        name: str = None,
+        name: str | None = None,
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
@@ -1171,7 +1169,9 @@ class Block:
                     False,
                 )
 
-    def plot(self, variables: list = None, figsize: tuple = None, **kwargs):
+    def plot(
+        self, variables: list | None = None, figsize: tuple | None = None, **kwargs
+    ):
         """
         Plot variables of the block.
 
@@ -1374,7 +1374,7 @@ class SMSNetwork(Block):
 
     def print_tree(
         self,
-        name: str = None,
+        name: str | None = None,
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
@@ -1439,8 +1439,8 @@ class SMSNetwork(Block):
         self,
         configfile: SMSConfig | Path | str,
         fp_temp: Path | str = "temp.nc",
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
         inner_block_name: str = "Block_0",
         logging=True,
