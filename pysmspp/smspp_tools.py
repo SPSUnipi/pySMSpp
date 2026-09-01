@@ -57,6 +57,7 @@ class SMSPPSolverTool:
         configsolution: Path | str | None = None,
         help_option: str = "-h",
         shell: bool = False,
+        mpi_options: dict | None = None,
         **kwargs,
     ):
         """
@@ -85,6 +86,8 @@ class SMSPPSolverTool:
             The option to display the help message, by default "-h".
         shell : bool, optional
             Whether to execute the command through the shell. Defaults to False.
+        mpi_options: dict, optional
+            Dictionary of MPI options to pass to the solver. The keys should be the option names (e.g., "np" for number of processes), and the values should be the corresponding option values. For example, to specify 4 processes, you would pass {"np": 4}. These options will be added to the command line call for the solver.
         **kwargs
             Additional keyword arguments to pass as options to the function.
             The keys of the kwargs should be the option name, and the value should be the option value.
@@ -122,7 +125,7 @@ class SMSPPSolverTool:
         self._solution_time = None
         self._computational_time = None
         self._kwargs = kwargs
-
+        self._mpi_options = mpi_options
         if "c" in self._kwargs:
             raise ValueError(
                 "Option 'c' is reserved for the configuration file directory."
@@ -145,7 +148,15 @@ class SMSPPSolverTool:
             raise ValueError("fp_network must be provided (non-None).")
         configdir, configfile = os.path.split(self.configfile)
         networkdir, networkfile = os.path.split(self.fp_network)
-        command = [
+        command = []
+        if self._mpi_options is not None:
+            command += ["mpirun"]
+            for option, value in self._mpi_options.items():
+                if value == "" or value is None:
+                    command += [f"-{option}"]
+                else:
+                    command += [f"-{option}", str(value)]
+        command += [
             self._solver_path,
             networkfile,
             "-S",
@@ -233,12 +244,16 @@ class SMSPPSolverTool:
         if logging:
             print(f"Executing command:\n{command_str}\n")
 
+        # specify local current directory for the process
+        networkdir, _ = os.path.split(self.fp_network)
+
         process = psutil.Popen(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             shell=self._shell,
+            cwd=networkdir,
         )
         pipe_messages = queue.Queue()
         stdout_thread = threading.Thread(
