@@ -10,7 +10,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* 
+* Update the shipped `BlockConfig` files to the current format: SMS++ now reads a version number after the differential flag and the structure `Configuration` first, so the shipped file was rejected, with the `-B` option silently having no effect. See [PR #110](https://github.com/SPSUnipi/pySMSpp/pull/110)
 
 
 ## Version v0.0.13

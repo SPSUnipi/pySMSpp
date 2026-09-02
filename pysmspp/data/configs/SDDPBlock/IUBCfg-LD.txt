@@ -14,6 +14,9 @@
 BlockConfig # exact type of the Configuration object
 
 1  # the BlockConfig is a "differential" one
+2  # version of the BlockConfig format
+# the Configuration for the structure, i.e., the tree of sub-Block
+*  # [none]
 
 # static_constraints
 *    # [none]
