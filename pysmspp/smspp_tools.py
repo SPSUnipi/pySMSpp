@@ -233,12 +233,16 @@ class SMSPPSolverTool:
         if logging:
             print(f"Executing command:\n{command_str}\n")
 
+        # Set current directory to network directory
+        networkdir, _ = os.path.split(self.fp_network)
+
         process = psutil.Popen(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             shell=self._shell,
+            cwd=networkdir,
         )
         pipe_messages = queue.Queue()
         stdout_thread = threading.Thread(
