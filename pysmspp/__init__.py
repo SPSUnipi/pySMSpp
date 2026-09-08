@@ -79,6 +79,9 @@ from pysmspp.smspp_tools import (
     SMSPPSolverTool as SMSPPSolverTool,
 )
 from pysmspp.smspp_tools import (
+    SVMSolver as SVMSolver,
+)
+from pysmspp.smspp_tools import (
     TSSBSolver as TSSBSolver,
 )
 from pysmspp.smspp_tools import (

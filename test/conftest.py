@@ -622,3 +622,108 @@ def build_tssb_block(fp_tssb):
     )
 
     return sn
+
+
+def build_svm_dataset(n_samples=40, n_features=2, regression=False, seed=1):
+    """
+    Build a small linearly separable classification data set, or a noisy linear
+    regression one, out of the given seed.
+
+    Parameters
+    ----------
+    n_samples : int (default: 40)
+        The number of samples.
+    n_features : int (default: 2)
+        The number of features of each sample.
+    regression : bool (default: False)
+        Whether the targets are real values rather than the labels +1 and -1.
+    seed : int (default: 1)
+        The seed of the data set.
+
+    Returns
+    -------
+    tuple
+        The samples, of shape (n_samples, n_features), and their targets.
+    """
+    rng = np.random.default_rng(seed)
+    X = rng.normal(size=(n_samples, n_features))
+
+    if regression:
+        w = np.arange(1, n_features + 1)
+        y = X @ w + 0.5 + 0.05 * rng.normal(size=n_samples)
+    else:
+        y = np.where(np.arange(n_samples) % 2 == 0, 1.0, -1.0)
+        X += y[:, None]  # shift the two classes apart
+
+    return X, y
+
+
+def build_svm_block(block_type="SVCBlock", X=None, y=None, **kwargs):
+    """
+    Build a SVCBlock or a SVRBlock holding the given data set.
+
+    Parameters
+    ----------
+    block_type : str (default: "SVCBlock")
+        The type of the block, either "SVCBlock" or "SVRBlock".
+    X : numpy.ndarray (default: None)
+        The samples; when None, a data set is generated.
+    y : numpy.ndarray (default: None)
+        The targets of the samples.
+    kwargs : dict
+        The hyper-parameters of the model, such as C, Kernel or Epsilon.
+
+    Returns
+    -------
+    Block
+        The block holding the data set.
+    """
+    if X is None or y is None:
+        X, y = build_svm_dataset(regression=block_type == "SVRBlock")
+
+    n_samples, n_features = X.shape
+
+    # the hyper-parameters are scalar variables, as any scalar datum of a
+    # SMS++ block is, and those that are flags or codes are integer ones
+    integer = ("Kernel", "Degree", "SquaredLoss", "RegBias")
+    hyperparameters = {
+        name: value
+        if isinstance(value, Variable)
+        else Variable(name, "int" if name in integer else "double", (), value)
+        for name, value in kwargs.items()
+    }
+
+    return Block().from_kwargs(
+        block_type=block_type,
+        NSamples=n_samples,
+        NFeatures=n_features,
+        X=Variable("X", "double", ("NSamples", "NFeatures"), X),
+        Y=Variable("Y", "double", ("NSamples",), y),
+        **hyperparameters,
+    )
+
+
+def build_svm_network(block_type="SVCBlock", X=None, y=None, **kwargs):
+    """
+    Build a SMSNetwork whose inner block is the training problem of a SVM.
+
+    Parameters
+    ----------
+    block_type : str (default: "SVCBlock")
+        The type of the inner block, either "SVCBlock" or "SVRBlock".
+    X : numpy.ndarray (default: None)
+        The samples; when None, a data set is generated.
+    y : numpy.ndarray (default: None)
+        The targets of the samples.
+    kwargs : dict
+        The hyper-parameters of the model, such as C, Kernel or Epsilon.
+
+    Returns
+    -------
+    SMSNetwork
+        The network holding the training problem.
+    """
+    sn = SMSNetwork(file_type=SMSFileType.eBlockFile)
+    sn.add(block_type, "Block_0", block=build_svm_block(block_type, X, y, **kwargs))
+
+    return sn

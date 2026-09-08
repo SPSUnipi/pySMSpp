@@ -1,0 +1,33 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - SVMSCfg-LD.txt - - - - - - - - - - - - - -
+#
+# A txt description of a BlockSolverConfig for the Block that the training
+# problem of a SVMBlock is rewritten into when it is split in chunks tied by
+# consensus constraints, which is what the -s option of svm_solver assembles.
+# The LagrangianDualSolver relaxes the consensus constraints and solves the
+# Lagrangian dual with a BundleSolver, each subproblem being the SVM of one
+# chunk. Note that this is not a BlockSolverConfig for a SVMBlock, and that
+# SMOSolver would not attach to the assembled Block anyway
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+1  # the BlockSolverConfig is a "differential" one
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+LagrangianDualSolver            # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# ComputeConfig of the LagrangianDualSolver
+*LDCfg.txt
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - END SVMSCfg-LD.txt - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

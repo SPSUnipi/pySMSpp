@@ -1,0 +1,8 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+SVMBlockSolution,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+SVMBlockSolution,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+SVMBlockSolution,NMultipliers,Dimension,Dimension,int,-,-,,optional,Number of multipliers of the model
+SVMBlockSolution,NFeatures,Dimension,Dimension,int,-,-,,optional,Number of features of the model
+SVMBlockSolution,Multipliers,Variable,Variable,double,NMultipliers,-,,optional,"Multipliers of the model, if it comes from a dual"
+SVMBlockSolution,Weights,Variable,Variable,double,NFeatures,-,,optional,"Weights of the model, if it comes from a primal"
+SVMBlockSolution,Bias,Variable,Variable,double,-,-,,optional,Bias of the model

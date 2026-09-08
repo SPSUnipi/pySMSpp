@@ -1,0 +1,16 @@
+block_name,attribute,smspp_object,netcdf_component,netcdf_base_type,dimension,unit,default,status,description
+SVRBlock,block_type,Attribute,Attribute,str,-,-,,required,Type of the block
+SVRBlock,id,Attribute,Attribute,str,-,-,,optional,Id of the block
+SVRBlock,name,Attribute,Attribute,str,-,-,,optional,Name of the block
+SVRBlock,NSamples,Dimension,Dimension,int,-,-,,required,Number of samples of the training set
+SVRBlock,NFeatures,Dimension,Dimension,int,-,-,,required,Number of features of each sample
+SVRBlock,X,Variable,Variable,double,NSamples-NFeatures,-,,required,Samples of the training set
+SVRBlock,Y,Variable,Variable,double,NSamples,-,,required,Targets of the samples
+SVRBlock,C,Variable,Variable,double,-,-,1.0,optional,Trade-off between the margin and the training errors
+SVRBlock,Kernel,Variable,Variable,int,-,-,0.0,optional,"Kernel: 0 = linear, 1 = polynomial, 2 = gaussian, 3 = laplacian, 4 = sigmoid"
+SVRBlock,Gamma,Variable,Variable,double,-,-,0.0,optional,"Parameter of the kernel; 0 = 1 / ( NFeatures Var( X ) ), -1 = 1 / NFeatures"
+SVRBlock,Degree,Variable,Variable,int,-,-,3.0,optional,Degree of the polynomial kernel
+SVRBlock,Coef0,Variable,Variable,double,-,-,0.0,optional,Constant term of the polynomial and sigmoid kernels
+SVRBlock,SquaredLoss,Variable,Variable,int,-,-,0.0,optional,Nonzero if the training errors are penalised quadratically
+SVRBlock,RegBias,Variable,Variable,int,-,-,0.0,optional,Nonzero if the bias is regularised together with the weights
+SVRBlock,Epsilon,Variable,Variable,double,-,-,0.1,optional,Half-width of the insensitivity tube around the targets

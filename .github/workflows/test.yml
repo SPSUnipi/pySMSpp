@@ -95,10 +95,11 @@ jobs:
       run: |
         conda list
 
-    # TODO: Re-enable SDDP test after new smspp-project release
+    # TODO: Re-enable the SDDP and the SVM tests after new smspp-project release
+    # (the conda-forge package ships neither sddp_solver nor svm_solver yet)
     - name: Test package with SMSpp
       run: |
-        pytest --force-smspp -k "not test_optimize_sddp"
+        pytest --force-smspp -k "not test_optimize_sddp and not svm"
 
   test_with_smspp:
     # Test package build in matrix of OS and Python versions

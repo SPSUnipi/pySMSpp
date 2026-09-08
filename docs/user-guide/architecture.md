@@ -132,6 +132,7 @@ The package currently includes wrappers such as:
 - `InvestmentSolver`
 - `SDDPSolver`
 - `TSSBSolver`
+- `SVMSolver`
 
 These wrappers do not implement the mathematical solver in Python. They bridge
 the Python model representation to installed SMS++ command-line tools.

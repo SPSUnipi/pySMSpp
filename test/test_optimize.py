@@ -12,6 +12,7 @@ from conftest import (
     add_sub_to_ucblock,
     add_tub_to_ucblock,
     add_ucblock_with_one_unit,
+    build_svm_network,
     build_tssb_block,
     get_network,
     get_temp_file,
@@ -258,6 +259,214 @@ def test_optimize_tssbsolver(force_smspp):
         )
     else:
         pytest.skip("TSSBBlockSolver not available in PATH")
+
+
+def test_help_svmsolver(force_smspp):
+    from pysmspp import SVMSolver
+
+    svm = SVMSolver()
+
+    if svm.is_available() or force_smspp:
+        assert "SMS++ SVM solver" in svm.help()
+    else:
+        pytest.skip("SVMSolver not available in PATH")
+
+
+def test_optimize_svmblock_classification(force_smspp):
+    """
+    Train a SVCBlock with the ad hoc SMOSolver.
+    """
+    from pysmspp import SVMSolver
+
+    b = build_svm_network("SVCBlock", C=10.0)
+
+    fp_log = get_temp_file("test_optimize_svcblock.txt")
+    fp_temp = get_temp_file("test_optimize_svcblock.nc")
+    configfile = SMSConfig(template="SVMBlock/SVMSCfg.txt")
+
+    if SVMSolver().is_available() or force_smspp:
+        result = b.optimize(configfile, fp_temp, fp_log)
+
+        assert "Success" in result.status
+        assert result.score_name == "accuracy"
+        assert result.training_score >= 0.9
+    else:
+        pytest.skip("SVMSolver not available in PATH")
+
+
+def test_optimize_svmblock_regression(force_smspp):
+    """
+    Train a SVRBlock with the ad hoc SMOSolver.
+    """
+    from pysmspp import SVMSolver
+
+    b = build_svm_network("SVRBlock", C=100.0, Epsilon=0.1)
+
+    fp_log = get_temp_file("test_optimize_svrblock.txt")
+    fp_temp = get_temp_file("test_optimize_svrblock.nc")
+    configfile = SMSConfig(template="SVMBlock/SVMSCfg.txt")
+
+    if SVMSolver().is_available() or force_smspp:
+        result = b.optimize(configfile, fp_temp, fp_log)
+
+        assert "Success" in result.status
+        assert result.score_name == "R2"
+        assert result.training_score >= 0.9
+    else:
+        pytest.skip("SVMSolver not available in PATH")
+
+
+def test_optimize_svmblock_formulations(force_smspp):
+    """
+    The training problem has the same value in every formulation and with
+    every Solver: the Wolfe dual and the primal solved by a :MILPSolver, the
+    dual solved by the ad hoc SMOSolver, the consensus structure of the
+    problem in chunks solved by a LagrangianDualSolver, and LIBSVM, which is
+    only in the Solver factory when SVMBlock has been built with it.
+    """
+    from pysmspp import SVMSolver
+
+    if not SVMSolver().is_available() and not force_smspp:
+        pytest.skip("SVMSolver not available in PATH")
+
+    fp_network = get_temp_file("test_svmblock_formulations.nc")
+    build_svm_network("SVCBlock", C=10.0).to_netcdf(fp_network, force=True)
+
+    runs = {
+        "dual/SMO": ("SVMBlock/SVMSCfg.txt", {}),
+        "dual/MILP": ("SVMBlock/SVMSCfg_grb.txt", {}),
+        "primal/MILP": ("SVMBlock/SVMSCfg_grb.txt", {"B": "SVMCfg-primal.txt"}),
+        "chunks/LD": ("SVMBlock/SVMSCfg-LD.txt", {"s": 4}),
+        "dual/LIBSVM": ("SVMBlock/SVMSCfg-libsvm.txt", {}),
+    }
+
+    values = {}
+    for name, (template, kwargs) in runs.items():
+        svm = SVMSolver(
+            fp_network=fp_network,
+            configfile=str(SMSConfig(template=template)),
+            **kwargs,
+        )
+        svm.optimize(logging=False)
+
+        if name == "dual/LIBSVM" and "Success" not in svm.status:
+            # LIBSVMSolver is only in the Solver factory when SVMBlock has
+            # been built with LIBSVM, which is an optional dependency
+            continue
+
+        assert "Success" in svm.status
+        values[name] = svm.objective_value
+
+    reference = values["dual/SMO"]
+    for name, value in values.items():
+        assert value == pytest.approx(reference, rel=1e-4), (
+            f"the value of the training problem of {name} ({value:.6f}) differs from the "
+            f"one of dual/SMO ({reference:.6f})"
+        )
+
+
+def test_svmsolver_model_selection(force_smspp):
+    """
+    A k-fold cross-validation over a grid of hyper-parameters reports the
+    score of each point of the grid and the best one.
+    """
+    from pysmspp import SVMSolver
+
+    if not SVMSolver().is_available() and not force_smspp:
+        pytest.skip("SVMSolver not available in PATH")
+
+    fp_network = get_temp_file("test_svmsolver_model_selection.nc")
+    build_svm_network("SVCBlock").to_netcdf(fp_network, force=True)
+
+    svm = SVMSolver(
+        fp_network=fp_network,
+        configfile=str(SMSConfig(template="SVMBlock/SVMSCfg.txt")),
+        k=4,
+        g="C=0.1,1,10",
+    )
+    svm.optimize(logging=False)
+
+    assert "Success" in svm.status
+    assert len(svm.scores) == 3
+
+    for point in svm.scores:
+        assert len(point["scores"]) == 4  # one score per fold
+        assert set(point["params"]) == {"C"}
+
+    assert svm.best_score == pytest.approx(max(p["score"] for p in svm.scores))
+    assert svm.best_params["C"] in (0.1, 1.0, 10.0)
+
+
+def test_svmblock_hyperparameters(force_smspp):
+    """
+    The hyper-parameters reach the solver, i.e., they are scalar variables of
+    the group and not attributes of it, which SMS++ would silently ignore.
+    """
+    from pysmspp import SVMSolver
+
+    if not SVMSolver().is_available() and not force_smspp:
+        pytest.skip("SVMSolver not available in PATH")
+
+    configfile = str(SMSConfig(template="SVMBlock/SVMSCfg.txt"))
+
+    def train(**kwargs):
+        fp_network = get_temp_file("test_svmblock_hyperparameters.nc")
+        build_svm_network("SVCBlock", **kwargs).to_netcdf(fp_network, force=True)
+
+        svm = SVMSolver(fp_network=fp_network, configfile=configfile)
+        svm.optimize(logging=False)
+
+        assert "Success" in svm.status
+        return svm.objective_value
+
+    reference = train(C=1.0)
+
+    # a larger C penalises the training errors more, and a nonlinear kernel,
+    # a squared loss or a regularised bias are a different problem altogether
+    assert train(C=10.0) > reference
+    assert train(C=1.0, Kernel=2, Gamma=0.5) != pytest.approx(reference)
+    assert train(C=1.0, SquaredLoss=1, RegBias=1) != pytest.approx(reference)
+
+
+def test_svmsolver_trained_model(force_smspp):
+    """
+    The trained model is written to the solution file as a SVMBlockSolution,
+    i.e., as the multipliers and the bias, and the samples whose multiplier
+    is nonzero are the support vectors.
+    """
+    from pysmspp import SVMSolver
+
+    if not SVMSolver().is_available() and not force_smspp:
+        pytest.skip("SVMSolver not available in PATH")
+
+    fp_network = get_temp_file("test_svmsolver_trained_model.nc")
+    fp_solution = get_temp_file("test_svmsolver_trained_model_sol.nc")
+
+    n_samples = 40
+    build_svm_network("SVCBlock", C=10.0).to_netcdf(fp_network, force=True)
+
+    svm = SVMSolver(
+        fp_network=fp_network,
+        configfile=str(SMSConfig(template="SVMBlock/SVMSCfg.txt")),
+        fp_solution=fp_solution,
+    )
+    svm.optimize(logging=False)
+
+    assert "Success" in svm.status
+
+    model = svm.solution.blocks["Solution_0"]
+
+    assert model.attributes["type"].value == "SVMBlockSolution"
+
+    alphas = np.asarray(model.variables["Multipliers"].data)
+    assert alphas.size == n_samples
+    assert np.all(alphas >= -1e-9)
+    assert np.all(alphas <= 10.0 + 1e-9)  # the multipliers are bounded by C
+
+    support = np.count_nonzero(alphas)
+    assert 0 < support < n_samples  # some samples support the model, not all
+
+    assert np.isfinite(model.variables["Bias"].data)
 
 
 def test_optimize_sddp(force_smspp):

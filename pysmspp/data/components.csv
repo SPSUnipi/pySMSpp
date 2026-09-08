@@ -23,3 +23,6 @@ MultiStageScenarioGenerator,Block,blocks,"Multi-stage scenario generator block u
 IndependentMultiStageScenarioGenerator,Block,blocks,"Independent multi-stage scenario generator block useful to describe stochastic problems with explicit scenario tree"
 BendersBlock,Block,blocks,"Block whose objective is represented by a BendersBFunction"
 BendersBFunction,Block,blocks,"Benders function group and its inner optimization block"
+SVCBlock,Block,blocks,"Support Vector Classification block, i.e., the training problem of a binary classifier"
+SVRBlock,Block,blocks,"Support Vector Regression block, i.e., the training problem of a regressor"
+SVMBlockSolution,Block,blocks,"Solution of a SVCBlock or a SVRBlock, i.e., a trained Support Vector Machine"

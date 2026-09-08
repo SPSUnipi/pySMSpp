@@ -356,6 +356,7 @@ class SMSPPSolverTool:
                 [self._solver_path, self._help_option],
                 check=False,
                 shell=self._shell,
+                capture_output=True,
             )
             return proc.returncode == 0
         except FileNotFoundError:
@@ -765,6 +766,193 @@ class TSSBSolver(SMSPPSolverTool):
         )
 
 
+class SVMSolver(SMSPPSolverTool):
+    """
+    Class to interact with the SVMSolver tool from SMS++, with name "svm_solver".
+
+    The tool trains a SVCBlock or a SVRBlock, i.e., it solves its training
+    problem, and optionally performs the model selection that surrounds it:
+    the option "x" holds out a fraction of the samples, "k" runs a k-fold
+    cross-validation, "g" compares the hyper-parameters of a grid, and "s"
+    gives the training problem the consensus structure, i.e., the given
+    number of chunks tied by consensus constraints, which is what a
+    Lagrangian Solver attacks.
+
+    Which formulation of the training problem the abstract representation
+    encodes is not part of the data, it is what the BlockConfig says: it is
+    therefore chosen with the option "B", while "configfile" is, as usual,
+    the BlockSolverConfig.
+
+    When "fp_solution" is given, the trained model is written to it as a
+    SVMBlockSolution, i.e., as the multipliers (or the weights, if the model
+    comes from a primal) and the bias, and it is read back into "solution".
+
+    Examples
+    --------
+    Train a model with the ad hoc SMOSolver:
+
+    >>> svm = SVMSolver(
+    ...     fp_network="svc.nc4",
+    ...     configfile=SMSConfig(template="SVMBlock/SVMSCfg.txt"),
+    ... )
+    >>> svm.optimize()  # doctest: +SKIP
+
+    Select C by a 5-fold cross-validation:
+
+    >>> svm = SVMSolver(
+    ...     fp_network="svc.nc4",
+    ...     configfile=SMSConfig(template="SVMBlock/SVMSCfg.txt"),
+    ...     k=5,
+    ...     g="C=0.1,1,10",
+    ... )
+    >>> svm.optimize()  # doctest: +SKIP
+    """
+
+    def __init__(
+        self,
+        solver_path: Path | str = "svm_solver",
+        fp_network: Path | str | None = None,
+        configfile: Path | str | None = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
+        configsolution: Path | str | None = None,
+        help_option: str = "-h",
+        **kwargs,
+    ):
+        """
+        The arguments of the constructor coincide with the options of SMSPPSolverTool; see the base class for details.
+        """
+        super().__init__(
+            solver_path=solver_path,
+            fp_network=fp_network,
+            configfile=configfile,
+            fp_log=fp_log,
+            fp_solution=fp_solution,
+            configsolution=configsolution,
+            help_option=help_option,
+            **kwargs,
+        )
+        self._score_name = None
+        self._training_score = np.nan
+        self._scores = []
+        self._best_score = np.nan
+        self._best_params = {}
+
+    def parse_solver_log(self):
+        """
+        Check the output of the SVMSolver.
+        Besides the status and the bounds of the training problem, which are
+        reported as by any other tool, it extracts the score of the trained
+        model and, when a model selection was asked for, the score of each
+        point of the grid and the best one.
+        """
+        super().parse_solver_log()
+
+        res = re.search(r"training problem: (.*)\n", self._log)
+        if res:
+            self._objective_value = float(res.group(1).replace("\r", ""))
+
+        # the score is the accuracy of a classifier and the coefficient of
+        # determination of a regressor, in both cases the larger the better
+        res = re.search(r"training (accuracy|R2): (.*)\n", self._log)
+        if res:
+            self._score_name = res.group(1)
+            self._training_score = float(res.group(2).replace("\r", ""))
+
+        # a point of the grid: its average score, the score of each split and
+        # the hyper-parameters it stands for, the last two being optional
+        self._scores = []
+        for name, score, splits, params in re.findall(
+            r"^ {2}(accuracy|R2) = (\S+)(?:  \[([^\]]*)\])?(?:  ~  (.*?))?\s*$",
+            self._log,
+            re.MULTILINE,
+        ):
+            self._score_name = name
+            self._scores.append(
+                {
+                    "score": float(score),
+                    "scores": [float(s) for s in splits.split()],
+                    "params": _parse_svm_params(params),
+                }
+            )
+
+        res = re.search(r"best: (?:accuracy|R2) = (\S+)  ~  (.*)\n", self._log)
+        if res:
+            self._best_score = float(res.group(1))
+            self._best_params = _parse_svm_params(res.group(2))
+        elif len(self._scores) == 1:  # a single point is the best one
+            self._best_score = self._scores[0]["score"]
+            self._best_params = self._scores[0]["params"]
+
+        # a run that only selects a model solves no training problem of its
+        # own, and therefore reports no status: it succeeded if it scored
+        if (self._status == "Failed") and self._scores:
+            self._status = "Success"
+
+    @property
+    def score_name(self):
+        """
+        Returns the name of the score, "accuracy" for a classification
+        problem and "R2" for a regression one.
+        """
+        return self._score_name
+
+    @property
+    def training_score(self):
+        """
+        Returns the score of the trained model on the samples it was trained
+        on, which is only available when no model selection was asked for.
+        """
+        return self._training_score
+
+    @property
+    def scores(self):
+        """
+        Returns the score of each point of the grid, as a list of dictionaries
+        with the average score, the score of each split and the
+        hyper-parameters of the point.
+        """
+        return self._scores
+
+    @property
+    def best_score(self):
+        """
+        Returns the best score of the model selection.
+        """
+        return self._best_score
+
+    @property
+    def best_params(self):
+        """
+        Returns the hyper-parameters of the best point of the grid.
+        """
+        return self._best_params
+
+
+def _parse_svm_params(spec):
+    """
+    Parse the hyper-parameters of a point of the grid, as the SVMSolver
+    reports them, i.e., as "C = 0.1, gamma = 2".
+
+    Parameters
+    ----------
+    spec : str
+        The hyper-parameters of the point.
+
+    Returns
+    -------
+    dict
+        The value of each hyper-parameter of the point.
+    """
+    if not spec:
+        return {}
+
+    return {
+        name.strip(): float(value)
+        for name, value in (p.split("=") for p in spec.split(",") if "=" in p)
+    }
+
+
 def is_smspp_installed(solvers: list[SMSPPSolverTool] | None = None) -> bool:
     """
     Check if SMS++ is installed by verifying that the specified solver executables
@@ -775,7 +963,7 @@ def is_smspp_installed(solvers: list[SMSPPSolverTool] | None = None) -> bool:
     solvers : list[type[SMSPPSolverTool]], optional
         List of solver classes to check. Defaults to [UCBlockSolver].
         Available solvers: UCBlockSolver, InvestmentBlockTestSolver,
-        InvestmentBlockSolver, SDDPSolver.
+        InvestmentBlockSolver, SDDPSolver, TSSBSolver, SVMSolver.
 
     Returns
     -------

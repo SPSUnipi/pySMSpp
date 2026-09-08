@@ -1,0 +1,56 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - LPCCfg.txt  - - - - - - - - - - - - - - - -
+#
+# A txt description of a ComputeConfig for a :MILPSolver solving a (convex)
+# quadratic program, which is what any formulation of the SVM training
+# problem is
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ComputeConfig # exact type of the ComputeConfig object
+
+1  # f_diff == 0 ==> all non-provided parameters are set to the default value
+   # f_diff == 1 ==> all non-provided parameters are not changed
+
+3  # number of integer parameters
+
+# now all the integer parameters
+intLogVerb      0 # log verbosity of the :MILPSolver
+intRelaxIntVars 0 # nonzero if the continuous relaxation is solved
+intMaxThread    1 # so that the results are reproducible
+
+2  # number of double parameters
+
+# now all the double parameters
+dblRelAcc  1e-9 # the cross-check is only as tight as the Solver are
+dblAbsAcc  1e-9
+
+0 # number of string parameters
+
+# now all the string parameters
+# [none]
+
+0 # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0 # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0 # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - END LPCCfg.txt  - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,0 +1,31 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - SVMSCfg_grb.txt  - - - - - - - - - - - - -
+#
+# A txt description of a BlockSolverConfig for a SVMBlock whose abstract
+# representation encodes either the Wolfe dual or the training problem itself,
+# to be solved by a :MILPSolver; unlike SVMSCfg.txt, which uses the ad hoc
+# SMOSolver, this needs the abstract representation, and therefore the
+# BlockConfig that says which of the two formulations it encodes
+#
+#   Donato Meoli
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+1  # the BlockSolverConfig is a "differential" one
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+GRBMILPSolver                   # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# ComputeConfig of the :MILPSolver
+*LPCCfg.txt
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - END SVMSCfg_grb.txt  - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
