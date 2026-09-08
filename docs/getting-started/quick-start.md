@@ -30,7 +30,7 @@ sn.add(
         "ActivePowerDemand",
         "float",
         ("NumberNodes", "TimeHorizon"),
-        np.full((1, 24), 50.),  # constant demand of 50kW
+        np.full((1, 24), 50.0),  # constant demand of 50kW
     ),
 )
 ```
@@ -41,7 +41,7 @@ In the unit commitment block stated above, no generator is yet added. To add a g
 thermal_unit_block = Block().from_kwargs(
     block_type="ThermalUnitBlock",
     MinPower=Variable("MinPower", "float", (), 0.0),
-    MaxPower=Variable("MaxPower", "float", (), 100.),
+    MaxPower=Variable("MaxPower", "float", (), 100.0),
     LinearTerm=Variable("LinearTerm", "float", (), 0.3),
     InitUpDownTime=Variable("InitUpDownTime", "int", (), 1),
 )
@@ -52,7 +52,9 @@ sn.blocks["Block_0"].add("ThermalUnitBlock", "UnitBlock_0", block=thermal_unit_b
 Finally, the network is optimized with the following code:
 
 ```python
-configfile = SMSConfig(template="uc_solverconfig")  # path to the template solver config file "uc_solverconfig"
+configfile = SMSConfig(
+    template="uc_solverconfig"
+)  # path to the template solver config file "uc_solverconfig"
 temporary_smspp_file = "./smspp_temp_file.nc"  # path to the temporary SMS++ file used as intermediate file to launch SMS++
 output_file = "./smspp_output.txt"  # path to the output file (optional)
 
