@@ -494,14 +494,18 @@ def test_status_code_of_a_log():
     """The status of a run is the one SMS++ printed, not a finite value."""
     solver = UCBlockSolver()
 
-    solver._log = "Status = 10 (Success)\nUpper bound = 1.5e+02\nLower bound = 1.5e+02\n"
+    solver._log = (
+        "Status = 10 (Success)\nUpper bound = 1.5e+02\nLower bound = 1.5e+02\n"
+    )
     solver.parse_solver_log()
     assert solver.status_code == 10
     assert solver.is_optimal
     assert solver.objective_value == pytest.approx(150.0)
 
     # kLowPrecision, which comes with a value that looks like an optimum
-    solver._log = "Status = 20 (Low precision)\nUpper bound = 1.5e+02\nLower bound = 1.4e+02\n"
+    solver._log = (
+        "Status = 20 (Low precision)\nUpper bound = 1.5e+02\nLower bound = 1.4e+02\n"
+    )
     solver.parse_solver_log()
     assert solver.status_code == 20
     assert not solver.is_optimal
