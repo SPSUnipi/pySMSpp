@@ -27,15 +27,23 @@ ComputeConfig # exact type of the ComputeConfig object
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-1  # number of integer parameters
+6  # number of integer parameters
 
 # now all the integer parameters
 intLogVerb               1 # log verbosity
+Method                   2 # barrier: the default concurrent method races the
+                           # dual simplex against it and leaves it part of the
+                           # cores
+Crossover                0 # no basis is needed from an LP
+PreDual                  0 # solve the primal, never dualize
+AggFill                  0 # no fill-in from the aggregation of the presolve:
+                           # it halves the nonzeros of the factorization
+Seed                   123 # so that two runs are comparable
 
-0 # number of double parameters
+1 # number of double parameters
 
 # now all the double parameters
-# [none]
+BarConvTol            1e-5 # the accuracy PyPSA-Eur asks of the barrier
 
 0 # number of string parameters
 
