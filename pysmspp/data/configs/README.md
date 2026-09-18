@@ -9,3 +9,6 @@ For SVMBlock, SVMCfg.txt and SVMCfg-primal.txt are BlockConfig, which is what ch
 
 For uc_solverconfig in both folders, the version using Gurobi is also provided under name uc_solverconfig_grb.
 The template configuration option for OSolCfg.txt allows to extract the most information from tools.
+
+The configurations that use the BundleSolver, i.e., InvestmentBlock/BSPar.txt, SDDPBlock/BSPar-LD.txt, SDDPBlock/BSPar-greedy-LD.txt, SVMBlock/LDCfg.txt, TSSBlock/TSSBSCfg-LD.txt and TSSBlock/LPBSCfg-LD.txt, are written for the BundleSolver 2.0, whose master problem is a Block of its own: `intMPStbl` chooses its stabilization and `strMPBSolverCfg` names the BlockSolverConfig of its Solver, the MPBCfg.txt of the same folder, which solves it with Gurobi. The parameters of the master of the BundleSolver 1.0 (`intMPName`, `intMPlvl`, `intQPmp1`, `intQPmp2`, `intOSImp1`, `intOSImp2`, `intOSImp3`, `dblCtOff`) are gone, and a name the SMS++ at hand does not know makes its whole ComputeConfig fail to load, so these files do not load with an SMS++ whose bundle is the 1.0. The MPBCfg.txt of SVMBlock is the one of the tests of the SVMBlock, which turns the presolve of the master off; the others leave it on, which the masters of the stochastic and investment problems need.
+
