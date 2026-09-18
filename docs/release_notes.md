@@ -10,6 +10,8 @@
 
 ### Minor Changes and Bug Fixes
 
+* Look up the attributes of a Block with a boolean mask rather than with `DataFrame.query`, which parsed an expression at every lookup and took about a third of the construction of the model of a large PyPSA network. See [PR #115](https://github.com/SPSUnipi/pySMSpp/pull/115)
+
 * Update the shipped `BlockConfig` files to the current format: SMS++ now reads a version number after the differential flag and the structure `Configuration` first, so the shipped file was rejected, with the `-B` option silently having no effect. See [PR #110](https://github.com/SPSUnipi/pySMSpp/pull/110)
 
 * Specify local directory when running solvers through `SMSPPSolverTool`: the current working directory is now set to the network directory. See [PR #112](https://github.com/SPSUnipi/pySMSpp/pull/112)
