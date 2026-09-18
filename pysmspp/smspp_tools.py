@@ -10,7 +10,34 @@ from pathlib import Path
 import numpy as np
 import psutil
 
+# the status a Solver of SMS++ returns, as Solver.h defines it: anything but
+# kOK means the value at hand is not a proved optimum, and some of them,
+# kLowPrecision in particular, come with a value that looks like one
+SMSPP_STATUS = {
+    0: "kUnEval",
+    1: "kStillEval",
+    10: "kOK",
+    11: "kStopTime",
+    12: "kStopIter",
+    13: "kInfeasible",
+    14: "kUnbounded",
+    15: "kStopped",
+    18: "kError",
+    20: "kLowPrecision",
+}
+
+SMSPP_OK_STATUS = 10
+
 logger = logging.getLogger(__name__)
+
+
+def _status_code_of(status):
+    """
+    The number in what a tool prints as the status of its Solver, be it
+    "10 (Success)" or "10", and None where there is no number in it.
+    """
+    res = re.search(r"-?\d+", "" if status is None else str(status))
+    return None if res is None else int(res.group())
 
 
 def _enqueue_pipe_lines(pipe, stream_name, messages):
@@ -113,6 +140,7 @@ class SMSPPSolverTool:
         self._shell = shell
 
         self._status = None
+        self._status_code = None
         self._log = None
         self._objective_value = None
         self._lower_bound = None
@@ -382,6 +410,7 @@ class SMSPPSolverTool:
 
         if not res:  # if success not found
             self._status = "Failed"
+            self._status_code = None
             self._objective_value = np.nan
             self._lower_bound = np.nan
             self._upper_bound = np.nan
@@ -389,6 +418,7 @@ class SMSPPSolverTool:
 
         smspp_status = res.group(1).replace("\r", "")
         self._status = smspp_status
+        self._status_code = _status_code_of(smspp_status)
 
         res = re.search("Upper bound = (.*)\n", self._log)
         ub = float(res.group(1).replace("\r", ""))
@@ -403,6 +433,23 @@ class SMSPPSolverTool:
     @property
     def status(self):
         return self._status
+
+    @property
+    def status_code(self):
+        """
+        The status the Solver returned, as the number SMS++ prints, or None
+        where the log does not carry one.
+        """
+        return self._status_code
+
+    @property
+    def is_optimal(self):
+        """
+        True where the Solver says it has solved the problem, i.e. where the
+        status it returned is kOK: a run that stopped on a time limit or on
+        an inexact oracle carries a value, and that value is not an optimum.
+        """
+        return self._status_code == SMSPP_OK_STATUS
 
     @property
     def log(self):
@@ -543,6 +590,7 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
 
         if not res:  # if success not found
             self._status = "Failed"
+            self._status_code = None
             self._objective_value = np.nan
             self._lower_bound = np.nan
             self._upper_bound = np.nan
@@ -552,8 +600,11 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
 
         res = re.search("Solver status: (.*)\n", self._log)
         smspp_status = res.group(1).replace("\r", "")
+        self._status_code = _status_code_of(smspp_status)
 
-        if np.isfinite(self._objective_value):
+        # a finite value is not an answer: what says the problem is solved is
+        # the status the Solver returned
+        if self.is_optimal and np.isfinite(self._objective_value):
             self._status = f"Success ({smspp_status})"
         else:
             self._status = f"Failed ({smspp_status})"
@@ -613,6 +664,7 @@ class InvestmentBlockSolver(SMSPPSolverTool):
 
         if not res:  # if success not found
             self._status = "Failed"
+            self._status_code = None
             self._objective_value = np.nan
             self._lower_bound = np.nan
             self._upper_bound = np.nan
@@ -622,8 +674,11 @@ class InvestmentBlockSolver(SMSPPSolverTool):
 
         res = re.search("Solver status: (.*)\n", self._log)
         smspp_status = res.group(1).replace("\r", "")
+        self._status_code = _status_code_of(smspp_status)
 
-        if np.isfinite(self._objective_value):
+        # a finite value is not an answer: what says the problem is solved is
+        # the status the Solver returned
+        if self.is_optimal and np.isfinite(self._objective_value):
             self._status = f"Success ({smspp_status})"
         else:
             self._status = f"Failed ({smspp_status})"
@@ -718,6 +773,7 @@ class SDDPSolver(SMSPPSolverTool):
 
         if error_inf_or_unb:  # if success not found
             self._status = "Failed"
+            self._status_code = None
             self._objective_value = np.nan
             self._lower_bound = np.nan
             self._upper_bound = np.nan
@@ -728,8 +784,16 @@ class SDDPSolver(SMSPPSolverTool):
         self._upper_bound = float(out.group(2).replace("\r", ""))
         smspp_status = out.group(3).replace("\r", "")
         self._objective_value = self._upper_bound
+        self._status_code = _status_code_of(smspp_status)
 
-        if np.isfinite(self._objective_value):
+        # the SDDPSolver prints no status of its own, so the value is what is
+        # left to go by where the log carries no number
+        if self._status_code is None:
+            solved = np.isfinite(self._objective_value)
+        else:
+            solved = self.is_optimal and np.isfinite(self._objective_value)
+
+        if solved:
             self._status = f"Success ({smspp_status})"
         else:
             self._status = f"Failed ({smspp_status})"
