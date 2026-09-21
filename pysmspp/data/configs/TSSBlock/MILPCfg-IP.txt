@@ -1,0 +1,51 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - MILPCfg-IP.txt  - - - - - - - - - - - - - - - -
+#
+# A txt description of a ComputeConfig for a :MILPSolver solving the
+# deterministic equivalent of a TSSBlock with its integer Variable, to a
+# relative gap of 1e-6 and within one hour.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ComputeConfig         # exact type of the ComputeConfig object
+
+1  # f_diff == 0 ==> all non-provided parameters are set to the default value
+   # f_diff == 1 ==> all non-provided parameters are not changed
+
+3 # number of integer parameters
+
+intLogVerb      0 # log verbosity of the MILPSolver
+intRelaxIntVars 0 # nonzero if the continuous relaxation is solved
+intCutSepPar    7 # separate user cuts + lazy constraints
+
+2 # number of double parameters
+
+dblRelAcc       1e-6 # relative accuracy required to solution
+dblMaxTime      3600 # maximum time for a call
+
+0 # number of string parameters
+
+# now all the string parameters
+# [none]
+
+0 # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0 # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0 # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+* # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END MILPCfg-IP.txt  - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

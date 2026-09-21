@@ -1,0 +1,32 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - InnerBSCfg-IP.txt - - - - - - - - - - - - - - -
+#
+# A "meta"-BlockSolverConfig: a map from a Block classname() to the
+# BlockSolverConfig to attach to every sub-Block of that class. s_config_Block()
+# dispatches it by classname over the WHOLE Block tree, so it reaches the
+# ThermalUnitBlock that sit deep inside each scenario's UCBlock and attaches the
+# efficient ThermalUnitExtDPSolver to them:
+#
+#   ThermalUnitBlock  -> TUBSCfg-DP.txt (ThermalUnitExtDPSolver, integer)
+#   *  (catch-all)    -> BSCfg1-IP.txt     (every other "hard" inner unit)
+#
+# The "*" entry is the default applied to any inner Block whose classname() is
+# not listed explicitly (BatteryUnitBlock, IntermittentUnitBlock, ...).
+#
+#
+
+# a "meta"-BlockConfig , i.e., a map classname --> its BlockConfig
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SimpleConfiguration<std::map<std::string,Configuration*>>
+
+2 # the number of elements in the map
+
+ThermalUnitBlock        *TUBSCfg-DP.txt
+*                       *BSCfg1-IP.txt
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END InnerBSCfg-IP.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

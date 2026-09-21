@@ -1,15 +1,12 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - TSSBSCfg-LDLD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - TSSBSCfg-LD-IP.txt  - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a TSSBlock solved by a
-# LagrangianDualSolver whose sub-problems are solved by a LagrangianDualSolver
-# in turn: the outer dual relaxes the non-anticipativity Constraint, making one
-# sub-problem of each scenario, and the inner one (LPBSCfg-LDLD.txt) relaxes
-# the Constraint that tie the units of a scenario together, each thermal unit
-# being solved by its dynamic programming. It gives a bound, not a solution. It
-# pays on the scenarios and on horizons of a month (see TSSBSCfg-LDrec.txt),
-# and it needs the BundleSolver 2.0. To be used with the BlockConfig
-# InnerBCfg.txt (-B).
+# LagrangianDualSolver that relaxes the non-anticipativity Constraint, each
+# scenario being solved whole by a :MILPSolver with its integer Variable
+# (InnerBSCfg-IP.txt). The management of the targets is off, since the cutoffs
+# it passes make the :MILPSolver of a scenario return an error. To be used with
+# the BlockConfig InnerBCfg.txt (-B).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,32 +33,23 @@ LagrangianDualSolver  # name of the Solver
 
 int_LDSlv_iBCopy  0 # 1 if sub-Block must be R3B-copied
 intLogVerb        1 # log verbosity of main Bundle algorithm
-intTrgtMng       31 # bit-wise encoding targets and accuracies management:
+intTrgtMng        0 # bit-wise encoding targets and accuracies management:
                     # bit 0: if lower/upper target is set to each convex/concave component
                     # bit 1: if upper/lower target is set to each convex/concave component
                     # bit 2-3: if accuracy is set (2 = upper - lower, 3 = using EpsU)
                     # bit 4: if Lipschitz constant is used to compute the upper model
 
-7 # number of double parameters
+3 # number of double parameters
 
 dblMaxTime        3600 # maximum time for a call, so that the nested dual is
                        # given the same budget as the MILP it is compared with
 
-dblMinNrEvls        -1 # every component is evaluated at each iteration: a
-                       # component here is an entire inner LagrangianDualSolver,
-                       # so an iteration made on one of the three alone buys
-                       # little and costs a master problem anyway; on the NC
-                       # instances the evaluations go from 865 and 1705 down
-                       # to 132 and 168
-dblRelAcc         1e-5 # relative accuracy required to solution
 dbltStar         -1e+0 # stopping parameter: multiplied to || residual || to estimate gap
-dblmxIncr            2 # max increase of t
-dbltMaior         1e+9 # maximum value for t
 dbltInit          1e-3 # initial value for t
 
 1 # number of string parameters
 
-str_LagBF_BSCfg  LPBSCfg-LDLD.txt # BlockSolverConfig for the LagBFunctions
+str_LagBF_BSCfg  InnerBSCfg-IP.txt # BlockSolverConfig for the LagBFunctions
 
 0 # number of vector-of-int parameters
 
@@ -79,5 +67,5 @@ str_LagBF_BSCfg  LPBSCfg-LDLD.txt # BlockSolverConfig for the LagBFunctions
 # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END TSSBSCfg-LDLD.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - END TSSBSCfg-LD-IP.txt  - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
