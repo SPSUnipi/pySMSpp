@@ -1,8 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - TSSBSCfg-LDLD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - TSSBSCfg-PPH.txt  - - - - - - - - - - - - - - -
 #
-# A TSSBlock solved by the Lagrangian dual of its scenarios, each one
-# solved by the Lagrangian dual of its units (LPBSCfg-LDLD.txt).
+# A TSSBlock solved by the PrimalProximalHeur over the Lagrangian dual of
+# its scenarios (LPBSCfg-LDLD.txt), which fixes the design to its mean over
+# the scenarios and solves each one alone (BSCfg1-IP.txt, 8 threads).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -13,11 +14,17 @@ BlockSolverConfig     # exact type of the Configuration object
 
 1 # number of (the names of) Solver in this BlockSolverConfig
 
-LagrangianDualSolver  # name of the Solver
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+PrimalProximalHeur    # name of 2nd Solver
 
 1 # number of ComputeConfig in this BlockSolverConfig
 
-# the ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ComputeConfig of the :MILPSolver
+
+
+# 2nd ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # ComputeConfig of the LagrangianDualSolver; it mostly is the
 # ComputeConfig of the inner Solver, which is a [Parallel]BundleSolver
 
@@ -25,17 +32,26 @@ LagrangianDualSolver  # name of the Solver
 
 1  # f_diff == 1 ==> only the entries listed below are changed
 
-3 # number of integer parameters
+6 # number of integer parameters
+
+intInnerMaxIter   200 # iterations of the Lagrangian Dual at each proximal one
+intUseWarmStartPSol 0 # the first iteration solves the plain Lagrangian Dual,
+                      # so its bound is valid for the integer problem and
+                      # stronger than the one of the continuous relaxation
 
 int_LDSlv_iBCopy  0 # 1 if sub-Block must be R3B-copied
-intLogVerb        1 # log verbosity of main Bundle algorithm
-intTrgtMng       31 # bit-wise encoding targets and accuracies management:
+intLogVerb        0 # log verbosity of main Bundle algorithm
+intTrgtMng       31
+intRecoveryThreads 8 # bit-wise encoding targets and accuracies management:
                     # bit 0: if lower/upper target is set to each convex/concave component
                     # bit 1: if upper/lower target is set to each convex/concave component
                     # bit 2-3: if accuracy is set (2 = upper - lower, 3 = using EpsU)
                     # bit 4: if Lipschitz constant is used to compute the upper model
 
-7 # number of double parameters
+9 # number of double parameters
+
+dbl_penaltyFactor 1e-1 # weight of the proximal term
+dblInnerRelAcc    1e-5 # accuracy asked of the Lagrangian Dual
 
 dblMaxTime        3600 # maximum time for a call, so that the nested dual is
                        # given the same budget as the MILP it is compared with
@@ -52,9 +68,10 @@ dblmxIncr            2 # max increase of t
 dbltMaior         1e+9 # maximum value for t
 dbltInit          1e-3 # initial value for t
 
-1 # number of string parameters
+2 # number of string parameters
 
-str_LagBF_BSCfg  LPBSCfg-LDLD.txt # BlockSolverConfig for the LagBFunctions
+str_LagBF_BSCfg  LPBSCfg-LDLD.txt
+strRecoveryBSC   BSCfg1-IP.txt # BlockSolverConfig for the LagBFunctions
 
 0 # number of vector-of-int parameters
 
@@ -71,6 +88,8 @@ str_LagBF_BSCfg  LPBSCfg-LDLD.txt # BlockSolverConfig for the LagBFunctions
 # now all the vector-of-string parameters
 # [none]
 
+# end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END TSSBSCfg-LDLD.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END TSSBSCfg-PPH.txt  - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

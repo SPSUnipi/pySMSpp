@@ -1,10 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - -  BDSMCfg.txt  - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for the master problem of the
-# Benders decomposition of TSSBSCfg-BDS.txt, in the MILP regime: a single
-# :MILPSolver that solves the master (with the epigraph Variable and the
-# dynamically added Benders cuts) at each round of the cut loop.
+# The master of TSSBSCfg-BDS.txt: a :MILPSolver.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

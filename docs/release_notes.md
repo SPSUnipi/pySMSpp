@@ -25,9 +25,11 @@
 
 * Give Gurobi, in the `TSSBlock/TSSBSCfg_grb.txt` template, the options PyPSA-Eur gives it (barrier without crossover, a tolerance of 1e-5, no dualization and no fill-in from the aggregation), where it passed none. See [PR #117](https://github.com/SPSUnipi/pySMSpp/pull/117)
 
-* Write the configuration templates that use the BundleSolver for the BundleSolver 2.0, whose master problem is a Block solved by a Solver of its own, configured by the `MPBCfg.txt` now shipped in each of those folders; the parameters of the master of the BundleSolver 1.0 are gone. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
+* Write the templates that use the BundleSolver for the BundleSolver 2.0, whose master is configured by the new `MPBCfg.txt`. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
-* Add `TSSBlock/TSSBSCfg-LDLD.txt` and `TSSBlock/TSSBSCfg-LDrec.txt`, which take the Lagrangian dual of a two-stage stochastic problem down to its units instead of stopping at its scenarios, the first one by giving each scenario a `LagrangianDualSolver` of its own and the second one by decomposing the whole tree at once. They are the same dual written two ways and pay on different sizes, the chain on the scenarios and the recursive one on the units and on the horizon; both need the BundleSolver 2.0. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
+* Add templates for the two-stage instances whose scenario is a unit commitment: the MILP (`TSSBSCfg-IP.txt`), the Lagrangian dual of the scenarios (`TSSBSCfg-LD-IP.txt`), the chain of two duals (`TSSBSCfg-LDLD.txt`), the recursive Lagrangian dual (`TSSBSCfg-LDrec.txt`) and the PrimalProximalHeur, which gives a feasible solution (`TSSBSCfg-PPH.txt`). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
+
+* Add the templates of the BendersDecompositionSolver for the Benders form of a two-stage problem (`TSSBSCfg-BDS.txt`, `BDSMCfg.txt`, `BDSSCfg.txt`). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
 * Update the shipped `BlockConfig` files to the current format: SMS++ now reads a version number after the differential flag and the structure `Configuration` first, so the shipped file was rejected, with the `-B` option silently having no effect. See [PR #110](https://github.com/SPSUnipi/pySMSpp/pull/110)
 

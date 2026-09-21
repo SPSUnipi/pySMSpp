@@ -1,16 +1,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - TSSBSCfg-LDrec.txt  - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a TSSBlock solved by one
-# LagrangianDualSolver that decomposes the whole tree (intRecursive): the
-# non-anticipativity Constraint and those that tie the units of each scenario
-# together are relaxed at once, the components being the units of every
-# scenario, each thermal one solved by its dynamic programming. It is the dual
-# of TSSBSCfg-LDLD.txt solved another way, with the same bound: it pays on the
-# units and on horizons up to two weeks, the chain on the scenarios and on
-# longer horizons, where the master of the recursive one, with one multiplier
-# per node and period of every scenario, becomes the bottleneck. It gives a
-# bound, not a solution. To be used with the BlockConfig InnerBCfg.txt (-B).
+# A TSSBlock solved by the recursive Lagrangian dual, which relaxes the
+# Constraint of the scenarios and of their units at once (intRecursive).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

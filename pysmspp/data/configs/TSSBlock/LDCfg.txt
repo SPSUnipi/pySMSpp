@@ -1,9 +1,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - LDCfg.txt - - - - - - - - - - - - - - - - -
 #
-# A txt description of the ComputeConfig of a LagrangianDualSolver with a
-# BundleSolver 2.0 as the inner Solver, which the templates of the thermal
-# family load and change in a few parameters (*LDCfg.txt +).
+# The ComputeConfig of a LagrangianDualSolver with a BundleSolver 2.0,
+# which the templates above load and change (*LDCfg.txt +).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

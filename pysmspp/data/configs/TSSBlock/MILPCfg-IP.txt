@@ -1,9 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - MILPCfg-IP.txt  - - - - - - - - - - - - - - - -
 #
-# A txt description of a ComputeConfig for a :MILPSolver solving the
-# deterministic equivalent of a TSSBlock with its integer Variable, to a
-# relative gap of 1e-6 and within one hour.
+# A :MILPSolver with integer Variable, relative gap 1e-6, one hour.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

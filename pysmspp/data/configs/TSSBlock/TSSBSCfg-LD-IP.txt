@@ -1,12 +1,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - TSSBSCfg-LD-IP.txt  - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a TSSBlock solved by a
-# LagrangianDualSolver that relaxes the non-anticipativity Constraint, each
-# scenario being solved whole by a :MILPSolver with its integer Variable
-# (InnerBSCfg-IP.txt). The management of the targets is off, since the cutoffs
-# it passes make the :MILPSolver of a scenario return an error. To be used with
-# the BlockConfig InnerBCfg.txt (-B).
+# A TSSBlock solved by the Lagrangian dual of its scenarios, each one
+# solved whole by a :MILPSolver (InnerBSCfg-IP.txt).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

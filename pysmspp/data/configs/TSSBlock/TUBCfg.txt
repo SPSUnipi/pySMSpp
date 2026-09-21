@@ -1,16 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - TUBCfg.txt  - - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockConfig for a ThermalUnitBlock that is being
-# solved by a :MILPSolver. As such it is relevant:
-#
-#   corresponding tolerances, as controlled by the Configuration of
-#   dynamic constraints
-#
-#   controlled by the Configuration of static variables
-#
-# Note that if the latter does not include P/C (+8), then the former is
-# actually irrelevant
+# The BlockConfig of a ThermalUnitBlock: formulation and perspective cuts.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

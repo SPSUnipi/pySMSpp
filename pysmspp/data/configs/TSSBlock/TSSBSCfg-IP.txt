@@ -1,12 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - TSSBSCfg-IP.txt - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a TSSBlock solved whole by a
-# :MILPSolver, i.e., its deterministic equivalent with the integer Variable as
-# they are, configured by MILPCfg-IP.txt. It is the monolithic reference of the
-# decompositions of the family of thermal instances (TSSBSCfg-LD-IP.txt,
-# TSSBSCfg-LDLD.txt, TSSBSCfg-LDrec.txt), to be used with the BlockConfig
-# InnerBCfg.txt (-B).
+# A TSSBlock solved whole by a :MILPSolver with its integer Variable.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

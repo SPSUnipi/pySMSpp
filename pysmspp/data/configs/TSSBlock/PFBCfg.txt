@@ -1,9 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - PFBCfg.txt  - - - - - - - - - - - - - - - - -
 #
-# A txt description of the BlockConfig for a PolyhedralFunctionBlock: the
-# "linearized" representation of the PolyhedralFunction is used (static
-# variables Configuration == 1), plus the is_feasible() tolerances.
+# The BlockConfig of a PolyhedralFunctionBlock: its linearized form.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

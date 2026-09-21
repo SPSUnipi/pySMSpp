@@ -1,12 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - -  BDSSCfg.txt  - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for the subproblem of one Benders
-# component of TSSBSCfg-BDS.txt, i.e., the linear program whose value function
-# is being approximated, and whose duals are the Benders cuts.
-#
-# Two things are asked of the Solver beyond solving it, and only the second
-# constrains how it is solved:
+# The subproblems of TSSBSCfg-BDS.txt: a :MILPSolver on the linear
+# program of a scenario, with the presolve off, which a Farkas
+# certificate needs.
 #
 # - the duals of an optimal solution, which give the optimality cut: any
 #   optimal dual solution does, basic or not, an interior-point one included;

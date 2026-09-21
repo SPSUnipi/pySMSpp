@@ -1,8 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - TUBSCfg-DP.txt  - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a ThermalUnitBlock that is being
-# solved by a ThermalUnitExtDPSolver
+# A ThermalUnitBlock solved by a ThermalUnitExtDPSolver.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

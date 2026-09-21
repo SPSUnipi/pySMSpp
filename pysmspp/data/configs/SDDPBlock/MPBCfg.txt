@@ -4,8 +4,6 @@
 # A txt description of a BlockSolverConfig for the inner :MILPSolver of the
 # MasterProblemBlock used by the BundleSolver
 #
-#   Donato Meoli, Antonio Frangioni
-#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # BlockSolverConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

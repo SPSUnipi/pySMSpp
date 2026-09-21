@@ -1,11 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - ACBCfg.txt  - - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockConfig for all the NetworkBlock of a UCBlock
-#
-#
-
-# exact type of the Configuration object
+# The BlockConfig of an ACNetworkBlock: its scaling factors.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,13 +1,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - LPBSCfg-LDLD.txt  - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a scenario of a TSSBlock solved
-# by a LagrangianDualSolver that relaxes the Constraint tying its units
-# together, each thermal unit being solved by its dynamic programming
-# (InnerBSCfg.txt). The cap on the iterations is not binding, the dual stopping
-# on its own criterion, and it has not to be tuned per instance: its multipliers
-# grow with the horizon, and a cap tuned on a short one makes the bound of the
-# chain collapse on a long one.
+# The Lagrangian dual of the units of a scenario, each thermal unit
+# solved by its dynamic programming (InnerBSCfg.txt).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

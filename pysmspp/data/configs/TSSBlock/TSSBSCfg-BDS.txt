@@ -1,19 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - -  TSSBSCfg-BDS.txt - - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a Block having a single
-# BendersDecompositionSolver attached, in the MILP regime, with one optimality
-# cut per scenario (multi-cut), which is the fastest of the options of the
-# Solver on the TSSB instances of pypsa2smspp. The master and the subproblems
-# are configured by BDSMCfg.txt and BDSSCfg.txt, and the subproblems of a
-# round are evaluated by several threads.
-#
-# It applies to the Benders form of a two-stage stochastic problem, i.e., a
-# root with a single copy of the here-and-now Variable, one sub-Block per
-# scenario, and the coupling written as Constraint of each scenario in which
-# those Variable appear linearly, which tssb_solver assembles around the
-# extensive form of a TSSBlock when it is given -k (in pySMSpp, the argument
-# k=None of TSSBSolver).
+# A BendersDecompositionSolver in the MILP regime, one cut per scenario,
+# the scenarios of a round evaluated by 8 threads, on the Benders form
+# smspp_tssb_solver -k assembles (BDSMCfg.txt, BDSSCfg.txt).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
