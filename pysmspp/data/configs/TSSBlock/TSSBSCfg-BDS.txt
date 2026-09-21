@@ -11,8 +11,9 @@
 # It applies to the Benders form of a two-stage stochastic problem, i.e., a
 # root with a single copy of the here-and-now Variable, one sub-Block per
 # scenario, and the coupling written as Constraint of each scenario in which
-# those Variable appear linearly; this is not the extensive form of a TSSBlock
-# that pypsa2smspp writes, and no tool builds it from a netCDF file yet.
+# those Variable appear linearly, which tssb_solver assembles around the
+# extensive form of a TSSBlock when it is given -k (in pySMSpp, the argument
+# k=None of TSSBSolver).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
