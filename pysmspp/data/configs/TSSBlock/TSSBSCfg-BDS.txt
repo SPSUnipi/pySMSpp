@@ -1,0 +1,77 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - -  TSSBSCfg-BDS.txt - - - - - - - - - - - - - - - -
+#
+# A txt description of a BlockSolverConfig for a Block having a single
+# BendersDecompositionSolver attached, in the MILP regime, with one optimality
+# cut per scenario (multi-cut), which is the fastest of the options of the
+# Solver on the TSSB instances of pypsa2smspp. The master and the subproblems
+# are configured by BDSMCfg.txt and BDSSCfg.txt.
+#
+# It applies to the Benders form of a two-stage stochastic problem, i.e., a
+# root with a single copy of the here-and-now Variable, one sub-Block per
+# scenario, and the coupling written as Constraint of each scenario in which
+# those Variable appear linearly; this is not the extensive form of a TSSBlock
+# that pypsa2smspp writes, and no tool builds it from a netCDF file yet.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+0  # the BlockSolverConfig is not a "differential" one
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+BendersDecompositionSolver # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ComputeConfig # exact type of the ComputeConfig object
+
+0  # f_diff == 0 ==> all non-provided parameters are set to the default value
+   # f_diff == 1 ==> all non-provided parameters are not changed
+
+1  # number of integer parameters
+
+# now all the integer parameters
+int_BDSlv_Regime  1  # 0 = convex master, 1 = MILP master
+
+0  # number of double parameters
+
+# now all the double parameters
+# [none]
+
+2  # number of string parameters
+
+# now all the string parameters
+str_Bsub_BSCfg  BDSSCfg.txt  # BlockSolverConfig of the subproblems
+str_Mstr_BSCfg  BDSMCfg.txt  # BlockSolverConfig of the master
+
+0  # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0  # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0  # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# end of 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# end of BlockSolverConfig  - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - -  END TSSBSCfg-BDS.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
