@@ -5,7 +5,8 @@
 # BendersDecompositionSolver attached, in the MILP regime, with one optimality
 # cut per scenario (multi-cut), which is the fastest of the options of the
 # Solver on the TSSB instances of pypsa2smspp. The master and the subproblems
-# are configured by BDSMCfg.txt and BDSSCfg.txt.
+# are configured by BDSMCfg.txt and BDSSCfg.txt, and the subproblems of a
+# round are evaluated by several threads.
 #
 # It applies to the Benders form of a two-stage stochastic problem, i.e., a
 # root with a single copy of the here-and-now Variable, one sub-Block per
@@ -34,10 +35,14 @@ ComputeConfig # exact type of the ComputeConfig object
 0  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-1  # number of integer parameters
+2  # number of integer parameters
 
 # now all the integer parameters
-int_BDSlv_Regime  1  # 0 = convex master, 1 = MILP master
+int_BDSlv_Regime     1  # 0 = convex master, 1 = MILP master
+int_BDSlv_MaxThread  8  # threads evaluating the subproblems of a round, at
+                        # most the cores of the machine; the run is the same
+                        # for every value, only faster, and 1 evaluates them
+                        # one after the other
 
 0  # number of double parameters
 
