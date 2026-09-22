@@ -35,7 +35,7 @@ Issues = "https://github.com/SPSUnipi/pySMSpp/issues"
 
 [project.optional-dependencies]
 plot = [
-    "matplotlib-base>=3.0",
+    "matplotlib>=3.0",
 ]
 dev = [
     "pytest", 
