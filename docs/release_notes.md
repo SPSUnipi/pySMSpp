@@ -4,6 +4,17 @@
 
 ### New Features and Major Changes
 
+* 
+
+### Minor Changes and Bug Fixes
+
+*
+
+
+## Version v0.0.14
+
+### New Features and Major Changes
+
 * Add the `Support Vector Machines` example, which runs SMS++ and scikit-learn side by side on the same train/test split, k-fold cross-validation and grid of hyper-parameters. See [PR #109](https://github.com/SPSUnipi/pySMSpp/pull/109)
 
 * Add support for the SVCBlock and the SVRBlock, i.e., the training problem of a Support Vector Machine, with the `SVMSolver` tool, the configuration templates of the `SVMBlock` folder and the model selection the tool performs (hold-out, k-fold cross-validation and grid search). The templates include `SVMSCfg-libsvm.txt`, which trains the model with LIBSVM: the example compares it with `libsvm-official` and with scikit-learn, i.e., the same library called from Python. See [PR #109](https://github.com/SPSUnipi/pySMSpp/pull/109)
@@ -25,6 +36,7 @@
 * Make matplotlib optional [PR #118](https://github.com/SPSUnipi/pySMSpp/pull/118)
 
 * Drop h5py constraint from toml [PR #119](https://github.com/SPSUnipi/pySMSpp/pull/119)
+
 
 ## Version v0.0.13
 
