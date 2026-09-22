@@ -1,0 +1,54 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  PIPSCfg.txt  - - - - - - - - - - - - - - -
+#
+# The ComputeConfig of the PIPSMILPSolver of TSSBSCfg-PIPS.txt: the
+# continuous relaxation, Curtis-Reid scaling, no presolve of PIPS-IPM++, the
+# linear solvers of the build (MUMPS unless PARDISO is there, in which case
+# LINEAR_ROOT_SOLVER and LINEAR_SUB_ROOT_SOLVER pardiso are faster).
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ComputeConfig         # exact type of the ComputeConfig object
+
+1  # f_diff == 0 ==> all non-provided parameters are set to the default value
+   # f_diff == 1 ==> all non-provided parameters are not changed
+
+3 # number of integer parameters
+
+# now all the integer parameters
+intLogVerb      0 # log verbosity of the PIPSMILPSolver
+intRelaxIntVars 1 # the continuous relaxation: PIPS-IPM++ solves LPs
+PRESOLVE        0 # presolve of PIPS-IPM++ off
+
+1 # number of double parameters
+
+# now all the double parameters
+IPM_TIMELIMIT 3600 # maximum time of the interior point method
+
+1 # number of string parameters
+
+# now all the string parameters
+SCALER curtisreid  # scaling of the problem
+
+0 # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0 # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0 # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  END PIPSCfg.txt  - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
