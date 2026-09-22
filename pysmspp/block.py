@@ -194,8 +194,10 @@ def get_attr_field(
                 f"Cannot infer type of {attr_name} with value {attr_value} in Block."
             )
 
-    block_attrs = blocks[block_type].query("smspp_object == 'Block'")
-    simple_attrs = blocks[block_type].query("smspp_object != 'Block'")
+    block_conf = blocks[block_type]
+    is_block = block_conf["smspp_object"] == "Block"
+    block_attrs = block_conf[is_block]
+    simple_attrs = block_conf[~is_block]
 
     if attr_name in simple_attrs.index:
         attr = attr_name
