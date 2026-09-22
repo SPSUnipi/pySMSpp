@@ -44,6 +44,12 @@ The package aims to support:
         pre-commit install
     ```
 
+    If you are installing from a local checkout and only need plotting support, you can install the optional extra:
+
+    ```bash
+        pip install ".[plot]"
+    ```
+
     Note that the `-e` command line option installs the package in editable mode, so that changes to the source code are immediately available in the environment being used. The `[dev]` option installs the packages required for development. The `pre-commit install` command installs the pre-commit hooks, which are used to check the code before committing to ensure code quality standards.
 
 4. Develop and test the code. For testing, please run:

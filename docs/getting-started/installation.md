@@ -43,6 +43,12 @@ cd /path/to/your/folder/pySMSpp
 pip install .
 ```
 
+If you need plotting utilities (`Variable.plot()` and `Block.plot()`) when installing from this local checkout, install the optional plotting extra:
+
+```bash
+pip install ".[plot]"
+```
+
 If you aim to develop the package, we recommend to install the package in editable mode (option `-e`), install the development dependencies (option `[dev]`), and install the pre-commit to ensure code quality:
 
 ```bash

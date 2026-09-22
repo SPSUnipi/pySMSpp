@@ -27,7 +27,6 @@ dependencies = [
     "pandas>=0.24",
     "netcdf4",
     "psutil",
-    "matplotlib>=3.0",
 ]
 
 [project.urls]
@@ -35,13 +34,15 @@ Homepage = "https://github.com/SPSUnipi/pySMSpp"
 Issues = "https://github.com/SPSUnipi/pySMSpp/issues"
 
 [project.optional-dependencies]
+plot = [
+    "matplotlib>=3.0",
+]
 dev = [
     "pytest", 
     "coverage",
     "pre-commit",
     "ncompare",
     "mypy",
-    "matplotlib>=3.0",
     "h5py<3.15",  # Temporary fix for compatibility issues with netcdf4; issues potentially linked to compatibility to xarray https://github.com/pydata/xarray/issues?q=is%3Aissue%20state%3Aopen%20h5py
 ]
 docs=[
