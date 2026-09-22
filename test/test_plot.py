@@ -14,7 +14,6 @@ plt = pytest.importorskip("matplotlib.pyplot")
 
 from pysmspp import Block, Variable
 
-
 # ---------------------------------------------------------------------------
 # Variable.plot() tests
 # ---------------------------------------------------------------------------
