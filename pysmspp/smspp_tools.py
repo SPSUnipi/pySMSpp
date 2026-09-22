@@ -602,8 +602,6 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         smspp_status = res.group(1).replace("\r", "")
         self._status_code = _status_code_of(smspp_status)
 
-        # a finite value is not an answer: what says the problem is solved is
-        # the status the Solver returned
         if self.is_optimal and np.isfinite(self._objective_value):
             self._status = f"Success ({smspp_status})"
         else:
@@ -676,8 +674,6 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         smspp_status = res.group(1).replace("\r", "")
         self._status_code = _status_code_of(smspp_status)
 
-        # a finite value is not an answer: what says the problem is solved is
-        # the status the Solver returned
         if self.is_optimal and np.isfinite(self._objective_value):
             self._status = f"Success ({smspp_status})"
         else:
@@ -786,8 +782,6 @@ class SDDPSolver(SMSPPSolverTool):
         self._objective_value = self._upper_bound
         self._status_code = _status_code_of(smspp_status)
 
-        # the SDDPSolver prints no status of its own, so the value is what is
-        # left to go by where the log carries no number
         if self._status_code is None:
             solved = np.isfinite(self._objective_value)
         else:
