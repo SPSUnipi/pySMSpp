@@ -27,7 +27,7 @@
 
 * Write the templates that use the BundleSolver for the BundleSolver 2.0, whose master is configured by the new `MPBCfg.txt`. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
-* Add templates for the two-stage instances whose scenario is a unit commitment: the MILP (`TSSBSCfg-IP.txt`), the Lagrangian dual of the scenarios (`TSSBSCfg-LD-IP.txt`), the chain of two duals (`TSSBSCfg-LDLD.txt`), the recursive Lagrangian dual (`TSSBSCfg-LDrec.txt`) and the PrimalProximalHeur, which gives a feasible solution (`TSSBSCfg-PPH.txt`). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
+* Add templates for the two-stage instances whose scenario is a unit commitment: the MILP (`TSSBSCfg-IP.txt`), the Lagrangian dual of the scenarios (`TSSBSCfg-LD-IP.txt`), the chain of two duals (`TSSBSCfg-LDLD.txt`), the recursive Lagrangian dual (`TSSBSCfg-LDrec.txt`) and the PrimalProximalHeur, which gives a feasible solution (`TSSBSCfg-PPH.txt`), the three duals also with a ParallelBundleSolver (`-par`). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
 * Add the templates of the BendersDecompositionSolver for the Benders form of a two-stage problem (`TSSBSCfg-BDS.txt`, `BDSMCfg.txt`, `BDSSCfg.txt`), and of the InvestmentBlock over a TSSB or an MSSB (`TSSBSCfg-IB.txt`, `BSCfg-IB.txt`). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
