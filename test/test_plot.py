@@ -8,13 +8,11 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-import matplotlib
-import matplotlib.pyplot as plt
+matplotlib = pytest.importorskip("matplotlib")
+matplotlib.use("Agg")  # Use non-interactive backend for testing
+plt = pytest.importorskip("matplotlib.pyplot")
 
 from pysmspp import Block, Variable
-
-matplotlib.use("Agg")  # Use non-interactive backend for testing
-
 
 # ---------------------------------------------------------------------------
 # Variable.plot() tests
