@@ -22,6 +22,7 @@
 
 * Mirror the repository to its GitLab copy, `smspp/pysmspp`, at every push on `main`: SMS++ lives on GitLab and mirrors itself to GitHub, pySMSpp is the one going the other way round. See [PR #108](https://github.com/SPSUnipi/pySMSpp/pull/108)
 
+* Make matplotlib optional [PR #18](https://github.com/SPSUnipi/pySMSpp/pull/118)
 
 ## Version v0.0.13
 
