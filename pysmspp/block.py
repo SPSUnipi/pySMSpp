@@ -194,8 +194,6 @@ def get_attr_field(
                 f"Cannot infer type of {attr_name} with value {attr_value} in Block."
             )
 
-    # a boolean mask rather than DataFrame.query, which parses and evaluates an
-    # expression at every call and dominated the construction of large Blocks
     block_conf = blocks[block_type]
     is_block = block_conf["smspp_object"] == "Block"
     block_attrs = block_conf[is_block]
