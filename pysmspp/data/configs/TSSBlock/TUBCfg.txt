@@ -25,7 +25,7 @@ SimpleConfiguration<std::pair<double,double>>
 
 # static_variables
 SimpleConfiguration<int>
-1    # 0 = 3bin, 1 = T, 2 = pt, 3 = DP, 4 = SU, 5 = SD, 6 = SUSD (Formulation)
+0    # 0 = 3bin, 1 = T, 2 = pt, 3 = DP, 4 = SU, 5 = SD, 6 = SUSD (Formulation)
 #9    # +8 with Perspective Cuts
 #17   # +16: start-up / shut-down variables are continuous
 
