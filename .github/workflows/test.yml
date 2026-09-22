@@ -89,7 +89,7 @@ jobs:
 
     - name: Install package and dependencies
       run: |
-        pip install .[dev]
+        pip install .[dev,plot]
 
     - name: List environment
       run: |
