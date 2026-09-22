@@ -43,7 +43,7 @@ cd /path/to/your/folder/pySMSpp
 pip install .
 ```
 
-If you need plotting utilities (`Variable.plot()` and `Block.plot()`), install the optional plotting extra:
+If you need plotting utilities (`Variable.plot()` and `Block.plot()`) when installing from this local checkout, install the optional plotting extra:
 
 ```bash
 pip install ".[plot]"

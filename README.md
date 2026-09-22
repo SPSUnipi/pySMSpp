@@ -44,7 +44,7 @@ The package aims to support:
         pre-commit install
     ```
 
-    If you only need plotting support in a regular installation, you can install the optional extra:
+    If you are installing from a local checkout and only need plotting support, you can install the optional extra:
 
     ```bash
         pip install ".[plot]"
