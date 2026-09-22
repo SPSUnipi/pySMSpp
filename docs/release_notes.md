@@ -18,6 +18,8 @@
 
 * Specify local directory when running solvers through `SMSPPSolverTool`: the current working directory is now set to the network directory. See [PR #112](https://github.com/SPSUnipi/pySMSpp/pull/112)
 
+* Take the status of a run from the one SMS++ returned rather than from a finite objective value: a run that stops on a time limit, on an iteration limit or on an inexact oracle prints a value too, and that value was read as a success. A tool now keeps the status as a number, `status_code`, and answers `is_optimal`, and the codes are named in `SMSPP_STATUS`. See [PR #114](https://github.com/SPSUnipi/pySMSpp/pull/114)
+
 * Mirror the repository to its GitLab copy, `smspp/pysmspp`, at every push on `main`: SMS++ lives on GitLab and mirrors itself to GitHub, pySMSpp is the one going the other way round. See [PR #108](https://github.com/SPSUnipi/pySMSpp/pull/108)
 
 
