@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* Write the templates that use the BundleSolver for the BundleSolver 2.0, whose master is configured by the new `MPBCfg.txt`. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
+* Write the templates that use the BundleSolver for the BundleSolver 2.0, whose master is configured by the new `MPBCfg.txt` (HiGHS) or `MPBCfg_grb.txt` (Gurobi). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
 * Add templates for the two-stage instances whose scenario is a unit commitment: the MILP (`TSSBSCfg-IP.txt`), the Lagrangian dual of the scenarios (`TSSBSCfg-LD-IP.txt`), the chain of two duals (`TSSBSCfg-LDLD.txt`), the recursive Lagrangian dual (`TSSBSCfg-LDrec.txt`) and the PrimalProximalHeur, which gives a feasible solution (`TSSBSCfg-PPH.txt`), the three duals also with a ParallelBundleSolver (`-par`), and the continuous relaxation with Gurobi (`TSSBSCfg-LP.txt`) and with PIPS-IPM++ (`TSSBSCfg-PIPS.txt`). See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 

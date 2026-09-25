@@ -16,9 +16,9 @@ BlockSolverConfig     # exact type of the Configuration object
 
 # now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
 #CPXMILPSolver        # name of Solver
-GRBMILPSolver         # name of Solver
+#GRBMILPSolver        # name of Solver
 #SCIPMILPSolver       # name of Solver
-#HiGHSMILPSolver      # name of Solver
+HiGHSMILPSolver       # name of Solver
 
 1 # number of ComputeConfig in this BlockSolverConfig
 
@@ -31,7 +31,7 @@ ComputeConfig         # exact type of the ComputeConfig object
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-6 # number of integer parameters
+4 # number of integer parameters
 
 # now all the integer parameters
 intLogVerb      0 # log verbosity of the MILPSolver
@@ -44,14 +44,14 @@ intMaxThread    1 # single-threaded for deterministic master reproducibility
 #CPXPARAM_Emphasis_Numerical      1   # numerical precision emphasis
 
 # All specific GUROBI parameter (uncomment based on Solver)
-Method        1   # 0 = primal, 1 = dual simplex, 2 = barrier: the multipliers
+#Method       1   # 0 = primal, 1 = dual simplex, 2 = barrier: the multipliers
                   # of the master ARE the algorithm, and an interior point has
                   # them only to about 1e-7 relative, which the stopping test
                   # of the bundle cannot survive; besides, the barrier cannot
                   # restart from the previous basis, so it re-solves the master
                   # from scratch at every call, while the simplex re-optimises
                   # after the new columns for a fraction of the iterations
-NumericFocus  1   # 0 = auto, 1..3 = increasing precision focus: the master
+#NumericFocus 1   # 0 = auto, 1..3 = increasing precision focus: the master
                   # is small and re-solved thousands of times, so whatever
                   # extra care is asked is paid at every one of them, and 3
                   # costs a factor two. 0 is not an option: with it the
@@ -63,7 +63,7 @@ NumericFocus  1   # 0 = auto, 1..3 = increasing precision focus: the master
                   # declared infeasible on tolerance when the model is badly
                   # scaled, and the bundle reads that as a numerical error
 
-5 # number of double parameters
+3 # number of double parameters
 
 # now all the double parameters
 dblRelAcc       1e-08 # relative accuracy required to solution
@@ -75,10 +75,11 @@ dblRAccSol      1e-08 # relative accuracy of the solution pool
 # vertical row by less than the default 1e-6 is feasible for the master and
 # infeasible for the subproblem, which answers with the very cut that is
 # already there, and the same iteration repeats forever.
-FeasibilityTol  1e-09 # how much a row of the master may be violated
-OptimalityTol   1e-09 # how much a reduced cost of the master may be off
+#FeasibilityTol 1e-09 # how much a row of the master may be violated
+#OptimalityTol  1e-09 # how much a reduced cost of the master may be off
 
 # All specific HiGHS parameter (uncomment based on Solver)
+# (not tighter: at 1e-9 the QP solver of HiGHS fails on the master)
 #primal_feasibility_tolerance     1e-9
 #dual_feasibility_tolerance       1e-9
 
