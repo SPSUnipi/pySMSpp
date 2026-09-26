@@ -1,9 +1,10 @@
 import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
 
-from pysmspp import InvestmentBlockSolver, SMSPPSolverTool, UCBlockSolver
+from pysmspp import InvestmentBlockSolver, SDDPSolver, SMSPPSolverTool, UCBlockSolver
 
 
 class FakeSolver(SMSPPSolverTool):
@@ -87,3 +88,31 @@ def test_investment_status_is_not_the_value():
     assert solver.status_code == 18
     assert not solver.is_optimal
     assert solver.status.startswith("Failed")
+
+
+def test_sddp_lagrangian_recipe_passes_its_block_config():
+    """The Lagrangian recipe of the SDDPBlock templates is the pair -B -S:
+    without -B the tool reads its default SDDPBCfg.txt, i.e., the formulation
+    of the units for the linear programs, whatever -S says."""
+    from pysmspp import SMSConfig
+
+    configfile = SMSConfig(template="SDDPBlock/SDDPSCfg-LD.txt")
+    training = SDDPSolver(
+        fp_network="net/SDDPBlock.nc4",
+        configfile=str(configfile),
+        B="SDDPBCfg-LD.txt",
+    ).calculate_executable_call()
+    simulation = SDDPSolver(
+        fp_network="net/SDDPBlock.nc4",
+        configfile=str(configfile).replace("SDDPSCfg-LD", "SDDPSCfg-greedy-LD"),
+        s=None,
+        B="SDDPBCfg-LD.txt",
+    ).calculate_executable_call()
+
+    for command in (training, simulation):
+        assert command[command.index("-B") + 1] == "SDDPBCfg-LD.txt"
+        configdir = command[command.index("-c") + 1]
+        for name in ("SDDPBCfg-LD.txt", command[command.index("-S") + 1]):
+            assert (Path(configdir) / name).is_file()
+    assert "-s" in simulation
+    assert simulation[simulation.index("-S") + 1] == "SDDPSCfg-greedy-LD.txt"

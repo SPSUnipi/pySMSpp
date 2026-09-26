@@ -4,8 +4,6 @@
 # A txt description of a BlockSolverConfig for a UCBlock to be solved by a
 # LagrangianDualSolver using a BundleSolver as the inner Solver
 #
-#   Enrico Gorgone, Antonio Frangioni, Donato Meoli
-#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -32,22 +30,28 @@ ComputeConfig # exact type of the ComputeConfig object
 17 # number of integer parameters
 
 # now all the integer parameters
-intMPStbl              0 # stabilization: 0 = proximal, 1 = level, 2 = doubly stabilized
+intMPStbl              0 # stabilization: 0 = proximal, 1 = level, 2 = doubly
+                         # stabilized
 intDoEasy  15     # do easy components for (some) LagBFunction
 intMaxIter 10000  # max number of iterations for each call
 intMaxThread 36   # MaxThread, max number of new tasks to spawn
 intLogVerb 2      # log verbosity of main Bundle algorithm
 
 intWZNorm   2     # which norm to use in the norm-based stopping condition
-intBPar1   20     # discard items when they have been useless for <this> iterations
+intBPar1   20     # discard items when they have been useless for <this>
+                  # iterations
 intBPar2 1000     # max bundle size per component
 intBPar3    1     # max n. of items to fetch from Fi() at each iteration
 intBPar4    1     # min n. of items to fetch from Fi() at each iteration
-intBPar6    0     # second parameter for dynamic max n. of items per iteration
+intBPar6    0     # second parameter for dynamic max n. of items per
+                  # iteration
 intBPar7   11     # how to deal with the global pools
-intMnSSC    0     # min number of consecutive SS with the same t for a t increase
-intMnNSC    1     # min number of consecutive NS with the same t for a t decrease
-inttSPar1  12     # long-term t-strategy (0 = none, 4 = soft, 8 = hard, 12 = balancing)
+intMnSSC    0     # min number of consecutive SS with the same t for a t
+                  # increase
+intMnNSC    1     # min number of consecutive NS with the same t for a t
+                  # decrease
+inttSPar1  12     # long-term t-strategy (0 = none, 4 = soft, 8 = hard, 12 =
+                  # balancing)
 intMaxNrEvls 2    # maximum number of function evaluations at each iteration
 
 # OSiMPSolver's parameters :- - - - - - - - - - - - - - - - - - - - - - - - -
@@ -57,11 +61,15 @@ intRstAlg  2     # parameter to handle the reset of the algorithm
 
 # now all the double parameters
 dblRelAcc  1e-4   # relative accuracy required to solution
-dblNZEps   1e+4   # stopping parameter: threshold to declare 0 the || residual ||
-dbltStar   -100   # stopping parameter: multiplied to || residual || to estimate gap
+dblNZEps   1e+4   # stopping parameter: threshold to declare 0 the ||
+                  # residual ||
+dbltStar   -100   # stopping parameter: multiplied to || residual || to
+                  # estimate gap
 dblBPar5   4      # first parameter for dynamic max n. of items per iteration
-dblm1      -0.30  # a NS is possible if (~) Fi( Lambda1 ) >= Fi( Lambda ) + | m1 | v*
-dblm2      0.90   # a SS is possible if Fi( Lambda1 ) <= Fi( Lambda ) + ( 1 - m2 ) v*
+dblm1      -0.30  # a NS is possible if (~) Fi( Lambda1 ) >= Fi( Lambda ) + |
+                  # m1 | v*
+dblm2      0.90   # a SS is possible if Fi( Lambda1 ) <= Fi( Lambda ) + ( 1 -
+                  # m2 ) v*
 dblm3      0.99   # a NR is computed if \sigma^* < - t * m3 * || z* ||
 dblmxIncr  10     # max increase of t
 dblmnIncr  1.5    # min increase of t (each time it is increased)
@@ -75,11 +83,15 @@ dbltSPar2  1e-2   # parameter for the long-term t-strategy
 3 # number of string parameters
 
 # now all the string parameters
-str_LDSlv_ISName	ParallelBundleSolver  # the inner Solver used by LagrangianDualSolver
-#str_LDSlv_ISName	BundleSolver  # the inner Solver used by LagrangianDualSolver
-str_LagBF_BSCfg		config/InnerBSCfg-sim.txt # meta BlockSolverConfig for the LagBFunctions,
-					                          # dispatched by inner Block classname()
-strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's Solver
+str_LDSlv_ISName        ParallelBundleSolver  # the inner Solver used by
+                                              # LagrangianDualSolver
+#str_LDSlv_ISName       BundleSolver  # the inner Solver used by
+                                      # LagrangianDualSolver
+str_LagBF_BSCfg         InnerBSCfg-sim.txt # meta BlockSolverConfig for the
+                                           # LagBFunctions, dispatched by
+                                           # inner Block classname()
+strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's
+                             # Solver
 
 0 # number of vector-of-int parameters
 
@@ -91,10 +103,21 @@ strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's So
 # now all the vector-of-double parameters
 # [none]
 
-0 # number of vector-of-string parameters
+2 # number of vector-of-string parameters
 
 # now all the vector-of-string parameters
-# [none]
+# the components that are never "easy": the ThermalUnitBlock, which have
+# their own Solver, and all those whose primal solution the simulation needs,
+# since it is not provided for the easy components: the units that link two
+# consecutive stages, and the NetworkBlock, part of the output
+vstr_LDSl_NoEasy 9 ThermalUnitBlock HydroSystemUnitBlock BatteryUnitBlock
+                   IntermittentUnitBlock DCNetworkBlock ACNetworkBlock
+                   ECNetworkBlock OTSNetworkBlock DesignNetworkBlock
+
+# the same components are those whose primal solution the simulation needs
+vstr_LDSl_VarSol 9 ThermalUnitBlock HydroSystemUnitBlock BatteryUnitBlock
+                   IntermittentUnitBlock DCNetworkBlock ACNetworkBlock
+                   ECNetworkBlock OTSNetworkBlock DesignNetworkBlock
 
 # pointer to the "extra" Configuration
 * # [none]
@@ -104,5 +127,5 @@ strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's So
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - -END BSPar-greedy-LD.txt- - - - - - - - - - - - -
+# - - - - - - - - - - - - - END BSPar-greedy-LD.txt - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

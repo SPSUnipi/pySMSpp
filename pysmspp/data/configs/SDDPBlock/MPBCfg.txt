@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - MPBCfg.txt - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - MPBCfg.txt- - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for the inner :MILPSolver of the
 # MasterProblemBlock used by the BundleSolver
@@ -40,17 +40,19 @@ intCutSepPar    7 # separate user cuts + lazy constraints
 intMaxThread    1 # single-threaded for deterministic master reproducibility
 
 # All specific CPLEX parameter (uncomment based on Solver)
-#CPXPARAM_LPMethod                1   # 0 = auto, 1 = primal, 2 = dual, 4 = barrier
+#CPXPARAM_LPMethod                1   # 0 = auto, 1 = primal, 2 = dual, 4 =
+                                      # barrier
 #CPXPARAM_Emphasis_Numerical      1   # numerical precision emphasis
 
 # All specific GUROBI parameter (uncomment based on Solver)
-#Method       1   # 0 = primal, 1 = dual simplex, 2 = barrier: the multipliers
-                  # of the master ARE the algorithm, and an interior point has
-                  # them only to about 1e-7 relative, which the stopping test
-                  # of the bundle cannot survive; besides, the barrier cannot
-                  # restart from the previous basis, so it re-solves the master
-                  # from scratch at every call, while the simplex re-optimises
-                  # after the new columns for a fraction of the iterations
+#Method       1   # 0 = primal, 1 = dual simplex, 2 = barrier: the
+                  # multipliers of the master ARE the algorithm, and an
+                  # interior point has them only to about 1e-7 relative,
+                  # which the stopping test of the bundle cannot survive;
+                  # besides, the barrier cannot restart from the previous
+                  # basis, so it re-solves the master from scratch at every
+                  # call, while the simplex re-optimises after the new
+                  # columns for a fraction of the iterations
 #NumericFocus 1   # 0 = auto, 1..3 = increasing precision focus: the master
                   # is small and re-solved thousands of times, so whatever
                   # extra care is asked is paid at every one of them, and 3
@@ -117,5 +119,5 @@ dblRAccSol      1e-08 # relative accuracy of the solution pool
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END MPBCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END MPBCfg.txt- - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

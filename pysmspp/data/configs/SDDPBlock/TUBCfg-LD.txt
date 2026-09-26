@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - TUBCfg-LD.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - TUBCfg-LD.txt - - - - - - - - - - - - - - -
 #
 # A txt description of the BlockConfig for a ThermalUnitBlock when the
 # SDDPBlock is solved via LagrangianDualSolver: besides what TUBCfg-OVC.txt
@@ -7,15 +7,15 @@
 # the Objective (objective Configuration == 3), since the reserve demand
 # constraints of the UCBlock are dualized.
 #
-#   Donato Meoli
-#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 BlockConfig # exact type of the Configuration object
 
 1  # the BlockConfig is a "differential" one
+
 2  # version of the BlockConfig format
+
 # the Configuration for the structure, i.e., the tree of sub-Block
 *  # [none]
 
@@ -50,5 +50,5 @@ SimpleConfiguration<std::pair<double,int>>
 *    # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END TUBCfg-LD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END TUBCfg-LD.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

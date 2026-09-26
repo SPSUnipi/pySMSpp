@@ -1,9 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - -SDDPSCfg-LD.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - SDDPSCfg-LD.txt - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a SDDPSolver
-#
-#   Rafael Durbano Lobato
+# The BlockSolverConfig of the SDDPBlock whose inner Block of each stage is
+# solved via LagrangianDualSolver [see BSPar-LD.txt], to be used with
+# -B SDDPBCfg-LD.txt.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,10 +33,14 @@ ComputeConfig # exact type of the ComputeConfig object
 intMaxIter               5
 intLogVerb               0 # log verbosity
 intNStepConv             5 # Frequency at which the convergence is checked
-intPrintTime             1 # Indicates whether computational time should be displayed
-intNbSimulCheckForConv   5 # Number of simulations considered when checking convergence
-intNbSimulForward        5 # Number of simulations considered in the forward pass
-intNbSimulBackward       5 # Number of simulations considered in the backward pass
+intPrintTime             1 # Indicates whether computational time should be
+                           # displayed
+intNbSimulCheckForConv   5 # Number of simulations considered when checking
+                           # convergence
+intNbSimulForward        5 # Number of simulations considered in the forward
+                           # pass
+intNbSimulBackward       5 # Number of simulations considered in the backward
+                           # pass
 intOutputFrequency       1
 intBackwardSolverIndex   1
 intForwardSolverIndex    0
@@ -50,8 +54,8 @@ dblAccuracy 0 # Relative accuracy for declaring a solution optimal
 3 # number of string parameters
 
 # now all the string parameters
-#strInnerBSC   config/UCBSCfg.txt   # BlockSolverConfig for the UCBlock
-strInnerBSC   config/BSPar-LD.txt          # BlockSolverConfig for the UCBlock
+#strInnerBSC   UCBSCfg.txt   # BlockSolverConfig for the UCBlock
+strInnerBSC   BSPar-LD.txt          # BlockSolverConfig for the UCBlock
 #strInnerBC   uc_blockconfig.txt    # BlockConfig for the UCBlock
 strSubSolverLogFilePrefix sub-log-
 strOutputFile cuts.txt
@@ -79,5 +83,5 @@ strOutputFile cuts.txt
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - -END SDDPSCfg-LD.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END SDDPSCfg-LD.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
