@@ -2,9 +2,9 @@
 # - - - - - - - - - - - - - - - -  PIPSCfg.txt  - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of the PIPSMILPSolver of TSSBSCfg-PIPS.txt: the
-# continuous relaxation, Curtis-Reid scaling, no presolve of PIPS-IPM++, the
-# linear solvers of the build (MUMPS unless PARDISO is there, in which case
-# LINEAR_ROOT_SOLVER and LINEAR_SUB_ROOT_SOLVER pardiso are faster).
+# continuous relaxation, equilibrium scaling, no presolve of PIPS-IPM++, the
+# linear solvers of the build (MUMPS; PARDISO at the root hangs in the
+# factorization of the Schur complement with 25 or more processes).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -29,7 +29,10 @@ IPM_TIMELIMIT 3600 # maximum time of the interior point method
 1 # number of string parameters
 
 # now all the string parameters
-SCALER curtisreid  # scaling of the problem
+SCALER equilibrium # scaling of the problem: with curtisreid the interior
+                   # point stops at its iteration limit on unit commitment
+                   # relaxations, and equilibrium is also 7 to 14% faster
+                   # where both converge
 
 0 # number of vector-of-int parameters
 

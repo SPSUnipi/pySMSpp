@@ -36,7 +36,11 @@ intDoEasy  0      # do easy components for (some) LagBFunction
 intMaxIter 10000  # max number of iterations for each call
 intMaxThread 6	   # MaxThread, max number of new tasks to spawn
 intLogVerb 16      # log verbosity of main Bundle algorithm
-intWZNorm   2     # which norm to use in the norm-based stopping condition
+intWZNorm  10     # which norm to use in the norm-based stopping condition:
+                  # the 2-norm, dblNZEps being relative to that of the first
+                  # full subgradient; taken as absolute, 1e-4 is below what
+                  # the aggregated subgradient reaches on a design in MW,
+                  # and the bundle goes on long after the optimum
 intBPar1   20     # discard items when they have been useless for <this> iterations
 intBPar2 1000     # max bundle size per component
 intBPar3    1     # max n. of items to fetch from Fi() at each iteration
@@ -69,13 +73,12 @@ dbltMinor  1e-10  # minimum value for t
 dbltInit   1e+0   # initial value for t
 dbltSPar2  1e-2   # parameter for the long-term t-strategy
 
-2 # number of string parameters
+1 # number of string parameters
 
 # now all the string parameters
 #str_LagBF_BSCfg	LPBSCfg.txt   # BlockSolverConfig for the LagBFunctions
 # not needed if intDoEasy >= 1 && USE_BundleSolver > 0, this is done "by hand"
 strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's Solver
-strInnerBSC       BSCfg-IB.txt # BlockSolverConfig for the inner Block
 
 0 # number of vector-of-int parameters
 
