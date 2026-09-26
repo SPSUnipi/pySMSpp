@@ -1,9 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - SDDPSCfg-greedy-LD.txt- - - - - - - - - - - - - -
+# - - - - - - - - - - - - -  SDDPSCfg-greedy-LD.txt - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a SDDPGreedySolver
-#
-#   Rafael Durbano Lobato
+# The BlockSolverConfig of the SDDPBlock for the simulation (-s), with the
+# inner Block of each stage solved via LagrangianDualSolver [see
+# BSPar-greedy-LD.txt], to be used with -B SDDPBCfg-LD.txt.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,17 +33,17 @@ ComputeConfig # exact type of the ComputeConfig object
 # now all the integer parameters
 intLogVerb 1      # log verbosity
 # intScenarioId 0 # index of the scenario to be considered
-intUnregisterSolver 1 # unregister the Solver of the inner Block after solving it
+intUnregisterSolver 1 # unregister the Solver of the inner Block after
+                      # solving it
 
 0 # number of double parameters
 
 # now all the double parameters
 
-1 # number of string parameters
+0 # number of string parameters
 
 # now all the string parameters
-strInnerBSC      config/BSPar-greedy-LD.txt   # BlockSolverConfig for the UCBlock
-#strInnerBC      uc_blockconfig.txt    # BlockConfig for the UCBlock
+# [none]
 
 0 # number of vector-of-int parameters
 
@@ -60,13 +60,32 @@ strInnerBSC      config/BSPar-greedy-LD.txt   # BlockSolverConfig for the UCBloc
 # now all the vector-of-string parameters
 # [none]
 
-# pointer to the "extra" Configuration
-* # [none]
+# pointer to the "extra" Configuration: the Configurations of the inner
+# Block of each stage
+SimpleConfiguration<std::vector<Configuration*>>
+4  # number of elements in this vector
+
+# the BlockConfig of the inner Block
+*  # [none]
+
+# the BlockSolverConfig of the inner Block
+*BSPar-greedy-LD.txt
+
+# the Configuration of get_var_solution(): none, the components whose primal
+# solution is needed are named in vstr_LDSl_VarSol of BSPar-greedy-LD.txt
+*  # [none]
+
+# the Configuration of get_dual_solution(): only the dual solution of the
+# linking constraints of the UCBlock (the -1 not being any sub-Block), those
+# of its sub-Blocks are not needed
+SimpleConfiguration<std::vector<std::pair<int,int>>>
+1  # number of elements in this vector
+-1 -1
 
 # end of 1st ComputeConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - END SDDPSCfg-greedy-LD.txt- - - - - - - - - - - - -
+# - - - - - - - - - - - -  END SDDPSCfg-greedy-LD.txt - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

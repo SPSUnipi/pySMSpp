@@ -1,0 +1,32 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - TSSBSCfg-IP.txt - - - - - - - - - - - - - - - -
+#
+# A TSSBlock solved whole by a :MILPSolver with its integer Variable.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+1  # the BlockSolverConfig is a "differential" one
+
+1 # number of (the names of) Solver in this BlockSolverConfig
+
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+#CPXMILPSolver        # name of 1st Solver
+GRBMILPSolver        # name of 1st Solver
+#SCIPMILPSolver       # name of 1st Solver
+#HiGHSMILPSolver       # name of 1st Solver
+# [no second Solver: this configuration times the :MILPSolver alone]
+
+1 # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ComputeConfig of the :MILPSolver
+
+*MILPCfg-IP.txt
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END TSSBSCfg-IP.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,11 +1,10 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - PFBCfg.txt- - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  PFBCfg.txt - - - - - - - - - - - - - - - -
 #
 # A txt description of the BlockConfig for a PolyhedralFunctionBlock: the
 # "linearized" representation of the PolyhedralFunction is used (static
-# variables Configuration == 1), plus the is_feasible() tolerances.
-#
-#   Donato Meoli
+# variables Configuration == 1), the is_feasible() tolerances, and the
+# cut-processing tolerances of remove_redundant_rows() (extra Configuration).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -13,7 +12,9 @@
 BlockConfig # exact type of the Configuration object
 
 1  # the BlockConfig is a "differential" one
+
 2  # version of the BlockConfig format
+
 # the Configuration for the structure, i.e., the tree of sub-Block
 *  # [none]
 
@@ -43,9 +44,14 @@ SimpleConfiguration<std::pair<double,int>>
 # solution
 *    # [none]
 
-# extra
-*    # [none]
+# extra: the four tolerances of remove_redundant_rows()
+SimpleConfiguration<std::vector<double>>
+4       # the number of elements in the vector
+0.0     # parallel abs tolerance
+0.0     # parallel rel tolerance
+0.0     # optimization abs tolerance
+0.0     # optimization rel tolerance
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END PFBCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  END PFBCfg.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
