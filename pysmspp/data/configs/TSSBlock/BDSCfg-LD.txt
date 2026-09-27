@@ -1,0 +1,35 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - BDSCfg-LD.txt - - - - - - - - - - - - - - - -
+#
+# The ComputeConfig of the BendersDecompositionSolver whose subproblems are
+# solved by the recursive Lagrangian dual of TSSBSCfg-LDrec.txt: that of
+# BDSCfg.txt, the Solver of the subproblems apart.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+*BDSCfg.txt +
+
+1  # f_diff == 1 ==> only the entries listed below are changed
+
+0  # number of integer parameters
+
+0  # number of double parameters
+
+1  # number of string parameters
+
+# now all the string parameters
+str_Bsub_BSCfg  TSSBSCfg-LDrec.txt  # BlockSolverConfig of the subproblems
+
+0  # number of vector-of-int parameters
+
+0  # number of vector-of-double parameters
+
+0  # number of vector-of-string parameters
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END BDSCfg-LD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
