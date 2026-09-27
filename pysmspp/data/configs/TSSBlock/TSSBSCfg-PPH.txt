@@ -41,12 +41,10 @@ intUseWarmStartPSol 0 # the first iteration solves the plain Lagrangian Dual,
 
 int_LDSlv_iBCopy  0 # 1 if sub-Block must be R3B-copied
 intLogVerb        0 # log verbosity of main Bundle algorithm
-intTrgtMng       31
-intRecoveryThreads 8 # bit-wise encoding targets and accuracies management:
-                    # bit 0: if lower/upper target is set to each convex/concave component
-                    # bit 1: if upper/lower target is set to each convex/concave component
-                    # bit 2-3: if accuracy is set (2 = upper - lower, 3 = using EpsU)
-                    # bit 4: if Lipschitz constant is used to compute the upper model
+intTrgtMng       31 # bit-wise targets and accuracies management: lower
+                    # and upper targets, accuracy as upper - lower, and
+                    # the Lipschitz constant in the upper model
+intRecoveryThreads 8 # threads solving the scenarios of the recovery
 
 9 # number of double parameters
 
@@ -71,7 +69,8 @@ dbltInit          1e-3 # initial value for t
 2 # number of string parameters
 
 str_LagBF_BSCfg  LPBSCfg-LDLD.txt
-strRecoveryBSC   BSCfg1-IP.txt # BlockSolverConfig for the LagBFunctions
+strRecoveryBSC   BSCfg1-IP.txt # BlockSolverConfig of the recovery: each
+                                # scenario a MILP at the fixed design
 
 0 # number of vector-of-int parameters
 
