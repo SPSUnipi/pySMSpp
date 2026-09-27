@@ -5,7 +5,8 @@
 # solved by the recursive Lagrangian dual of TSSBSCfg-LDrec.txt: that of
 # BDSCfg.txt, the Solver of the subproblems apart, and with the recovery of
 # a feasible solution at the design of the master (BSCfg1-IP.txt), which
-# gives the upper bound in the MILP regime.
+# gives the upper bound in both regimes (in the convex one, at the best
+# point of the bundle).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
