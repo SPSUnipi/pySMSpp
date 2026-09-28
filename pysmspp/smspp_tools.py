@@ -192,6 +192,9 @@ class SMSPPSolverTool:
         self._subprocess_time = None
         self._solution_time = None
         self._computational_time = None
+        self._version_output = None
+        self._parsed_version = None
+        self._minimum_version_checked = False
         self._kwargs = kwargs
 
         if "c" in self._kwargs:
@@ -290,7 +293,18 @@ class SMSPPSolverTool:
         -------
         str
             The semantic version (e.g. "0.7.1") parsed from the tool output.
+
+        Raises
+        ------
+        ValueError
+            If version retrieval fails for all configured version options, or
+            if the tool output does not contain a parseable semantic version.
         """
+        if self._parsed_version is not None:
+            if print_message and self._version_output is not None:
+                print(self._version_output)
+            return self._parsed_version
+
         options = [self._version_option]
         if self._fallback_version_option is not None:
             options.append(self._fallback_version_option)
@@ -327,6 +341,9 @@ class SMSPPSolverTool:
                 f"Could not parse version from {self._solver_path} output:\n{msg}"
             )
 
+        self._version_output = msg
+        self._parsed_version = parsed
+
         if print_message:
             print(msg)
         return parsed
@@ -336,6 +353,8 @@ class SMSPPSolverTool:
         Raise when the solver version is older than the required minimum one.
         """
         if self._minimum_version is None:
+            return
+        if self._minimum_version_checked:
             return
 
         minimum = _version_tuple_of(self._minimum_version)
@@ -355,6 +374,7 @@ class SMSPPSolverTool:
             raise ValueError(
                 f"{self._solver_path} version {current_text} is older than required minimum version {self._minimum_version}"
             )
+        self._minimum_version_checked = True
 
     def optimize(self, logging=True, tracking_period=0.1):
         """

@@ -78,6 +78,34 @@ def test_optimize_checks_minimum_solver_version(tmp_path):
         solver.optimize(logging=False, tracking_period=0.01)
 
 
+def test_minimum_version_check_is_cached(tmp_path, monkeypatch):
+    fp_network = tmp_path / "network.nc4"
+    fp_config = tmp_path / "config.txt"
+    fp_network.write_text("fake network")
+    fp_config.write_text("fake config")
+
+    solver = FakeSolver(
+        solver_path=sys.executable,
+        fp_network=fp_network,
+        configfile=fp_config,
+        minimum_version="0.0.1",
+    )
+
+    calls = {"count": 0}
+    version = solver.version
+
+    def counting_version(*args, **kwargs):
+        calls["count"] += 1
+        return version(*args, **kwargs)
+
+    monkeypatch.setattr(solver, "version", counting_version)
+
+    solver.ensure_minimum_version()
+    solver.ensure_minimum_version()
+
+    assert calls["count"] == 1
+
+
 def test_status_code_of_a_log():
     """The status of a run is the one SMS++ printed, not a finite value."""
     solver = UCBlockSolver()
