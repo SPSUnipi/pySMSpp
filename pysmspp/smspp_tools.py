@@ -2,6 +2,7 @@ import logging
 import os
 import queue
 import re
+import shlex
 import subprocess
 import threading
 import time
@@ -322,14 +323,15 @@ class SMSPPSolverTool:
             "text": True,
         }
         networkdir = None if self.fp_network is None else os.path.split(self.fp_network)[0]
-        if networkdir:
+        if networkdir and Path(networkdir).is_dir():
             run_kwargs["cwd"] = networkdir
 
         for option in options:
+            command_parts = [self._solver_path, option]
             command = (
-                f"{self._solver_path} {option}"
+                " ".join(shlex.quote(part) for part in command_parts)
                 if self._shell
-                else [self._solver_path, option]
+                else command_parts
             )
             result = subprocess.run(command, **run_kwargs)
             msg = result.stdout + os.linesep + result.stderr
