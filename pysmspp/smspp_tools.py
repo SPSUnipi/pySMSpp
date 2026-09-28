@@ -315,19 +315,23 @@ class SMSPPSolverTool:
 
         msg = None
         succeeded = False
+        run_kwargs = {
+            "capture_output": True,
+            "shell": self._shell,
+            "check": False,
+            "text": True,
+        }
+        networkdir = None if self.fp_network is None else os.path.split(self.fp_network)[0]
+        if networkdir:
+            run_kwargs["cwd"] = networkdir
+
         for option in options:
             command = (
                 f"{self._solver_path} {option}"
                 if self._shell
                 else [self._solver_path, option]
             )
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                shell=self._shell,
-                check=False,
-                text=True,
-            )
+            result = subprocess.run(command, **run_kwargs)
             msg = result.stdout + os.linesep + result.stderr
             if result.returncode == 0:
                 succeeded = True
