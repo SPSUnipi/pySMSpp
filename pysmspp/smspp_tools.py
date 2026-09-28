@@ -306,7 +306,10 @@ class SMSPPSolverTool:
             return self._parsed_version
 
         options = [self._version_option]
-        if self._fallback_version_option is not None:
+        if (
+            self._fallback_version_option is not None
+            and self._fallback_version_option not in options
+        ):
             options.append(self._fallback_version_option)
 
         msg = None
