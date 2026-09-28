@@ -315,7 +315,7 @@ class SMSPPSolverTool:
             options.append(self._fallback_version_option)
 
         msg = None
-        succeeded = False
+        parsed = None
         run_kwargs = {
             "capture_output": True,
             "shell": self._shell,
@@ -335,20 +335,16 @@ class SMSPPSolverTool:
             )
             result = subprocess.run(command, **run_kwargs)
             msg = result.stdout + os.linesep + result.stderr
-            if result.returncode == 0:
-                succeeded = True
+            if result.returncode != 0:
+                continue
+            parsed = _parse_tool_version(msg)
+            if parsed is not None:
                 break
 
-        if not succeeded:
-            raise ValueError(
-                f"Failed to get version from {self._solver_path} using options {options}:"
-                f"\n{msg}"
-            )
-
-        parsed = _parse_tool_version(msg)
         if parsed is None:
             raise ValueError(
-                f"Could not parse version from {self._solver_path} output:\n{msg}"
+                f"Failed to parse version from {self._solver_path} using options {options}:"
+                f"\n{msg}"
             )
 
         self._version_output = msg
