@@ -278,12 +278,13 @@ class SMSPPSolverTool:
 
     def version(self, print_message=True):
         """
-        Print and return the semantic version reported by the SMS++ solver.
+        Return the semantic version reported by the SMS++ solver.
 
         Parameters
         ----------
         print_message : bool, optional
-            Whether to print the full version output, by default True.
+            Whether to print the raw version output from the solver, by default
+            True.
 
         Returns
         -------
@@ -297,8 +298,13 @@ class SMSPPSolverTool:
         msg = None
         succeeded = False
         for option in options:
+            command = (
+                f"{self._solver_path} {option}"
+                if self._shell
+                else [self._solver_path, option]
+            )
             result = subprocess.run(
-                [self._solver_path, option],
+                command,
                 capture_output=True,
                 shell=self._shell,
                 check=False,
