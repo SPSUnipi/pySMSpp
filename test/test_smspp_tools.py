@@ -37,6 +37,31 @@ def test_version_uses_fallback_option():
     assert version.count(".") >= 1
 
 
+def test_version_is_cached_and_deduplicates_identical_options(monkeypatch):
+    calls = {"count": 0}
+
+    def fake_run(command, **kwargs):
+        calls["count"] += 1
+        return smspp_tools_module.subprocess.CompletedProcess(
+            args=command,
+            returncode=0,
+            stdout="SMS++ tools version 0.7.1\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(smspp_tools_module.subprocess, "run", fake_run)
+
+    solver = UCBlockSolver(
+        solver_path="ucblock_solver",
+        version_option="--version",
+        fallback_version_option="--version",
+    )
+
+    assert solver.version(print_message=False) == "0.7.1"
+    assert solver.version(print_message=False) == "0.7.1"
+    assert calls["count"] == 1
+
+
 def test_optimize_reads_subprocess_output_portably(tmp_path):
     fp_network = tmp_path / "network.nc4"
     fp_config = tmp_path / "config.txt"
@@ -110,6 +135,26 @@ def test_minimum_version_check_is_cached(tmp_path, monkeypatch):
     solver.ensure_minimum_version()
 
     assert calls["count"] == 1
+
+
+def test_minimum_version_cache_tracks_requirement(tmp_path):
+    fp_network = tmp_path / "network.nc4"
+    fp_config = tmp_path / "config.txt"
+    fp_network.write_text("fake network")
+    fp_config.write_text("fake config")
+
+    solver = FakeSolver(
+        solver_path=sys.executable,
+        fp_network=fp_network,
+        configfile=fp_config,
+        minimum_version="0.0.1",
+    )
+
+    solver.ensure_minimum_version()
+    solver._minimum_version = "99.0.0"
+
+    with pytest.raises(ValueError, match="older than required minimum version"):
+        solver.ensure_minimum_version()
 
 
 def test_status_code_of_a_log():

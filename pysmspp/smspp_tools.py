@@ -195,6 +195,7 @@ class SMSPPSolverTool:
         self._version_output = None
         self._parsed_version = None
         self._minimum_version_checked = False
+        self._validated_minimum_version = None
         self._kwargs = kwargs
 
         if "c" in self._kwargs:
@@ -357,14 +358,17 @@ class SMSPPSolverTool:
         """
         if self._minimum_version is None:
             return
-        if self._minimum_version_checked:
-            return
 
         minimum = _version_tuple_of(self._minimum_version)
         if minimum is None:
             raise ValueError(
                 f"Invalid minimum_version '{self._minimum_version}' for {self._solver_path}"
             )
+        if (
+            self._minimum_version_checked
+            and self._validated_minimum_version == minimum
+        ):
+            return
 
         current_text = self.version(print_message=False)
         current = _version_tuple_of(current_text)
@@ -378,6 +382,7 @@ class SMSPPSolverTool:
                 f"{self._solver_path} version {current_text} is older than required minimum version {self._minimum_version}"
             )
         self._minimum_version_checked = True
+        self._validated_minimum_version = minimum
 
     def optimize(self, logging=True, tracking_period=0.1):
         """
