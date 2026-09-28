@@ -327,11 +327,10 @@ class SMSPPSolverTool:
             run_kwargs["cwd"] = networkdir
 
         for option in options:
-            command_parts = [self._solver_path, option]
             command = (
-                " ".join(shlex.quote(part) for part in command_parts)
+                f"{self._solver_path} {shlex.quote(option)}"
                 if self._shell
-                else command_parts
+                else [self._solver_path, option]
             )
             result = subprocess.run(command, **run_kwargs)
             msg = result.stdout + os.linesep + result.stderr

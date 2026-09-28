@@ -66,6 +66,13 @@ def test_version_fallback_runs_when_primary_output_has_no_version(monkeypatch):
     assert solver.version(print_message=False) == "0.7.1"
 
 
+def test_version_supports_shell_solver_commands():
+    code = "print('SMS++ tools version 0.7.1')"
+    solver_cmd = f'{sys.executable} -c "{code}"'
+    solver = UCBlockSolver(solver_path=solver_cmd, shell=True)
+    assert solver.version(print_message=False) == "0.7.1"
+
+
 def test_version_is_cached_and_deduplicates_identical_options(monkeypatch):
     calls = {"count": 0}
 
