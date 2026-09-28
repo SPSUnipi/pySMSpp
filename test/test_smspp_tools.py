@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import pytest
 
+import pysmspp.smspp_tools as smspp_tools_module
 from pysmspp import InvestmentBlockSolver, SMSPPSolverTool, UCBlockSolver
 
 
@@ -61,7 +62,7 @@ def test_optimize_reads_subprocess_output_portably(tmp_path):
     assert fp_log.read_text() == result.log
 
 
-def test_optimize_checks_minimum_solver_version(tmp_path):
+def test_optimize_checks_minimum_solver_version(tmp_path, monkeypatch):
     fp_network = tmp_path / "network.nc4"
     fp_config = tmp_path / "config.txt"
     fp_network.write_text("fake network")
@@ -73,6 +74,11 @@ def test_optimize_checks_minimum_solver_version(tmp_path):
         configfile=fp_config,
         minimum_version="99.0.0",
     )
+
+    def fail_if_launched(*args, **kwargs):
+        raise AssertionError("optimize subprocess should not start on version mismatch")
+
+    monkeypatch.setattr(smspp_tools_module.psutil, "Popen", fail_if_launched)
 
     with pytest.raises(ValueError, match="older than required minimum version"):
         solver.optimize(logging=False, tracking_period=0.01)
