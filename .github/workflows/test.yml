@@ -107,7 +107,7 @@ jobs:
     needs:
     - test
     runs-on: ${{ matrix.os }}-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[breaking]') || contains(github.event.pull_request.title, '[Breaking]') || contains(github.event.pull_request.title, '[BREAKING]')))
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[breaking]'))
     strategy:
       fail-fast: false
       matrix:
