@@ -5,6 +5,7 @@ import re
 import subprocess
 import threading
 import time
+from itertools import zip_longest
 from pathlib import Path
 
 import numpy as np
@@ -38,6 +39,34 @@ def _status_code_of(status):
     """
     res = re.search(r"-?\d+", "" if status is None else str(status))
     return None if res is None else int(res.group())
+
+
+def _parse_tool_version(version):
+    """
+    The semantic version found in a tool version string, e.g. "0.7.1" in
+    "SMS++ tools version 0.7.1", and None where none can be found.
+    """
+    if version is None:
+        return None
+
+    res = re.search(r"\d+(?:\.\d+){1,}", str(version))
+    return None if res is None else res.group()
+
+
+def _version_tuple_of(version):
+    parsed = _parse_tool_version(version)
+    if parsed is None:
+        return None
+    return tuple(int(component) for component in parsed.split("."))
+
+
+def _is_older_version(current, minimum):
+    for cur, req in zip_longest(current, minimum, fillvalue=0):
+        if cur < req:
+            return True
+        if cur > req:
+            return False
+    return False
 
 
 def _enqueue_pipe_lines(pipe, stream_name, messages):
@@ -83,6 +112,9 @@ class SMSPPSolverTool:
         fp_solution: Path | str | None = None,
         configsolution: Path | str | None = None,
         help_option: str = "-h",
+        version_option: str = "--version",
+        fallback_version_option: str | None = "-V",
+        minimum_version: str | None = None,
         shell: bool = False,
         **kwargs,
     ):
@@ -110,6 +142,14 @@ class SMSPPSolverTool:
             When provided, option "-C" is added to the executable call to specify the configuration solution file.
         help_option : str, optional
             The option to display the help message, by default "-h".
+        version_option : str, optional
+            The option to display the version message, by default "--version".
+        fallback_version_option : str | None, optional
+            Alternative version option when version_option is not supported,
+            by default "-V".
+        minimum_version : str | None, optional
+            Optional minimum compatible version (for example "0.7.1"), by
+            default None.
         shell : bool, optional
             Whether to execute the command through the shell. Defaults to False.
         **kwargs
@@ -122,6 +162,9 @@ class SMSPPSolverTool:
         else:
             self._solver_path = str(solver_path)
         self._help_option = help_option
+        self._version_option = version_option
+        self._fallback_version_option = fallback_version_option
+        self._minimum_version = minimum_version
 
         self.fp_network = (
             None if fp_network is None else str(Path(fp_network).resolve())
@@ -233,6 +276,80 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
+    def version(self, print_message=True):
+        """
+        Print and return the semantic version reported by the SMS++ solver.
+
+        Parameters
+        ----------
+        print_message : bool, optional
+            Whether to print the full version output, by default True.
+
+        Returns
+        -------
+        str
+            The semantic version (e.g. "0.7.1") parsed from the tool output.
+        """
+        options = [self._version_option]
+        if self._fallback_version_option is not None:
+            options.append(self._fallback_version_option)
+
+        msg = None
+        succeeded = False
+        for option in options:
+            result = subprocess.run(
+                [self._solver_path, option],
+                capture_output=True,
+                shell=self._shell,
+                check=False,
+                text=True,
+            )
+            msg = result.stdout + os.linesep + result.stderr
+            if result.returncode == 0:
+                succeeded = True
+                break
+
+        if not succeeded:
+            raise ValueError(
+                f"Failed to get version from {self._solver_path} using options {options}:"
+                f"\n{msg}"
+            )
+
+        parsed = _parse_tool_version(msg)
+        if parsed is None:
+            raise ValueError(
+                f"Could not parse version from {self._solver_path} output:\n{msg}"
+            )
+
+        if print_message:
+            print(msg)
+        return parsed
+
+    def ensure_minimum_version(self):
+        """
+        Raise when the solver version is older than the required minimum one.
+        """
+        if self._minimum_version is None:
+            return
+
+        minimum = _version_tuple_of(self._minimum_version)
+        if minimum is None:
+            raise ValueError(
+                f"Invalid minimum_version '{self._minimum_version}' for {self._solver_path}"
+            )
+
+        current_text = self.version(print_message=False)
+        current = _version_tuple_of(current_text)
+        if current is None:
+            raise ValueError(
+                f"Could not parse version for {self._solver_path}: {current_text}"
+            )
+
+        if _is_older_version(current, minimum):
+            raise ValueError(
+                f"{self._solver_path} version {current_text} is older than required minimum version {self._minimum_version}"
+            )
+
     def optimize(self, logging=True, tracking_period=0.1):
         """
         Run the SMSPP Solver tool.
@@ -252,6 +369,7 @@ class SMSPPSolverTool:
             )
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
+        self.ensure_minimum_version()
 
         command_raw = self.calculate_executable_call()
         command_str = " ".join(command_raw)

@@ -20,6 +20,22 @@ class FakeSolver(SMSPPSolverTool):
         return [sys.executable, "-c", code]
 
 
+def test_version_reads_solver_version():
+    solver = UCBlockSolver(solver_path=sys.executable)
+    version = solver.version(print_message=False)
+    assert version.count(".") >= 1
+
+
+def test_version_uses_fallback_option():
+    solver = UCBlockSolver(
+        solver_path=sys.executable,
+        version_option="--not-a-valid-python-version-option",
+        fallback_version_option="-V",
+    )
+    version = solver.version(print_message=False)
+    assert version.count(".") >= 1
+
+
 def test_optimize_reads_subprocess_output_portably(tmp_path):
     fp_network = tmp_path / "network.nc4"
     fp_config = tmp_path / "config.txt"
@@ -43,6 +59,23 @@ def test_optimize_reads_subprocess_output_portably(tmp_path):
     assert "solver stderr line" in result.log
     assert "Peak CPU Usage" in result.log
     assert fp_log.read_text() == result.log
+
+
+def test_optimize_checks_minimum_solver_version(tmp_path):
+    fp_network = tmp_path / "network.nc4"
+    fp_config = tmp_path / "config.txt"
+    fp_network.write_text("fake network")
+    fp_config.write_text("fake config")
+
+    solver = FakeSolver(
+        solver_path=sys.executable,
+        fp_network=fp_network,
+        configfile=fp_config,
+        minimum_version="99.0.0",
+    )
+
+    with pytest.raises(ValueError, match="older than required minimum version"):
+        solver.optimize(logging=False, tracking_period=0.01)
 
 
 def test_status_code_of_a_log():
