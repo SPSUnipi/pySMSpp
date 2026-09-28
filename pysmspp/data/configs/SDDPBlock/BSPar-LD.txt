@@ -135,20 +135,15 @@ strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's
 # now all the vector-of-double parameters
 # [none]
 
-3 # number of vector-of-string parameters
+1 # number of vector-of-string parameters
 
 # now all the vector-of-string parameters
-# the components that are never "easy": the ThermalUnitBlock, which have
-# their own Solver, and the HydroSystemUnitBlock, whose primal solution (the
-# final volume of the reservoirs) the SDDPSolver needs and which is not
-# provided for the easy components
-vstr_LDSl_NoEasy  2 ThermalUnitBlock HydroSystemUnitBlock
-
-# the only component whose primal and dual solution the SDDPSolver needs:
-# the final volume of the reservoirs, and the duals of the constraints of
-# the HydroSystemUnitBlock that the BendersBFunction handles
-vstr_LDSl_VarSol  1 HydroSystemUnitBlock
-vstr_LDSl_DualSol 1 HydroSystemUnitBlock
+# the components that the inner BundleSolver never treats as "easy": the
+# ThermalUnitBlock, which have their own Solver, and the
+# HydroSystemUnitBlock, whose primal solution (the final volume of the
+# reservoirs) the SDDPSolver needs and which is not provided for the easy
+# components
+vstrNoEasy 2 ThermalUnitBlock HydroSystemUnitBlock
 
 # pointer to the "extra" Configuration
 * # [none]

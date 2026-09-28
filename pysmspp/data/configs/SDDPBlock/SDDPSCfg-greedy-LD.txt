@@ -71,9 +71,20 @@ SimpleConfiguration<std::vector<Configuration*>>
 # the BlockSolverConfig of the inner Block
 *BSPar-greedy-LD.txt
 
-# the Configuration of get_var_solution(): none, the components whose primal
-# solution is needed are named in vstr_LDSl_VarSol of BSPar-greedy-LD.txt
-*  # [none]
+# the Configuration of get_var_solution(): the components whose primal
+# solution the simulation needs, by class, which are the hard ones of
+# BSPar-greedy-LD.txt
+SimpleConfiguration<std::map<std::string,Configuration*>>
+9                      # the number of elements in the map
+ThermalUnitBlock       *  # all of its solution
+HydroSystemUnitBlock   *  # all of its solution
+BatteryUnitBlock       *  # all of its solution
+IntermittentUnitBlock  *  # all of its solution
+DCNetworkBlock         *  # all of its solution
+ACNetworkBlock         *  # all of its solution
+ECNetworkBlock         *  # all of its solution
+OTSNetworkBlock        *  # all of its solution
+DesignNetworkBlock     *  # all of its solution
 
 # the Configuration of get_dual_solution(): only the dual solution of the
 # linking constraints of the UCBlock (the -1 not being any sub-Block), those

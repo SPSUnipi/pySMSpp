@@ -3,7 +3,8 @@
 #
 # The BlockSolverConfig of the SDDPBlock whose inner Block of each stage is
 # solved via LagrangianDualSolver [see BSPar-LD.txt], to be used with
-# -B SDDPBCfg-LD.txt.
+# -B SDDPBCfg-LD.txt. The extra Configuration tells the LagrangianDualSolver
+# which components have their primal and dual solution written.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -75,8 +76,32 @@ strOutputFile cuts.txt
 # now all the vector-of-string parameters
 # [none]
 
-# pointer to the "extra" Configuration
-* # [none]
+# pointer to the "extra" Configuration: the Configurations of the inner
+# Block of each stage
+SimpleConfiguration<std::vector<Configuration*>>
+4  # number of elements in this vector
+
+# the BlockConfig of the inner Block
+*  # [none]
+
+# the BlockSolverConfig of the inner Block: none here, it is strInnerBSC
+*  # [none]
+
+# the Configuration of get_var_solution(): the only component whose primal
+# solution the SDDPSolver needs, by class, is the HydroSystemUnitBlock (the
+# final volume of the reservoirs)
+SimpleConfiguration<std::map<std::string,Configuration*>>
+1                     # the number of elements in the map
+HydroSystemUnitBlock  *  # all of its solution
+
+# the Configuration of get_dual_solution(), which the BendersBFunction of
+# each stage passes on: the duals it needs are those of the constraints of
+# the HydroSystemUnitBlock (the volume of the reservoirs) and those of the
+# relaxed constraints (key "relaxed"), the other components are skipped
+SimpleConfiguration<std::map<std::string,Configuration*>>
+2                     # the number of elements in the map
+HydroSystemUnitBlock  *  # all of its dual solution
+relaxed               *  # the duals of the relaxed constraints
 
 # end of 1st ComputeConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 

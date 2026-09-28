@@ -103,21 +103,17 @@ strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's
 # now all the vector-of-double parameters
 # [none]
 
-2 # number of vector-of-string parameters
+1 # number of vector-of-string parameters
 
 # now all the vector-of-string parameters
-# the components that are never "easy": the ThermalUnitBlock, which have
-# their own Solver, and all those whose primal solution the simulation needs,
-# since it is not provided for the easy components: the units that link two
-# consecutive stages, and the NetworkBlock, part of the output
-vstr_LDSl_NoEasy 9 ThermalUnitBlock HydroSystemUnitBlock BatteryUnitBlock
-                   IntermittentUnitBlock DCNetworkBlock ACNetworkBlock
-                   ECNetworkBlock OTSNetworkBlock DesignNetworkBlock
-
-# the same components are those whose primal solution the simulation needs
-vstr_LDSl_VarSol 9 ThermalUnitBlock HydroSystemUnitBlock BatteryUnitBlock
-                   IntermittentUnitBlock DCNetworkBlock ACNetworkBlock
-                   ECNetworkBlock OTSNetworkBlock DesignNetworkBlock
+# the components that the inner BundleSolver never treats as "easy": the
+# ThermalUnitBlock, which have their own Solver, and all those whose primal
+# solution the simulation needs, since it is not provided for the easy
+# components: the units that link two consecutive stages, and the
+# NetworkBlock, part of the output
+vstrNoEasy 9 ThermalUnitBlock HydroSystemUnitBlock BatteryUnitBlock
+             IntermittentUnitBlock DCNetworkBlock ACNetworkBlock
+             ECNetworkBlock OTSNetworkBlock DesignNetworkBlock
 
 # pointer to the "extra" Configuration
 * # [none]
