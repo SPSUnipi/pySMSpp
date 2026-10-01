@@ -1,8 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - MPBCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - MPBCfg-IP.txt - - - - - - - - - - - - - - -
 #
-# A BlockSolverConfig for the inner :MILPSolver of the MasterProblemBlock
-# used by the BundleSolver [see MPCfg.txt].
+# A BlockSolverConfig for the :MILPSolver of the MasterProblemBlock of
+# BDSMCfg-CVX-int.txt, which keeps the integer Variable integer [see
+# MPCfg.txt].
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -24,12 +25,48 @@ HiGHSMILPSolver       # name of Solver
 # 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # ComputeConfig of the :MILPSolver
 
-*MPCfg.txt
+*MPCfg.txt +
+
+1  # f_diff == 1 ==> only the entries below are changed
+
+2  # number of integer parameters
+
+# now all the integer parameters
+intRelaxIntVars 0  # the integer design stays integer
+intCutSepPar    0  # no Block separates cuts in the master
+
+0  # number of double parameters
+
+# now all the double parameters
+# [none]
+
+0  # number of string parameters
+
+# now all the string parameters
+# [none]
+
+0  # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0  # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0  # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
 
 # end of ComputeConfig- - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END MPBCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END MPBCfg-IP.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

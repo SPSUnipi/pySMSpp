@@ -1,32 +1,33 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - BDSMCfg-CVX.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - TSSBSCfg-BDS-CVX-int.txt - - - - - - - - - - - - -
 #
-# The BlockSolverConfig of the master problem of BendersDecompositionSolver
-# in the convex regime (BDSCfg-CVX-LD.txt): a BundleSolver, which drives the
-# stabilized cutting-plane loop, the value functions of the subproblems
-# being components of its Objective; its master problem is solved by the
-# Solver of MPBCfg.txt.
+# The BendersDecompositionSolver of TSSBSCfg-BDS.txt in the convex regime
+# when the design is integer (BDSCfg-CVX-int.txt): a BundleSolver on the
+# master that keeps the design integer, the subproblems those of
+# BDSSCfg.txt.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 BlockSolverConfig     # exact type of the Configuration object
 
-0  # the BlockSolverConfig is not a "differential" one: values are being set
+0  # the BlockSolverConfig is not a "differential" one
 
 1  # number of (the names of) Solver in this BlockSolverConfig
 # now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
-BundleSolver # name of Solver
+BendersDecompositionSolver # name of Solver
 
 1  # number of ComputeConfig in this BlockSolverConfig
 
 # now all the ComputeConfig
 # 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-*BDSMBundleCfg.txt
+*BDSCfg-CVX-int.txt
 
-# end 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# end of 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# end of BlockSolverConfig  - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END BDSMCfg-CVX.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - END TSSBSCfg-BDS-CVX-int.txt - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

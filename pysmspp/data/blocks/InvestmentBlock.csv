@@ -10,6 +10,7 @@ InvestmentBlock,DisinvestmentCost,Variable,Variable,double,-|NumAssets,-,,requir
 InvestmentBlock,LowerBound,Variable,Variable,double,-|NumAssets,-,,optional,Minimum capacity of each asset
 InvestmentBlock,UpperBound,Variable,Variable,double,-|NumAssets,-,,optional,Maximum capacity of each asset
 InvestmentBlock,InstalledQuantity,Variable,Variable,double,-|NumAssets,-,,optional,Installed capacity of each asset
+InvestmentBlock,Integer,Variable,Variable,int,-|NumAssets,-,,optional,Nonzero if the design of the asset is integer (e.g. the number of its modules)
 InvestmentBlock,Constraints_LowerBound,Variable,Variable,double,-|NumConstraints,-,,optional,Lower bound of each constraint
 InvestmentBlock,Constraints_UpperBound,Variable,Variable,double,-|NumConstraints,-,,optional,Upper bound of each constraint
 InvestmentBlock,Constraints_A,Variable,Variable,double,-|NumConstraints-NumAssets,-,,optional,Coefficients of matrix of the linear constraints
