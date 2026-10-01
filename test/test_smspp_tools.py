@@ -28,12 +28,8 @@ def test_version_reads_solver_version():
 
 
 def test_version_uses_fallback_option():
-    solver = UCBlockSolver(
-        solver_path=sys.executable,
-        version_option="--not-a-valid-python-version-option",
-        fallback_version_option="-V",
-    )
-    version = solver.version(print_message=False)
+    solver = UCBlockSolver(solver_path=sys.executable)
+    version = solver.version(fallback_option="-V", print_message=False)
     assert version.count(".") >= 1
 
 
@@ -58,12 +54,8 @@ def test_version_fallback_runs_when_primary_output_has_no_version(monkeypatch):
 
     monkeypatch.setattr(smspp_tools_module.subprocess, "run", fake_run)
 
-    solver = UCBlockSolver(
-        solver_path="ucblock_solver",
-        version_option="--version",
-        fallback_version_option="-V",
-    )
-    assert solver.version(print_message=False) == "0.7.1"
+    solver = UCBlockSolver(solver_path="ucblock_solver")
+    assert solver.version(fallback_option="-V", print_message=False) == "0.7.1"
 
 
 def test_version_supports_shell_solver_commands():
@@ -71,31 +63,6 @@ def test_version_supports_shell_solver_commands():
     solver_cmd = f'{sys.executable} -c "{code}"'
     solver = UCBlockSolver(solver_path=solver_cmd, shell=True)
     assert solver.version(print_message=False) == "0.7.1"
-
-
-def test_version_is_cached_and_deduplicates_identical_options(monkeypatch):
-    calls = {"count": 0}
-
-    def fake_run(command, **kwargs):
-        calls["count"] += 1
-        return smspp_tools_module.subprocess.CompletedProcess(
-            args=command,
-            returncode=0,
-            stdout="SMS++ tools version 0.7.1\n",
-            stderr="",
-        )
-
-    monkeypatch.setattr(smspp_tools_module.subprocess, "run", fake_run)
-
-    solver = UCBlockSolver(
-        solver_path="ucblock_solver",
-        version_option="--version",
-        fallback_version_option="--version",
-    )
-
-    assert solver.version(print_message=False) == "0.7.1"
-    assert solver.version(print_message=False) == "0.7.1"
-    assert calls["count"] == 1
 
 
 def test_optimize_reads_subprocess_output_portably(tmp_path):

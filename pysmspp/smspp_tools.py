@@ -2,7 +2,6 @@ import logging
 import os
 import queue
 import re
-import shlex
 import subprocess
 import threading
 import time
@@ -39,18 +38,6 @@ def _status_code_of(status):
     """
     res = re.search(r"-?\d+", "" if status is None else str(status))
     return None if res is None else int(res.group())
-
-
-def _parse_tool_version(version):
-    """
-    The semantic version found in a tool version string, e.g. "0.7.1" in
-    "SMS++ tools version 0.7.1", and None where none can be found.
-    """
-    if version is None:
-        return None
-
-    res = re.search(r"\d+(?:\.\d+){1,}", str(version))
-    return None if res is None else res.group()
 
 
 def _enqueue_pipe_lines(pipe, stream_name, messages):
@@ -96,8 +83,6 @@ class SMSPPSolverTool:
         fp_solution: Path | str | None = None,
         configsolution: Path | str | None = None,
         help_option: str = "-h",
-        version_option: str = "--version",
-        fallback_version_option: str | None = "-V",
         shell: bool = False,
         **kwargs,
     ):
@@ -125,11 +110,6 @@ class SMSPPSolverTool:
             When provided, option "-C" is added to the executable call to specify the configuration solution file.
         help_option : str, optional
             The option to display the help message, by default "-h".
-        version_option : str, optional
-            The option to display the version message, by default "--version".
-        fallback_version_option : str | None, optional
-            Alternative version option when version_option is not supported,
-            by default "-V".
         shell : bool, optional
             Whether to execute the command through the shell. Defaults to False.
         **kwargs
@@ -142,8 +122,6 @@ class SMSPPSolverTool:
         else:
             self._solver_path = str(solver_path)
         self._help_option = help_option
-        self._version_option = version_option
-        self._fallback_version_option = fallback_version_option
 
         self.fp_network = (
             None if fp_network is None else str(Path(fp_network).resolve())
@@ -171,8 +149,6 @@ class SMSPPSolverTool:
         self._subprocess_time = None
         self._solution_time = None
         self._computational_time = None
-        self._version_output = None
-        self._parsed_version = None
         self._kwargs = kwargs
 
         if "c" in self._kwargs:
@@ -257,12 +233,15 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def version(self, print_message=True):
+    def version(self, fallback_option="-V", print_message=True):
         """
         Return the semantic version reported by the SMS++ solver.
 
         Parameters
         ----------
+        fallback_option : str | None, optional
+            Alternative option to try when "--version" does not return a
+            parseable semantic version, by default "-V".
         print_message : bool, optional
             Whether to print the raw version output from the solver, by default
             True.
@@ -275,60 +254,40 @@ class SMSPPSolverTool:
         Raises
         ------
         ValueError
-            If version retrieval fails for all configured version options, or
-            if the tool output does not contain a parseable semantic version.
+            If the tool output does not contain a parseable semantic version.
         """
-        if self._parsed_version is not None:
-            if print_message and self._version_output is not None:
-                print(self._version_output)
-            return self._parsed_version
-
-        options = [self._version_option]
-        if (
-            self._fallback_version_option is not None
-            and self._fallback_version_option not in options
-        ):
-            options.append(self._fallback_version_option)
-
-        msg = None
-        parsed = None
-        run_kwargs = {
-            "capture_output": True,
-            "shell": self._shell,
-            "check": False,
-            "text": True,
-        }
-        networkdir = None if self.fp_network is None else os.path.split(self.fp_network)[0]
-        if networkdir and Path(networkdir).is_dir():
-            run_kwargs["cwd"] = networkdir
-
-        for option in options:
+        def _run(option):
+            command = [self._solver_path, option]
             if self._shell:
-                command_parts = shlex.split(self._solver_path)
-                command_parts.append(option)
-                command = " ".join(shlex.quote(part) for part in command_parts)
-            else:
-                command = [self._solver_path, option]
-            result = subprocess.run(command, **run_kwargs)
-            msg = result.stdout + os.linesep + result.stderr
-            if result.returncode != 0:
-                continue
-            parsed = _parse_tool_version(msg)
-            if parsed is not None:
-                break
-
-        if parsed is None:
-            raise ValueError(
-                f"Failed to parse version from {self._solver_path} using options {options}:"
-                f"\n{msg}"
+                command = f"{self._solver_path} {option}"
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                shell=self._shell,
+                check=False,
             )
+            stdout = result.stdout
+            stderr = result.stderr
+            if isinstance(stdout, bytes):
+                stdout = stdout.decode("utf-8")
+            if isinstance(stderr, bytes):
+                stderr = stderr.decode("utf-8")
+            return str(stdout) + os.linesep + str(stderr)
 
-        self._version_output = msg
-        self._parsed_version = parsed
+        msg = _run("--version")
+        res = re.search(r"\d+(?:\.\d+){1,}", msg)
+        if res is None and fallback_option is not None:
+            msg = _run(fallback_option)
+            res = re.search(r"\d+(?:\.\d+){1,}", msg)
+
+        if res is None:
+            raise ValueError(
+                f"Failed to parse version from {self._solver_path} output:\n{msg}"
+            )
 
         if print_message:
             print(msg)
-        return parsed
+        return res.group()
 
     def optimize(self, logging=True, tracking_period=0.1):
         """
