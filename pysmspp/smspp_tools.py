@@ -233,15 +233,14 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def version(self, fallback_option="-V", print_message=True):
+    def version(self, option="--version", print_message=True):
         """
         Return the semantic version reported by the SMS++ solver.
 
         Parameters
         ----------
-        fallback_option : str | None, optional
-            Alternative option to try when "--version" does not return a
-            parseable semantic version, by default "-V".
+        option : str, optional
+            Option to query the tool version, by default "--version".
         print_message : bool, optional
             Whether to print the raw version output from the solver, by default
             True.
@@ -256,6 +255,7 @@ class SMSPPSolverTool:
         ValueError
             If the tool output does not contain a parseable semantic version.
         """
+
         def _run(option):
             command = [self._solver_path, option]
             if self._shell:
@@ -274,11 +274,8 @@ class SMSPPSolverTool:
                 stderr = stderr.decode("utf-8")
             return str(stdout) + os.linesep + str(stderr)
 
-        msg = _run("--version")
+        msg = _run(option)
         res = re.search(r"\d+(?:\.\d+){1,}", msg)
-        if res is None and fallback_option is not None:
-            msg = _run(fallback_option)
-            res = re.search(r"\d+(?:\.\d+){1,}", msg)
 
         if res is None:
             raise ValueError(

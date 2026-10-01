@@ -27,35 +27,26 @@ def test_version_reads_solver_version():
     assert version.count(".") >= 1
 
 
-def test_version_uses_fallback_option():
+def test_version_with_custom_option():
     solver = UCBlockSolver(solver_path=sys.executable)
-    version = solver.version(fallback_option="-V", print_message=False)
+    version = solver.version(option="-V", print_message=False)
     assert version.count(".") >= 1
 
 
-def test_version_fallback_runs_when_primary_output_has_no_version(monkeypatch):
-    responses = [
-        smspp_tools_module.subprocess.CompletedProcess(
+def test_version_raises_if_output_is_not_a_semantic_version(monkeypatch):
+    def fake_run(*args, **kwargs):
+        return smspp_tools_module.subprocess.CompletedProcess(
             args=["ucblock_solver", "--version"],
             returncode=0,
             stdout="no semantic version here\n",
             stderr="",
-        ),
-        smspp_tools_module.subprocess.CompletedProcess(
-            args=["ucblock_solver", "-V"],
-            returncode=0,
-            stdout="SMS++ tools version 0.7.1\n",
-            stderr="",
-        ),
-    ]
-
-    def fake_run(*args, **kwargs):
-        return responses.pop(0)
+        )
 
     monkeypatch.setattr(smspp_tools_module.subprocess, "run", fake_run)
 
     solver = UCBlockSolver(solver_path="ucblock_solver")
-    assert solver.version(fallback_option="-V", print_message=False) == "0.7.1"
+    with pytest.raises(ValueError, match="Failed to parse version"):
+        solver.version(print_message=False)
 
 
 def test_version_supports_shell_solver_commands():
