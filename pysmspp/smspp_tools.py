@@ -233,6 +233,59 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
+    def version(self, option="--version", print_message=True):
+        """
+        Return the semantic version reported by the SMS++ solver.
+
+        Parameters
+        ----------
+        option : str, optional
+            Option to query the tool version, by default "--version".
+        print_message : bool, optional
+            Whether to print the raw version output from the solver, by default
+            True.
+
+        Returns
+        -------
+        str
+            The semantic version (e.g. "0.7.1") parsed from the tool output.
+
+        Raises
+        ------
+        ValueError
+            If the tool output does not contain a parseable semantic version.
+        """
+
+        def _run(option):
+            command = [self._solver_path, option]
+            if self._shell:
+                command = f"{self._solver_path} {option}"
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                shell=self._shell,
+                check=False,
+            )
+            stdout = result.stdout
+            stderr = result.stderr
+            if isinstance(stdout, bytes):
+                stdout = stdout.decode("utf-8")
+            if isinstance(stderr, bytes):
+                stderr = stderr.decode("utf-8")
+            return str(stdout) + os.linesep + str(stderr)
+
+        msg = _run(option)
+        res = re.search(r"\d+(?:\.\d+){1,}", msg)
+
+        if res is None:
+            raise ValueError(
+                f"Failed to parse version from {self._solver_path} output:\n{msg}"
+            )
+
+        if print_message:
+            print(msg)
+        return res.group()
+
     def optimize(self, logging=True, tracking_period=0.1):
         """
         Run the SMSPP Solver tool.
