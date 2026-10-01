@@ -6,7 +6,6 @@ import shlex
 import subprocess
 import threading
 import time
-from itertools import zip_longest
 from pathlib import Path
 
 import numpy as np
@@ -54,22 +53,6 @@ def _parse_tool_version(version):
     return None if res is None else res.group()
 
 
-def _version_tuple_of(version):
-    parsed = _parse_tool_version(version)
-    if parsed is None:
-        return None
-    return tuple(int(component) for component in parsed.split("."))
-
-
-def _is_older_version(current, minimum):
-    for cur, req in zip_longest(current, minimum, fillvalue=0):
-        if cur < req:
-            return True
-        if cur > req:
-            return False
-    return False
-
-
 def _enqueue_pipe_lines(pipe, stream_name, messages):
     try:
         for line in iter(pipe.readline, ""):
@@ -115,7 +98,6 @@ class SMSPPSolverTool:
         help_option: str = "-h",
         version_option: str = "--version",
         fallback_version_option: str | None = "-V",
-        minimum_version: str | None = None,
         shell: bool = False,
         **kwargs,
     ):
@@ -148,9 +130,6 @@ class SMSPPSolverTool:
         fallback_version_option : str | None, optional
             Alternative version option when version_option is not supported,
             by default "-V".
-        minimum_version : str | None, optional
-            Optional minimum compatible version (for example "0.7.1"), by
-            default None.
         shell : bool, optional
             Whether to execute the command through the shell. Defaults to False.
         **kwargs
@@ -165,7 +144,6 @@ class SMSPPSolverTool:
         self._help_option = help_option
         self._version_option = version_option
         self._fallback_version_option = fallback_version_option
-        self._minimum_version = minimum_version
 
         self.fp_network = (
             None if fp_network is None else str(Path(fp_network).resolve())
@@ -195,8 +173,6 @@ class SMSPPSolverTool:
         self._computational_time = None
         self._version_output = None
         self._parsed_version = None
-        self._minimum_version_checked = False
-        self._validated_minimum_version = None
         self._kwargs = kwargs
 
         if "c" in self._kwargs:
@@ -354,38 +330,6 @@ class SMSPPSolverTool:
             print(msg)
         return parsed
 
-    def ensure_minimum_version(self):
-        """
-        Raise when the solver version is older than the required minimum one.
-        """
-        if self._minimum_version is None:
-            return
-
-        minimum = _version_tuple_of(self._minimum_version)
-        if minimum is None:
-            raise ValueError(
-                f"Invalid minimum_version '{self._minimum_version}' for {self._solver_path}"
-            )
-        if (
-            self._minimum_version_checked
-            and self._validated_minimum_version == minimum
-        ):
-            return
-
-        current_text = self.version(print_message=False)
-        current = _version_tuple_of(current_text)
-        if current is None:
-            raise ValueError(
-                f"Could not parse version for {self._solver_path}: {current_text}"
-            )
-
-        if _is_older_version(current, minimum):
-            raise ValueError(
-                f"{self._solver_path} version {current_text} is older than required minimum version {self._minimum_version}"
-            )
-        self._minimum_version_checked = True
-        self._validated_minimum_version = minimum
-
     def optimize(self, logging=True, tracking_period=0.1):
         """
         Run the SMSPP Solver tool.
@@ -405,7 +349,6 @@ class SMSPPSolverTool:
             )
         if not Path(self.fp_network).exists():
             raise FileNotFoundError(f"Network file {self.fp_network} does not exist.")
-        self.ensure_minimum_version()
 
         command_raw = self.calculate_executable_call()
         command_str = " ".join(command_raw)
