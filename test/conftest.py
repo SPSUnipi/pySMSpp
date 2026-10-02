@@ -294,7 +294,10 @@ def add_hub_to_ucblock(b, name_inner_block="Block_0", **kwargs):
     ucname = get_new_ucname(ucb)
 
     ucb.dimensions["NumberUnits"].value += 1
-    ucb.dimensions["NumberElectricalGenerators"].value += 1
+    # each arc of a HydroUnitBlock is an electrical generator
+    ucb.dimensions["NumberElectricalGenerators"].value += hub.dimensions[
+        "NumberArcs"
+    ].value
 
     ucb.add("HydroUnitBlock", ucname, block=hub)
     return b
