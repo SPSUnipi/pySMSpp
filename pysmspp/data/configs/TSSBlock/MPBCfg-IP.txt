@@ -35,10 +35,12 @@ HiGHSMILPSolver       # name of Solver
 intRelaxIntVars 0  # the integer design stays integer
 intCutSepPar    0  # no Block separates cuts in the master
 
-0  # number of double parameters
+1  # number of double parameters
 
 # now all the double parameters
-# [none]
+mip_feasibility_tolerance 1e-10
+                   # integrality as tight as HiGHS allows: the bundle
+                   # rounds the point of the master before evaluating it
 
 0  # number of string parameters
 
