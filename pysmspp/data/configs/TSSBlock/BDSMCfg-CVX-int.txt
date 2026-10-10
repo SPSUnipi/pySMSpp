@@ -1,0 +1,70 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - BDSMCfg-CVX-int.txt - - - - - - - - - - - - - -
+#
+# The BlockSolverConfig of the master problem of BendersDecompositionSolver
+# in the convex regime when the design is integer, e.g., the number of
+# modules of a modular asset: the BundleSolver of BDSMCfg-CVX.txt keeping
+# it integer, with a trust region of radius 1 and a master that is a
+# mixed-integer linear problem [see intIntVars].
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+0  # the BlockSolverConfig is not a "differential" one: values are being set
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+BundleSolver # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+*BDSMBundleCfg.txt +
+
+1  # f_diff == 1 ==> only the entries below are changed
+
+4  # number of integer parameters
+
+# now all the integer parameters
+intIntVars   1  # the integer design, e.g., the modules, stay integer
+intMPPrimal  1  # the primal master, where the design is the Variable
+intMPV2Form  1  # raw form: the Variable of the master are the design itself
+intMPStbl    4  # 4 = trust region || x - x_bar ||_inf <= t, a MILP master
+
+1  # number of double parameters
+
+# now all the double parameters
+dbltInit     1  # radius of the trust region, in modules
+
+1  # number of string parameters
+
+# now all the string parameters
+strMPBSolverCfg  MPBCfg-IP.txt  # the master, which keeps the integers
+
+0  # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0  # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0  # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# end 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END BDSMCfg-CVX-int.txt - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,12 +1,10 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - TUBSCfg-DP.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  TUBSCfg-DP.txt - - - - - - - - - - - - - - -
 #
 # A txt description of the BlockSolverConfig for a ThermalUnitBlock inside
 # the Lagrangian decomposition of the UCBlock of each stage of the
 # SDDPBlock: each thermal unit subproblem is solved by the specialized
 # ThermalUnitExtDPSolver.
-#
-#   Rafael Durbano Lobato, Donato Meoli
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -68,5 +66,5 @@ intLogVerb 0 # log verbosity
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END TUBSCfg-DP.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - -  END TUBSCfg-DP.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

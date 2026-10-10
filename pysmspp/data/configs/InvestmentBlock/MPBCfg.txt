@@ -1,0 +1,35 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - MPBCfg.txt - - - - - - - - - - - - - - - -
+#
+# A BlockSolverConfig for the inner :MILPSolver of the MasterProblemBlock
+# used by the BundleSolver [see MPCfg.txt].
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+1  # the BlockSolverConfig is a "differential" one
+
+1 # number of (the names of) Solver in this BlockSolverConfig
+
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+#CPXMILPSolver        # name of Solver
+#GRBMILPSolver        # name of Solver
+#SCIPMILPSolver       # name of Solver
+HiGHSMILPSolver       # name of Solver
+
+1 # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ComputeConfig of the :MILPSolver
+
+*MPCfg.txt
+
+# end of ComputeConfig- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END MPBCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
