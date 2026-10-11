@@ -116,3 +116,26 @@ def test_sddp_lagrangian_recipe_passes_its_block_config():
             assert (Path(configdir) / name).is_file()
     assert "-s" in simulation
     assert simulation[simulation.index("-S") + 1] == "SDDPSCfg-greedy-LD.txt"
+
+
+@pytest.mark.parametrize(
+    "template", ["InvestmentBlock/BSPar.txt", "TSSBlock/TSSBSCfg-IB.txt"]
+)
+def test_investment_block_config_is_the_default_of_the_tool(template):
+    """smspp_investmentblock_solver requires a BlockConfig, which gives the
+    InvestmentFunction the Solver of its inner Block: without -B it reads
+    InnerBCfg.txt from the -c folder, which the templates therefore ship next
+    to the BlockSolverConfig, with the InvestmentBlock entry."""
+    from pysmspp import SMSConfig
+
+    configfile = SMSConfig(template=template)
+    command = InvestmentBlockSolver(
+        fp_network="net/InvestmentBlock.nc4",
+        configfile=str(configfile),
+    ).calculate_executable_call()
+
+    assert "-B" not in command
+    block_config = Path(command[command.index("-c") + 1]) / "InnerBCfg.txt"
+    assert block_config.is_file()
+    entries = [line.split("#")[0].split() for line in block_config.open()]
+    assert ["InvestmentBlock", "*IBOCfg.txt"] in entries

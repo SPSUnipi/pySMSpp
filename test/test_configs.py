@@ -48,6 +48,11 @@ def _named_files(path):
         "TSSBlock/TSSBSCfg-BDS.txt",
         "TSSBlock/TSSBSCfg-PPH.txt",
         "TSSBlock/InnerBCfg.txt",
+        "TSSBlock/TSSBSCfg-IB.txt",
+        "TSSBlock/InnerBCfg-LD.txt",
+        "InvestmentBlock/BSPar.txt",
+        "InvestmentBlock/BSPar-int.txt",
+        "InvestmentBlock/InnerBCfg.txt",
     ],
 )
 def test_template_names_files_of_its_folder(template):
