@@ -3,9 +3,9 @@
 #
 # The BendersDecompositionSolver of TSSBSCfg-BDS.txt in the convex regime
 # (BDSCfg-CVX.txt), for a continuous design and subproblems that are linear
-# programs: a ParallelBundleSolver with a trust region on the master
-# stabilizes the cutting-plane loop of the MILP regime, which on the PyPSA
-# networks takes several times its rounds.
+# programs: a ParallelBundleSolver with a trust region on the master, a
+# linear program that HiGHS solves, which also gives a lower bound; whether
+# it takes fewer rounds than the MILP regime depends on the instance.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
