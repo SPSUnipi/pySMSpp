@@ -1,0 +1,34 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - TSSBSCfg-BDS-CVX.txt  - - - - - - - - - - - - - -
+#
+# The BendersDecompositionSolver of TSSBSCfg-BDS.txt in the convex regime
+# (BDSCfg-CVX.txt), for a continuous design and subproblems that are linear
+# programs: a ParallelBundleSolver with a trust region on the master
+# stabilizes the cutting-plane loop of the MILP regime, which on the PyPSA
+# networks takes several times its rounds.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+0  # the BlockSolverConfig is not a "differential" one
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+BendersDecompositionSolver # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+*BDSCfg-CVX.txt
+
+# end of 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# end of BlockSolverConfig  - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - END TSSBSCfg-BDS-CVX.txt  - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

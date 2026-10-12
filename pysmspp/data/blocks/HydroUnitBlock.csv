@@ -20,6 +20,7 @@ HydroUnitBlock,SecondaryRho,Variable,Variable,double,NumberReservoirs-NumberArcs
 HydroUnitBlock,NumberPieces,Variable,Variable,int,-,-,,required,Number of pieces
 HydroUnitBlock,ConstantTerm,Variable,Variable,double,NumberPieces,-,,required,Constant multiplier of FTAP function
 HydroUnitBlock,LinearTerm,Variable,Variable,double,NumberPieces,-,,required,Linear multiplier of FTAP function
+HydroUnitBlock,ExactFlowToPower,Variable,Variable,int,NumberArcs,-,,optional,Nonzero for a single-piece turbine producing exactly the power of its piece
 HydroUnitBlock,DeltaRampUp,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Ramp-up limit
 HydroUnitBlock,DeltaRampDown,Variable,Variable,double,-|NumberReservoirs|TimeHorizon-NumberReservoirs,-,,optional,Ramp-down limit
 HydroUnitBlock,DownhillFlow,Variable,Variable,int,NumberPieces,-,,optional,Downhill flow rate
