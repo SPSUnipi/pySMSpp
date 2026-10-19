@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* Keep `pymdown-extensions` below 12 under Python 3.10, the Python of the documentation build, where `mkdocstrings` stops at 1.0.6, which fails with it (`Highlight.__init__() missing 1 required positional argument: 'md'`)
+* Keep `pymdown-extensions` below 12 under Python 3.10, the Python of the documentation build, where `mkdocstrings` stops at 1.0.6, which fails with it (`Highlight.__init__() missing 1 required positional argument: 'md'`). See [PR #127](https://github.com/SPSUnipi/pySMSpp/pull/127)
 
 
 ## Version v0.0.14
