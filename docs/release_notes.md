@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-*
+* Ship `UCBlock/InnerBCfg.txt`, which `smspp_ucblock_solver` reads by default, so that a UCBlock with a PolyhedralFunctionBlock (e.g., the future value of the water of a HydroSystemUnitBlock) is solved with the function linearized, as a :MILPSolver needs; the other sub-Blocks keep their formulation
 
 
 ## Version v0.0.14

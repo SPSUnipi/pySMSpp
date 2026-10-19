@@ -9,3 +9,5 @@ For SVMBlock, SVMCfg.txt and SVMCfg-primal.txt are BlockConfig, which is what ch
 
 For uc_solverconfig in both folders, the version using Gurobi is also provided under name uc_solverconfig_grb.
 The template configuration option for OSolCfg.txt allows to extract the most information from tools.
+
+UCBlock/InnerBCfg.txt is the BlockConfig that smspp_ucblock_solver reads from the folder of the BlockSolverConfig when no `-B` is given: it puts the PolyhedralFunctionBlock of a UCBlock, e.g., the future value of the water of a HydroSystemUnitBlock, in its linearized form (PFBCfg.txt), without which a :MILPSolver cannot handle its objective, and leaves every other sub-Block in the formulation it is deserialized with.
