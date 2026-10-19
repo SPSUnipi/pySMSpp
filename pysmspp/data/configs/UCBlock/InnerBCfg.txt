@@ -1,0 +1,21 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - InnerBCfg.txt - - - - - - - - - - - - - - - -
+#
+# A map from classname to BlockConfig, which smspp_ucblock_solver reads from
+# the -c folder when no -B is given: the PolyhedralFunctionBlock of a UCBlock
+# (e.g., the future value of the water of a HydroSystemUnitBlock) in its
+# linearized form (PFBCfg.txt), without which a :MILPSolver cannot handle
+# its objective. The other sub-Blocks keep the formulation they are
+# deserialized with.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SimpleConfiguration<std::map<std::string,Configuration*>>
+
+1 # the number of elements in the map
+PolyhedralFunctionBlock *PFBCfg.txt
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END InnerBCfg.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
