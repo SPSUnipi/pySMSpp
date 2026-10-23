@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-*
+* Set smspp-project 0.7.0 for CI. See [PR #128](https://github.com/SPSUnipi/pySMSpp/pull/128)
 
 
 ## Version v0.0.14
