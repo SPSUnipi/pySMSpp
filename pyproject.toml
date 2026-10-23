@@ -53,6 +53,8 @@ docs=[
     "mkdocs-jupyter>=0.24",
     "mkdocs-autorefs>=0.5",
     "pymdown-extensions>=10.0",
+    # mkdocstrings 1.0.6, the last one for Python 3.10, fails with 12.0
+    "pymdown-extensions<12; python_version < '3.11'",
     "scikit-learn",
     "libsvm-official",
 ]
