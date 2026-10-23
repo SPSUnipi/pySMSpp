@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import pytest
 
+import pysmspp.smspp_tools as smspp_tools_module
 from pysmspp import InvestmentBlockSolver, SMSPPSolverTool, UCBlockSolver
 
 
@@ -18,6 +19,41 @@ class FakeSolver(SMSPPSolverTool):
             "print('Lower bound = 120.0', flush=True)"
         )
         return [sys.executable, "-c", code]
+
+
+def test_version_reads_solver_version():
+    solver = UCBlockSolver(solver_path=sys.executable)
+    version = solver.version(print_message=False)
+    assert version.count(".") >= 1
+
+
+def test_version_with_custom_option():
+    solver = UCBlockSolver(solver_path=sys.executable)
+    version = solver.version(option="-V", print_message=False)
+    assert version.count(".") >= 1
+
+
+def test_version_raises_if_output_is_not_a_semantic_version(monkeypatch):
+    def fake_run(*args, **kwargs):
+        return smspp_tools_module.subprocess.CompletedProcess(
+            args=["ucblock_solver", "--version"],
+            returncode=0,
+            stdout="no semantic version here\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(smspp_tools_module.subprocess, "run", fake_run)
+
+    solver = UCBlockSolver(solver_path="ucblock_solver")
+    with pytest.raises(ValueError, match="Failed to parse version"):
+        solver.version(print_message=False)
+
+
+def test_version_supports_shell_solver_commands():
+    code = "print('SMS++ tools version 0.7.1')"
+    solver_cmd = f'{sys.executable} -c "{code}"'
+    solver = UCBlockSolver(solver_path=solver_cmd, shell=True)
+    assert solver.version(print_message=False) == "0.7.1"
 
 
 def test_optimize_reads_subprocess_output_portably(tmp_path):
