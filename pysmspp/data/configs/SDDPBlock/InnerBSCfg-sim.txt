@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - InnerBSCfg-sim.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - -  InnerBSCfg-sim.txt - - - - - - - - - - - - - -
 #
 # A "meta" BlockSolverConfig for the LagrangianDualSolver (str_LagBF_BSCfg):
 # a map from the classname() of the inner Block of each LagBFunction to the
@@ -14,8 +14,6 @@
 # All filenames are resolved against the directory the tool is run from
 # (the root of the tools/sddp_solver directory), as in the other tools.
 #
-#   Donato Meoli
-#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -23,12 +21,13 @@ SimpleConfiguration<std::map<std::string,Configuration*>>
 
 5 # the number of elements in the map
 
-ThermalUnitBlock	*config/TUBSCfg-DP.txt   # specialized DP solver
-HydroSystemUnitBlock	*config/HSUBSCfg.txt  # hard component (primal solution needed)
-BatteryUnitBlock	*config/OUBSCfg.txt   # hard component (links two stages)
-IntermittentUnitBlock	*config/OUBSCfg.txt   # hard component (links two stages)
-*			*config/LPBSCfg.txt   # everything else
+ThermalUnitBlock        *TUBSCfg-DP.txt   # specialized DP solver
+HydroSystemUnitBlock    *HSUBSCfg.txt  # hard component (primal solution
+                                       # needed)
+BatteryUnitBlock        *OUBSCfg.txt   # hard component (links two stages)
+IntermittentUnitBlock   *OUBSCfg.txt   # hard component (links two stages)
+*                       *LPBSCfg.txt   # everything else
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END InnerBSCfg-sim.txt- - - - - - - - - - - - - -
+# - - - - - - - - - - - - -  END InnerBSCfg-sim.txt - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

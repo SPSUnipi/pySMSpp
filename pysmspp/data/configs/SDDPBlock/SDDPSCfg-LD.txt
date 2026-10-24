@@ -1,9 +1,10 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - -SDDPSCfg-LD.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - SDDPSCfg-LD.txt - - - - - - - - - - - - - - -
 #
-# A txt description of a BlockSolverConfig for a SDDPSolver
-#
-#   Rafael Durbano Lobato
+# The BlockSolverConfig of the SDDPBlock whose inner Block of each stage is
+# solved via LagrangianDualSolver [see BSPar-LD.txt], to be used with
+# -B SDDPBCfg-LD.txt. The extra Configuration tells the LagrangianDualSolver
+# which components have their primal and dual solution written.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,10 +34,14 @@ ComputeConfig # exact type of the ComputeConfig object
 intMaxIter               5
 intLogVerb               0 # log verbosity
 intNStepConv             5 # Frequency at which the convergence is checked
-intPrintTime             1 # Indicates whether computational time should be displayed
-intNbSimulCheckForConv   5 # Number of simulations considered when checking convergence
-intNbSimulForward        5 # Number of simulations considered in the forward pass
-intNbSimulBackward       5 # Number of simulations considered in the backward pass
+intPrintTime             1 # Indicates whether computational time should be
+                           # displayed
+intNbSimulCheckForConv   5 # Number of simulations considered when checking
+                           # convergence
+intNbSimulForward        5 # Number of simulations considered in the forward
+                           # pass
+intNbSimulBackward       5 # Number of simulations considered in the backward
+                           # pass
 intOutputFrequency       1
 intBackwardSolverIndex   1
 intForwardSolverIndex    0
@@ -50,8 +55,8 @@ dblAccuracy 0 # Relative accuracy for declaring a solution optimal
 3 # number of string parameters
 
 # now all the string parameters
-#strInnerBSC   config/UCBSCfg.txt   # BlockSolverConfig for the UCBlock
-strInnerBSC   config/BSPar-LD.txt          # BlockSolverConfig for the UCBlock
+#strInnerBSC   UCBSCfg.txt   # BlockSolverConfig for the UCBlock
+strInnerBSC   BSPar-LD.txt          # BlockSolverConfig for the UCBlock
 #strInnerBC   uc_blockconfig.txt    # BlockConfig for the UCBlock
 strSubSolverLogFilePrefix sub-log-
 strOutputFile cuts.txt
@@ -71,13 +76,37 @@ strOutputFile cuts.txt
 # now all the vector-of-string parameters
 # [none]
 
-# pointer to the "extra" Configuration
-* # [none]
+# pointer to the "extra" Configuration: the Configurations of the inner
+# Block of each stage
+SimpleConfiguration<std::vector<Configuration*>>
+4  # number of elements in this vector
+
+# the BlockConfig of the inner Block
+*  # [none]
+
+# the BlockSolverConfig of the inner Block: none here, it is strInnerBSC
+*  # [none]
+
+# the Configuration of get_var_solution(): the only component whose primal
+# solution the SDDPSolver needs, by class, is the HydroSystemUnitBlock (the
+# final volume of the reservoirs)
+SimpleConfiguration<std::map<std::string,Configuration*>>
+1                     # the number of elements in the map
+HydroSystemUnitBlock  *  # all of its solution
+
+# the Configuration of get_dual_solution(), which the BendersBFunction of
+# each stage passes on: the duals it needs are those of the constraints of
+# the HydroSystemUnitBlock (the volume of the reservoirs) and those of the
+# relaxed constraints (key "relaxed"), the other components are skipped
+SimpleConfiguration<std::map<std::string,Configuration*>>
+2                     # the number of elements in the map
+HydroSystemUnitBlock  *  # all of its dual solution
+relaxed               *  # the duals of the relaxed constraints
 
 # end of 1st ComputeConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - -END SDDPSCfg-LD.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END SDDPSCfg-LD.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

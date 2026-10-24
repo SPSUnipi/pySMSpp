@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - SDDPBCfg.txt- - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  SDDPBCfg.txt - - - - - - - - - - - - - - -
 #
 # The default "meta" BlockConfig for the inner Block of each stage of the
 # SDDPBlock: a map from Block classname() to the BlockConfig to be applied
@@ -10,8 +10,6 @@
 # All filenames are resolved against the directory the tool is run from
 # (the root of the tools/sddp_solver directory), as in the other tools.
 #
-#   Donato Meoli
-#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -19,14 +17,14 @@ SimpleConfiguration<std::map<std::string,Configuration*>>
 
 7 # the number of elements in the map
 
-PolyhedralFunctionBlock	*PFBCfg.txt  # linearized representation
-SlackUnitBlock		*SUBCfg.txt  # OneVarConstraints
-BatteryUnitBlock	*BUBCfg.txt  # OneVarConstraints, no negative prices
-ThermalUnitBlock	*TUBCfg-OVC.txt  # OneVarConstraints
-DCNetworkBlock		*DCNBCfg.txt # network formulation (KIRCHHOFF)
-ACNetworkBlock		*ACBCfg.txt  # AC Network scaling factors
-*			*BCfg.txt    # everything else (is_feasible only)
+PolyhedralFunctionBlock *PFBCfg.txt  # linearized representation
+SlackUnitBlock          *SUBCfg.txt  # OneVarConstraints
+BatteryUnitBlock        *BUBCfg.txt  # OneVarConstraints, no negative prices
+ThermalUnitBlock        *TUBCfg-OVC.txt  # OneVarConstraints
+DCNetworkBlock          *DCNBCfg.txt # network formulation (KIRCHHOFF)
+ACNetworkBlock          *ACBCfg.txt  # AC Network scaling factors
+*                       *BCfg.txt    # everything else (is_feasible only)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END SDDPBCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  END SDDPBCfg.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

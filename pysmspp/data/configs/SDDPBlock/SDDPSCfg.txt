@@ -1,9 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - SDDPSCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  SDDPSCfg.txt - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a SDDPSolver
-#
-#   Rafael Durbano Lobato
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,10 +31,14 @@ ComputeConfig # exact type of the ComputeConfig object
 intMaxIter            10
 intLogVerb            1 # log verbosity
 intNStepConv            5 # Frequency at which the convergence is checked
-intPrintTime            1 # Indicates whether computational time should be displayed
-intNbSimulCheckForConv  5 # Number of simulations considered when checking convergence
-intNbSimulForward       1 # Number of simulations considered in the forward pass
-intNbSimulBackward      5 # Number of simulations considered in the backward pass
+intPrintTime            1 # Indicates whether computational time should be
+                          # displayed
+intNbSimulCheckForConv  5 # Number of simulations considered when checking
+                          # convergence
+intNbSimulForward       1 # Number of simulations considered in the forward
+                          # pass
+intNbSimulBackward      5 # Number of simulations considered in the backward
+                          # pass
 intOutputFrequency      1
 
 1 # number of double parameters
@@ -80,5 +82,5 @@ strFilenameSuffix .0
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END SDDPSCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  END SDDPSCfg.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

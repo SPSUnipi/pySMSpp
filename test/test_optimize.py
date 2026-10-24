@@ -347,7 +347,14 @@ def test_optimize_svmblock_formulations(force_smspp):
             configfile=str(SMSConfig(template=template)),
             **kwargs,
         )
-        svm.optimize(logging=False)
+        try:
+            svm.optimize(logging=False)
+        except ValueError as e:
+            # a Solver of an optional dependency, e.g., GRBMILPSolver in a
+            # build of SMS++ without Gurobi, is not in the Solver factory
+            if "not present in Solver factory" in str(e):
+                continue
+            raise
 
         if name == "dual/LIBSVM" and "Success" not in svm.status:
             # LIBSVMSolver is only in the Solver factory when SVMBlock has
