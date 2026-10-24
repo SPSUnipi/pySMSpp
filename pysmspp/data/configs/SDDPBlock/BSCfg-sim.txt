@@ -1,13 +1,11 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - BSCfg-sim.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - BSCfg-sim.txt - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a SDDPGreedySolver to be used
 # to simulate the SDDPBlock instances in this directory: the inner Block of
 # each stage is Solver-configured lazily (strInnerBSC), just before being
 # solved, so that the callback of sddp_solver can still update the data
 # linking two consecutive stages (e.g. ThermalUnitBlock init up/down time).
-#
-#   Donato Meoli
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35,7 +33,8 @@ ComputeConfig # exact type of the ComputeConfig object
 
 # now all the integer parameters
 intLogVerb          1 # log verbosity
-intUnregisterSolver 1 # unregister the Solver of the inner Block after solving it
+intUnregisterSolver 1 # unregister the Solver of the inner Block after
+                      # solving it
 
 0 # number of double parameters
 
@@ -45,7 +44,7 @@ intUnregisterSolver 1 # unregister the Solver of the inner Block after solving i
 1 # number of string parameters
 
 # now all the string parameters
-strInnerBSC config/UCBSCfg.txt # BlockSolverConfig for the UCBlock
+strInnerBSC UCBSCfg.txt # BlockSolverConfig for the UCBlock
 
 0 # number of vector-of-int parameters
 
@@ -70,5 +69,5 @@ strInnerBSC config/UCBSCfg.txt # BlockSolverConfig for the UCBlock
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END BSCfg-sim.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END BSCfg-sim.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,11 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - -BCfg.txt - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - -  BCfg.txt - - - - - - - - - - - - - - - -
 #
 # A txt description of the default BlockConfig for any Block of the inner
 # Block of each stage of the SDDPBlock for which SDDPBCfg[-LD].txt has no
 # class-specific entry: it only sets the is_feasible() tolerances.
-#
-#   Donato Meoli
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -13,7 +11,9 @@
 BlockConfig # exact type of the Configuration object
 
 1  # the BlockConfig is a "differential" one
+
 2  # version of the BlockConfig format
+
 # the Configuration for the structure, i.e., the tree of sub-Block
 *  # [none]
 
@@ -46,5 +46,5 @@ SimpleConfiguration<std::pair<double,int>>
 *    # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END BCfg.txt- - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  END BCfg.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

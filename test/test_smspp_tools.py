@@ -1,9 +1,10 @@
 import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
 
-from pysmspp import InvestmentBlockSolver, SMSPPSolverTool, UCBlockSolver
+from pysmspp import InvestmentBlockSolver, SDDPSolver, SMSPPSolverTool, UCBlockSolver
 
 
 class FakeSolver(SMSPPSolverTool):
@@ -87,3 +88,54 @@ def test_investment_status_is_not_the_value():
     assert solver.status_code == 18
     assert not solver.is_optimal
     assert solver.status.startswith("Failed")
+
+
+def test_sddp_lagrangian_recipe_passes_its_block_config():
+    """The Lagrangian recipe of the SDDPBlock templates is the pair -B -S:
+    without -B the tool reads its default SDDPBCfg.txt, i.e., the formulation
+    of the units for the linear programs, whatever -S says."""
+    from pysmspp import SMSConfig
+
+    configfile = SMSConfig(template="SDDPBlock/SDDPSCfg-LD.txt")
+    training = SDDPSolver(
+        fp_network="net/SDDPBlock.nc4",
+        configfile=str(configfile),
+        B="SDDPBCfg-LD.txt",
+    ).calculate_executable_call()
+    simulation = SDDPSolver(
+        fp_network="net/SDDPBlock.nc4",
+        configfile=str(configfile).replace("SDDPSCfg-LD", "SDDPSCfg-greedy-LD"),
+        s=None,
+        B="SDDPBCfg-LD.txt",
+    ).calculate_executable_call()
+
+    for command in (training, simulation):
+        assert command[command.index("-B") + 1] == "SDDPBCfg-LD.txt"
+        configdir = command[command.index("-c") + 1]
+        for name in ("SDDPBCfg-LD.txt", command[command.index("-S") + 1]):
+            assert (Path(configdir) / name).is_file()
+    assert "-s" in simulation
+    assert simulation[simulation.index("-S") + 1] == "SDDPSCfg-greedy-LD.txt"
+
+
+@pytest.mark.parametrize(
+    "template", ["InvestmentBlock/BSPar.txt", "TSSBlock/TSSBSCfg-IB.txt"]
+)
+def test_investment_block_config_is_the_default_of_the_tool(template):
+    """smspp_investmentblock_solver requires a BlockConfig, which gives the
+    InvestmentFunction the Solver of its inner Block: without -B it reads
+    InnerBCfg.txt from the -c folder, which the templates therefore ship next
+    to the BlockSolverConfig, with the InvestmentBlock entry."""
+    from pysmspp import SMSConfig
+
+    configfile = SMSConfig(template=template)
+    command = InvestmentBlockSolver(
+        fp_network="net/InvestmentBlock.nc4",
+        configfile=str(configfile),
+    ).calculate_executable_call()
+
+    assert "-B" not in command
+    block_config = Path(command[command.index("-c") + 1]) / "InnerBCfg.txt"
+    assert block_config.is_file()
+    entries = [line.split("#")[0].split() for line in block_config.open()]
+    assert ["InvestmentBlock", "*IBOCfg.txt"] in entries
