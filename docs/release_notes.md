@@ -14,6 +14,8 @@
 
 * Add the templates of the BendersDecompositionSolver for the Benders form of a two-stage problem (`TSSBSCfg-BDS.txt`, `BDSMCfg.txt`, `BDSSCfg.txt`), and of the InvestmentBlock over a TSSB or an MSSB (`TSSBSCfg-IB.txt`, `BSCfg-IB.txt`). The Solver of the block inside an InvestmentBlock is given by its OBlockConfig (`IBOCfg.txt`, `IFCfg.txt`) through the `InvestmentBlock` entry of `InnerBCfg.txt`, which `smspp_investmentblock_solver` reads by default, in `InvestmentBlock/` and in `TSSBlock/`: the tool requires a `BlockConfig` since SMS++ tools 22ccfec, and stops without it. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
 
+* Ship `UCBlock/InnerBCfg.txt`, which `smspp_ucblock_solver` reads by default, so that a UCBlock with a PolyhedralFunctionBlock (e.g., the future value of the water of a HydroSystemUnitBlock) is solved with the function linearized, as a :MILPSolver needs; the other sub-Blocks keep their formulation. See [PR #126](https://github.com/SPSUnipi/pySMSpp/pull/126)
+
 * Keep `pymdown-extensions` below 12 under Python 3.10, the Python of the documentation build, where `mkdocstrings` stops at 1.0.6, which fails with it (`Highlight.__init__() missing 1 required positional argument: 'md'`). See [PR #127](https://github.com/SPSUnipi/pySMSpp/pull/127)
 
 * Set smspp-project 0.7.0 for CI. See [PR #128](https://github.com/SPSUnipi/pySMSpp/pull/128)
