@@ -1,14 +1,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - BendersBSCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  BSCfg-IB.txt - - - - - - - - - - - - - - -
 #
-# A txt description of the default BlockSolverConfig for the inner Block of
-# each BendersBFunction of the SDDPBlock, used by build_BlockConfig() of
-# sddp_solver when no BlockConfig (-B) and no BlockSolverConfig (-S) are
-# provided: the continuous relaxation is solved by CPXMILPSolver with
-# presolve disabled, throwing an exception if reduced costs are not
-# available.
-#
-#   Donato Meoli
+# The :MILPSolver of the stochastic Block inside an InvestmentBlock
+# (TSSBSCfg-IB.txt), on the continuous relaxation, with the cuts of the
+# InvestmentFunction as lazy constraints.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -19,26 +14,29 @@ BlockSolverConfig     # exact type of the Configuration object
 
 1  # number of (the names of) Solver in this BlockSolverConfig
 # now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
-CPXMILPSolver    # name of 1st Solver
+GRBMILPSolver     # name of Solver
 
 1  # number of ComputeConfig in this BlockSolverConfig
 
 # now all the ComputeConfig
 # 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# ComputeConfig of the CPXMILPSolver
 
 ComputeConfig # exact type of the ComputeConfig object
 
 1  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-2 # number of integer parameters
+4  # number of integer parameters
 
 # now all the integer parameters
-CPXPARAM_Preprocessing_Presolve  0 # disable presolve
-intThrowReducedCostException     1 # throw if reduced costs are unavailable
+intLogVerb      0 # LogVerb, log verbosity of the MILPSolver
+intRelaxIntVars 1 # nonzero if the continuous relaxation is solved
+intCutSepPar    7 # separate user cuts + lazy constraints
+intHomogeneousDirection 1 # the multipliers of an unbounded dual direction are
+                  # - A' y and not c - A' y, the Objective having no part in a
+                  # certificate of infeasibility
 
-0 # number of double parameters
+0  # number of double parameters
 
 # now all the double parameters
 # [none]
@@ -71,5 +69,5 @@ intThrowReducedCostException     1 # throw if reduced costs are unavailable
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END BendersBSCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  END BSCfg-IB.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

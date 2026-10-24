@@ -1,0 +1,68 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - BDSMCfg-CVX-LP.txt  - - - - - - - - - - - - - - -
+#
+# The BlockSolverConfig of the master problem of BendersDecompositionSolver
+# in the convex regime when the design is continuous and every subproblem is
+# a linear program (TSSBSCfg-BDS-CVX.txt): the ParallelBundleSolver of
+# BDSMCfg-CVX.txt with a trust region of radius 1000, in the unit of the
+# design (MW), whose master is a linear program that HiGHS solves, where it
+# fails on the quadratic master of the proximal stabilization.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+0  # the BlockSolverConfig is not a "differential" one: values are being set
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+ParallelBundleSolver # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+*BDSMBundleCfg.txt +
+
+1  # f_diff == 1 ==> only the entries below are changed
+
+1  # number of integer parameters
+
+# now all the integer parameters
+intMPStbl  4  # 4 = trust region || x - x_bar ||_inf <= t, an LP master
+
+1  # number of double parameters
+
+# now all the double parameters
+dbltInit  1000  # radius of the trust region, in the unit of the design
+
+0  # number of string parameters
+
+# now all the string parameters
+# [none]
+
+0  # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0  # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0  # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# end 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - END BDSMCfg-CVX-LP.txt  - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

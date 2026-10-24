@@ -1,0 +1,65 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  MILPCfg-LP.txt - - - - - - - - - - - - - - -
+#
+# A txt description of the ComputeConfig of the CPXMILPSolver that solves,
+# as an LP, the subproblems of the Lagrangian decomposition of the UCBlock
+# of each stage of the SDDPBlock. It is the same for every subproblem, so
+# the BlockSolverConfig that register that Solver include this file rather
+# than repeating it: LPBSCfg.txt and OUBSCfg.txt take it as it is, while
+# HSUBSCfg.txt takes it and overrides the one entry it needs on top.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ComputeConfig # exact type of the ComputeConfig object
+
+1  # f_diff == 0 ==> all non-provided parameters are set to the default value
+   # f_diff == 1 ==> all non-provided parameters are not changed
+
+6 # number of integer parameters
+
+# now all the integer parameters
+intLogVerb                  0 # log verbosity
+CPXPARAM_Threads            1 # number of threads
+CPXPARAM_LPMethod           2 # dual simplex
+CPXPARAM_Read_Scale         1 # aggressive scaling
+CPX_PARAM_NUMERICALEMPHASIS 1 # numerical emphasis
+CPXPARAM_SolutionType       2 # basic solution
+#CPXPARAM_Preprocessing_Presolve 0
+#intThrowReducedCostException    1
+
+1 # number of double parameters
+
+# now all the double parameters
+CPXPARAM_Simplex_Tolerances_Optimality 1e-9 # optimality tolerance
+#dblAAccSol 1e-04
+#dblMaxTime 20000
+
+0 # number of string parameters
+
+# now all the string parameters
+#strOutputFile lp.lp
+
+0 # number of vector-of-int parameters
+
+# now all the vector-of-int parameters
+# [none]
+
+0 # number of vector-of-double parameters
+
+# now all the vector-of-double parameters
+# [none]
+
+0 # number of vector-of-string parameters
+
+# now all the vector-of-string parameters
+# [none]
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# end of ComputeConfig  - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - -  END MILPCfg-LP.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

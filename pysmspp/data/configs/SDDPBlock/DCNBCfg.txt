@@ -1,18 +1,19 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - - DCNBCfg.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - DCNBCfg.txt - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockConfig for all the DCNetworkBlock of a UCBlock,
-# selecting the network formulation (read by DCNetworkBlock::generate_abstract_
-# variables). A no-op on instances without a DCNetworkBlock.
-#
-#   Donato Meoli
+# selecting the network formulation (read by
+# DCNetworkBlock::generate_abstract_ variables). A no-op on instances without
+# a DCNetworkBlock.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 BlockConfig     # exact type of the Configuration object
 
 1   # the BlockConfig is a "differential" one
+
 2  # version of the BlockConfig format
+
 # the Configuration for the structure, i.e., the tree of sub-Block
 *  # [none]
 
@@ -46,5 +47,5 @@ SimpleConfiguration<int>
 *  # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END DCNBCfg.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END DCNBCfg.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

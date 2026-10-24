@@ -1,9 +1,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - ACBCfg.txt- - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - -  ACBCfg.txt - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockConfig for all the NetworkBlock of a UCBlock
-#
-#   Antonio Frangioni
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -12,7 +10,9 @@
 BlockConfig
 
 1   # the BlockConfig is differential
+
 2  # version of the BlockConfig format
+
 # the Configuration for the structure, i.e., the tree of sub-Block
 *  # [none]
 
@@ -52,5 +52,5 @@ SimpleConfiguration<std::vector<double>>
 *  # none
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END ACBCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - -  END ACBCfg.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
