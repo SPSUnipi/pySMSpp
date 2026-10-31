@@ -3,16 +3,18 @@
 #
 # A map from classname to BlockConfig: the InvestmentBlock over a TSSB, an
 # MSSB or a UCBlock (IBOCfg.txt, which gives the Solver of the inner Block),
-# and the units and the networks of a UCBlock (TUBCfg.txt, DCNBCfg.txt,
-# ACBCfg.txt, PFBCfg.txt).
+# the AbstractBlock that are its components when it splits its inner Block
+# into one per scenario (the same IBOCfg.txt), and the units and the
+# networks of a UCBlock (TUBCfg.txt, DCNBCfg.txt, ACBCfg.txt, PFBCfg.txt).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 SimpleConfiguration<std::map<std::string,Configuration*>>
 
-5 # the number of elements in the map
+6 # the number of elements in the map
 InvestmentBlock         *IBOCfg.txt
+AbstractBlock           *IBOCfg.txt
 ThermalUnitBlock        *TUBCfg.txt
 DCNetworkBlock          *DCNBCfg.txt
 ACNetworkBlock          *ACBCfg.txt
