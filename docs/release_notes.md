@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* 
+* The `InnerBCfg.txt` and `InnerBCfg-LD.txt` of `TSSBlock` give the AbstractBlock components of an InvestmentBlock, which splits a stochastic inner Block into one per scenario, the configuration of the InvestmentBlock (`IBOCfg.txt`, `IBOCfg-LD.txt`); without it the InvestmentFunction of such an InvestmentBlock had no Solver.
 
 
 ## Version v0.1.0

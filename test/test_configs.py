@@ -68,3 +68,26 @@ def test_template_names_files_of_its_folder(template):
         path = os.path.join(folder, name)
         assert os.path.isfile(path), f"{template} names {name}, which is missing"
         to_check.extend(_named_files(path))
+
+
+def _map_entries(path):
+    """The classname -> file entries of a map template."""
+    entries = {}
+    with open(path) as f:
+        for line in f:
+            words = line.split("#")[0].split()
+            if len(words) == 2 and words[1].startswith("*"):
+                entries[words[0]] = words[1].lstrip("*")
+    return entries
+
+
+@pytest.mark.parametrize(
+    "template", ["TSSBlock/InnerBCfg.txt", "TSSBlock/InnerBCfg-LD.txt"]
+)
+def test_inner_block_config_of_the_split_components(template):
+    # an InvestmentBlock splits a TwoStageStochasticBlock or a
+    # MultiStageStochasticBlock inner Block into AbstractBlock components,
+    # one per scenario, which need the same configuration as the
+    # InvestmentBlock, else its InvestmentFunction has no Solver
+    entries = _map_entries(SMSConfig(template=template).config)
+    assert entries.get("AbstractBlock") == entries["InvestmentBlock"]
