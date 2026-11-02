@@ -1,22 +1,23 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - InnerBCfg-LD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - InnerBCfg-LD.txt  - - - - - - - - - - - - - - -
 #
-# The map of InnerBCfg.txt, the InvestmentBlock being configured by
-# IBOCfg-LD.txt, whose inner Block is solved by the recursive Lagrangian dual
-# (IFCfg-LD.txt, TSSBSCfg-LDrec.txt).
+# The map of InnerBCfg.txt, the InvestmentBlock and its AbstractBlock
+# components being configured by IBOCfg-LD.txt, whose inner Block is solved
+# by the recursive Lagrangian dual (IFCfg-LD.txt, TSSBSCfg-LDrec.txt).
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 SimpleConfiguration<std::map<std::string,Configuration*>>
 
-5 # the number of elements in the map
+6 # the number of elements in the map
 InvestmentBlock         *IBOCfg-LD.txt
+AbstractBlock           *IBOCfg-LD.txt
 ThermalUnitBlock        *TUBCfg.txt
 DCNetworkBlock          *DCNBCfg.txt
 ACNetworkBlock          *ACBCfg.txt
 PolyhedralFunctionBlock *PFBCfg.txt
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END InnerBCfg-LD.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END InnerBCfg-LD.txt  - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

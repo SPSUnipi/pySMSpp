@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* 
+* Revision of `InnerBCfg.txt` and `InnerBCfg-LD.txt` of `TSSBlock` to adapt to latest SMS++ standard to create a stochastic inner Block into one per scenario. See [PR #130](https://github.com/SPSUnipi/pySMSpp/pull/130)
 
 
 ## Version v0.1.0
