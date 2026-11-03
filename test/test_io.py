@@ -55,24 +55,27 @@ def test_unstack():
     group "U" of two parts of different trees; a group whose variables do not
     lead with its dimension "Stacked" is left as it is.
     """
-    V, D, B = pysmspp.Variable, pysmspp.Dimension, pysmspp.Block
 
     def stack(name, values):  # the stack of the parts with the given values
-        return B(
-            dimensions={"Stacked": D("Stacked", len(values[0]))},
-            variables={name: V(name, "f8", ("Stacked_1", "Stacked"), np.array(values))},
+        return pysmspp.Block(
+            dimensions={"Stacked": pysmspp.Dimension("Stacked", len(values[0]))},
+            variables={
+                name: pysmspp.Variable(
+                    name, "f8", ("Stacked_1", "Stacked"), np.array(values)
+                )
+            },
         )
 
-    u = B(
-        dimensions={"NumberParts": D("NumberParts", 2)},
+    u = pysmspp.Block(
+        dimensions={"NumberParts": pysmspp.Dimension("NumberParts", 2)},
         variables={
-            "PartStack": V(
+            "PartStack": pysmspp.Variable(
                 "PartStack",
                 "i4",
                 ("Stacked_1", "NumberParts"),
                 np.array([[0, 1], [1, 0]]),
             ),
-            "PartPosition": V(
+            "PartPosition": pysmspp.Variable(
                 "PartPosition",
                 "i4",
                 ("Stacked_1", "NumberParts"),
@@ -84,13 +87,16 @@ def test_unstack():
             "Stack_1": stack("y", [[1.0], [10.0]]),
         },
     )
-    plain = B(
-        dimensions={"Stacked": D("Stacked", 3)},
-        variables={"z": V("z", "f8", ("T",), np.zeros(4))},
+    plain = pysmspp.Block(
+        dimensions={"Stacked": pysmspp.Dimension("Stacked", 3)},
+        variables={"z": pysmspp.Variable("z", "f8", ("T",), np.zeros(4))},
     )
-    root = B(
+    root = pysmspp.Block(
         blocks={
-            "O": B(dimensions={"Stacked_1": D("Stacked_1", 2)}, blocks={"U": u}),
+            "O": pysmspp.Block(
+                dimensions={"Stacked_1": pysmspp.Dimension("Stacked_1", 2)},
+                blocks={"U": u},
+            ),
             "P": plain,
         }
     ).unstack()

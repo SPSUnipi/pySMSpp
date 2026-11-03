@@ -532,23 +532,22 @@ class Variable:
 
 def _stack_dimension(block) -> str | None:
     """Return the dimension "Stacked" or "Stacked_n" of block, None if none."""
-    for name in block.dimensions:
-        if re.fullmatch(r"Stacked(_[1-9][0-9]*)?", name):
-            return name
-    return None
-
-
-def _variables(block):
-    """Yield the variables of the tree of block."""
-    yield from block.variables.values()
-    for b in block.blocks.values():
-        yield from _variables(b)
+    # SMS++ gives the root of a stack one such dimension, those of the stacks
+    # nested in its parts being in their own roots: more than one is not a stack
+    names = [n for n in block.dimensions if re.fullmatch(r"Stacked(_[1-9][0-9]*)?", n)]
+    return names[0] if len(names) == 1 else None
 
 
 def _leads_with(block, dim: str) -> bool:
     """Return True if the tree has variables and dim is the first dimension of each."""
-    variables = list(_variables(block))
-    return bool(variables) and all(tuple(v.dimensions[:1]) == (dim,) for v in variables)
+
+    def variables(b):
+        yield from b.variables.values()
+        for c in b.blocks.values():
+            yield from variables(c)
+
+    v = list(variables(block))
+    return bool(v) and all(tuple(x.dimensions[:1]) == (dim,) for x in v)
 
 
 def _stacked_size(block) -> int:
@@ -1546,6 +1545,7 @@ class SMSNetwork(Block):
         inner_block_name: str = "Block_0",
         logging=True,
         tracking_period=0.1,
+        unstack=True,
         **kwargs,
     ):
         """
@@ -1576,6 +1576,9 @@ class SMSNetwork(Block):
             Whether to enable logging during optimization.
         tracking_period : float (default: 0.1)
             The period (in seconds) to track optimization progress when logging is enabled.
+        unstack : bool (default: True)
+            Whether the parts that SMS++ stacks in one group of the solution are
+            read as one sub-Block each [see Block.unstack()].
         kwargs : dict
             Optional arguments to pass to the solver constructor. These can include any additional parameters required by specific solvers.
         """
@@ -1627,4 +1630,6 @@ class SMSNetwork(Block):
             )
 
         self.to_netcdf(fp_temp, force=True)
-        return smspp_solver.optimize(logging=logging, tracking_period=tracking_period)
+        return smspp_solver.optimize(
+            logging=logging, tracking_period=tracking_period, unstack=unstack
+        )

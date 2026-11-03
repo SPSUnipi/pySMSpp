@@ -235,7 +235,7 @@ class SMSPPSolverTool:
             print(msg)
         return msg
 
-    def optimize(self, logging=True, tracking_period=0.1):
+    def optimize(self, logging=True, tracking_period=0.1, unstack=True):
         """
         Run the SMSPP Solver tool.
 
@@ -245,6 +245,9 @@ class SMSPPSolverTool:
             When true, logging is provided, including the executable call.
         tracking_period : float
             Delay in seconds between resource usage tracking samples.
+        unstack : bool
+            When true, the parts that SMS++ stacks in one group of the solution
+            are read as one sub-Block each [see Block.unstack()].
         """
         from pysmspp import SMSNetwork
 
@@ -355,9 +358,9 @@ class SMSPPSolverTool:
         start_solution_time = time.time()
         if self.fp_solution is not None:
             if Path(self.fp_solution).exists():
-                # the parts that SMS++ stacks in one group (the scenarios of a
-                # stochastic Block, say) as one sub-Block each, as before
-                self._solution = SMSNetwork(self.fp_solution).unstack()
+                self._solution = SMSNetwork(self.fp_solution)
+                if unstack:
+                    self._solution = self._solution.unstack()
             else:
                 raise FileNotFoundError(
                     f"solution file {self.fp_solution} does not exist."
