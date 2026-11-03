@@ -5,6 +5,7 @@ import re
 import subprocess
 import threading
 import time
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -146,9 +147,10 @@ class SMSPPSolverTool:
         self._lower_bound = None
         self._upper_bound = None
         self._solution = None
+        self._compute_time = np.nan
         self._subprocess_time = None
         self._solution_time = None
-        self._computational_time = None
+        self._total_time = None
         self._kwargs = kwargs
 
         if "c" in self._kwargs:
@@ -361,7 +363,7 @@ class SMSPPSolverTool:
         else:
             self._solution = None
         self._solution_time = time.time() - start_solution_time
-        self._computational_time = time.time() - start_time
+        self._total_time = time.time() - start_time
 
         return self
 
@@ -393,10 +395,19 @@ class SMSPPSolverTool:
             logger.warning(f"Error checking availability of {self._solver_path}: {e}")
             return False
 
+    def _parse_compute_time(self):
+        res = re.search(
+            r"^Elapsed time:\s*(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)\s+s\s*$",
+            self._log,
+            re.MULTILINE,
+        )
+        self._compute_time = float(res.group(1)) if res else np.nan
+
     def parse_solver_log(self):
         """
         Check the output of the Solver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
+        It will extract the status, upper bound, lower bound, objective value,
+        and elapsed time from the log.
 
         Parameters
         ----------
@@ -405,6 +416,8 @@ class SMSPPSolverTool:
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
+        self._parse_compute_time()
 
         res = re.search("Status = (.*)\n", self._log)
 
@@ -477,6 +490,11 @@ class SMSPPSolverTool:
         return self._solution
 
     @property
+    def compute_time(self):
+        """The elapsed time reported by the solver in seconds, or NaN if absent."""
+        return self._compute_time
+
+    @property
     def subprocess_time(self):
         """
         Returns the time taken to run the subprocess in seconds.
@@ -495,13 +513,20 @@ class SMSPPSolverTool:
         return self._solution_time
 
     @property
+    def total_time(self):
+        """The total time spent in optimize(), including solution loading, in seconds."""
+        return self._total_time
+
+    @property
     def computational_time(self):
-        """
-        Returns the total computational time of the optimization in seconds.
-        This is a placeholder method and should be implemented in derived
-        classes if applicable.
-        """
-        return self._computational_time
+        """Deprecated alias for total_time."""
+        warnings.warn(
+            "computational_time will be deprecated in the next release; "
+            "use total_time instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.total_time
 
 
 class UCBlockSolver(SMSPPSolverTool):
@@ -586,6 +611,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         if self._log is None:
             raise ValueError("Optimization was not launched.")
 
+        self._parse_compute_time()
+
         res = re.search(r"Fi\* = (.*)\n", self._log)
 
         if not res:  # if success not found
@@ -657,6 +684,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
+        self._parse_compute_time()
 
         res = re.search(r"Fi\* = (.*)\n", self._log)
 
@@ -758,6 +787,8 @@ class SDDPSolver(SMSPPSolverTool):
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
+        self._parse_compute_time()
 
         lower_log = self._log.lower()
 
