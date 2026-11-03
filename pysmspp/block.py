@@ -566,17 +566,31 @@ def _stacked_size(block) -> int:
     return 0
 
 
+def _copy_data(data):
+    """Return a copy of the data of a variable, which shares no memory with it."""
+    return data.copy() if hasattr(data, "copy") else data
+
+
+def _copies(components: Dict) -> Dict:
+    """Return copies of the attributes, dimensions or variables components."""
+    out = Dict()
+    for n, c in components.items():
+        out[n] = copy.copy(c)
+        if isinstance(c, Variable):  # the values of the others are immutable
+            out[n].data = _copy_data(c.data)
+    return out
+
+
 def _slice(block, dim: str, i: int, root: bool = True):
     """Return the i-th element of the stack block along its dimension dim."""
+    # the dimension of the stack is that of its root only
+    dims = {n: d for n, d in block.dimensions.items() if not root or n != dim}
     return Block(
-        attributes=block.attributes,
-        # the dimension of the stack is that of its root only
-        dimensions=Dict(
-            {n: d for n, d in block.dimensions.items() if not root or n != dim}
-        ),
+        attributes=_copies(block.attributes),
+        dimensions=_copies(dims),
         variables=Dict(
             {
-                n: Variable(n, v.var_type, v.dimensions[1:], v.data[i])
+                n: Variable(n, v.var_type, v.dimensions[1:], _copy_data(v.data[i]))
                 for n, v in block.variables.items()
             }
         ),
@@ -1053,18 +1067,27 @@ class Block:
         Returns
         -------
         Block
-            The unstacked copy; the Block itself is left as read.
+            The unstacked copy, of the class of the Block (an SMSNetwork
+            gives an SMSNetwork); the Block itself is left as read.
         """
-        new = copy.copy(self)
-        new._blocks = Dict()
+        blocks = Dict()
         for name, block in self.blocks.items():
             n_parts = _stacked_size(block)
             if n_parts:  # a stack: one sub-Block per part
                 for i in range(n_parts):
-                    new._blocks[f"{name}_{i}"] = _stacked_part(block, i).unstack()
+                    blocks[f"{name}_{i}"] = _stacked_part(block, i).unstack()
             else:  # an ordinary sub-Block, whose own stacks are unstacked
-                new._blocks[name] = block.unstack()
-        return new
+                blocks[name] = block.unstack()
+        return self._with_blocks(blocks)
+
+    def _with_blocks(self, blocks: Dict):
+        """Return a Block with copies of the components of this one and blocks."""
+        return Block(
+            attributes=_copies(self.attributes),
+            dimensions=_copies(self.dimensions),
+            variables=_copies(self.variables),
+            blocks=blocks,
+        )
 
     # Functions
 
@@ -1458,6 +1481,16 @@ class SMSNetwork(Block):
     def file_type(self, ft: SMSFileType | int):
         """Set the file type of the SMS file."""
         self.add_attribute("SMS++_file_type", int(ft), force=True)
+
+    def _with_blocks(self, blocks: Dict):
+        """Return an SMSNetwork with copies of the components of this one and blocks."""
+        return SMSNetwork(
+            file_type=self.file_type,
+            attributes=_copies(self.attributes),
+            dimensions=_copies(self.dimensions),
+            variables=_copies(self.variables),
+            blocks=blocks,
+        )
 
     @classmethod
     def _from_netcdf(cls, ncfile: nc.Dataset):

@@ -91,15 +91,24 @@ def test_unstack():
         dimensions={"Stacked": pysmspp.Dimension("Stacked", 3)},
         variables={"z": pysmspp.Variable("z", "f8", ("T",), np.zeros(4))},
     )
-    root = pysmspp.Block(
+    network = pysmspp.SMSNetwork(
+        file_type=pysmspp.SMSFileType.eSolutionFile,
         blocks={
             "O": pysmspp.Block(
                 dimensions={"Stacked_1": pysmspp.Dimension("Stacked_1", 2)},
                 blocks={"U": u},
             ),
             "P": plain,
-        }
-    ).unstack()
+        },
+    )
+    root = network.unstack()
+
+    # an SMSNetwork of the same type, which shares nothing with the network
+    assert isinstance(root, pysmspp.SMSNetwork)
+    assert root.file_type == pysmspp.SMSFileType.eSolutionFile
+    root.blocks["P"].variables["z"].data[0] = 1.0
+    assert network.blocks["P"].variables["z"].data[0] == 0.0
+    assert set(network.blocks) == {"O", "P"}
 
     assert set(root.blocks) == {"O_0", "O_1", "P"}
     assert "Stacked" in root.blocks["P"].dimensions
