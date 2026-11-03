@@ -48,10 +48,21 @@ def test_optimize_reads_subprocess_output_portably(tmp_path):
     assert result.objective_value == pytest.approx(123.0)
     assert result.lower_bound == pytest.approx(120.0)
     assert result.compute_time == pytest.approx(0.05)
+    assert result.total_time >= result.subprocess_time + result.solution_time
+    with pytest.warns(DeprecationWarning, match="use total_time instead"):
+        assert result.computational_time == result.total_time
     assert "solver stdout line" in result.log
     assert "solver stderr line" in result.log
     assert "Peak CPU Usage" in result.log
     assert fp_log.read_text() == result.log
+
+
+def test_total_time_before_optimization():
+    solver = UCBlockSolver()
+
+    assert solver.total_time is None
+    with pytest.warns(DeprecationWarning, match="next release"):
+        assert solver.computational_time is None
 
 
 def test_status_code_of_a_log():

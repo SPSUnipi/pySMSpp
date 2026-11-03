@@ -5,6 +5,7 @@ import re
 import subprocess
 import threading
 import time
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -149,7 +150,7 @@ class SMSPPSolverTool:
         self._compute_time = np.nan
         self._subprocess_time = None
         self._solution_time = None
-        self._computational_time = None
+        self._total_time = None
         self._kwargs = kwargs
 
         if "c" in self._kwargs:
@@ -362,7 +363,7 @@ class SMSPPSolverTool:
         else:
             self._solution = None
         self._solution_time = time.time() - start_solution_time
-        self._computational_time = time.time() - start_time
+        self._total_time = time.time() - start_time
 
         return self
 
@@ -512,13 +513,20 @@ class SMSPPSolverTool:
         return self._solution_time
 
     @property
+    def total_time(self):
+        """The total time spent in optimize(), including solution loading, in seconds."""
+        return self._total_time
+
+    @property
     def computational_time(self):
-        """
-        Returns the total computational time of the optimization in seconds.
-        This is a placeholder method and should be implemented in derived
-        classes if applicable.
-        """
-        return self._computational_time
+        """Deprecated alias for total_time."""
+        warnings.warn(
+            "computational_time will be deprecated in the next release; "
+            "use total_time instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.total_time
 
 
 class UCBlockSolver(SMSPPSolverTool):
