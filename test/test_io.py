@@ -111,6 +111,11 @@ def test_unstack():
     assert set(network.blocks) == {"O", "P"}
 
     assert set(root.blocks) == {"O_0", "O_1", "P"}
+
+    # a group with two stack dimensions is not something SMS++ writes
+    plain.add_dimension("Stacked_1", 2)
+    with pytest.raises(ValueError):
+        network.unstack()
     assert "Stacked" in root.blocks["P"].dimensions
     for k in range(2):
         parts = root.blocks[f"O_{k}"].blocks

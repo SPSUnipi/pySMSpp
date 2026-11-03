@@ -532,10 +532,12 @@ class Variable:
 
 def _stack_dimension(block) -> str | None:
     """Return the dimension "Stacked" or "Stacked_n" of block, None if none."""
-    # SMS++ gives the root of a stack one such dimension, those of the stacks
-    # nested in its parts being in their own roots: more than one is not a stack
     names = [n for n in block.dimensions if re.fullmatch(r"Stacked(_[1-9][0-9]*)?", n)]
-    return names[0] if len(names) == 1 else None
+    # SMS++ gives the root of a stack one such dimension, those of the stacks
+    # nested in its parts being in their own roots
+    if len(names) > 1:
+        raise ValueError(f"a group with more than one stack dimension: {names}")
+    return names[0] if names else None
 
 
 def _leads_with(block, dim: str) -> bool:
