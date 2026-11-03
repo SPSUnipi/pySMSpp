@@ -4,7 +4,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pysmspp import InvestmentBlockSolver, SDDPSolver, SMSPPSolverTool, UCBlockSolver
+from pysmspp import (
+    InvestmentBlockSolver,
+    InvestmentBlockTestSolver,
+    SDDPSolver,
+    SMSPPSolverTool,
+    UCBlockSolver,
+)
 
 
 class FakeSolver(SMSPPSolverTool):
@@ -14,6 +20,7 @@ class FakeSolver(SMSPPSolverTool):
             "print('solver stdout line', flush=True); "
             "print('solver stderr line', file=sys.stderr, flush=True); "
             "time.sleep(0.05); "
+            "print('Elapsed time: 0.05 s', flush=True); "
             "print('Status = Success', flush=True); "
             "print('Upper bound = 123.0', flush=True); "
             "print('Lower bound = 120.0', flush=True)"
@@ -40,6 +47,7 @@ def test_optimize_reads_subprocess_output_portably(tmp_path):
     assert result.status == "Success"
     assert result.objective_value == pytest.approx(123.0)
     assert result.lower_bound == pytest.approx(120.0)
+    assert result.compute_time == pytest.approx(0.05)
     assert "solver stdout line" in result.log
     assert "solver stderr line" in result.log
     assert "Peak CPU Usage" in result.log
@@ -71,6 +79,48 @@ def test_status_code_of_a_log():
     solver.parse_solver_log()
     assert solver.status_code is None
     assert not solver.is_optimal
+
+
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+def test_compute_time_from_solver_log(newline):
+    solver = UCBlockSolver()
+    solver._log = newline.join(
+        [
+            "BendersDecompositionSolver: round 120, lb 16299144475.7, ub 16299144475.7, cuts 0 (2379), 227 s",
+            "Elapsed time: 227.252 s",
+            "Status = 10 (Success)",
+            "Upper bound = 16299144475.659405",
+            "Lower bound = 16299144475.659372",
+            "",
+        ]
+    )
+    solver.parse_solver_log()
+
+    assert solver.compute_time == pytest.approx(227.252)
+    assert solver.is_optimal
+
+
+@pytest.mark.parametrize(
+    "solver_class, log",
+    [
+        (UCBlockSolver, "Status = 10\nUpper bound = 123\nLower bound = 120\n"),
+        (InvestmentBlockSolver, "Fi* = 123\nSolver status: 10\n"),
+        (InvestmentBlockTestSolver, "Fi* = 123\nSolver status: 10\n"),
+        (SDDPSolver, "Backward value: 120\nForward value: 123\nSuccess\n"),
+    ],
+)
+def test_compute_time_is_reset_when_missing(solver_class, log):
+    solver = solver_class()
+    assert np.isnan(solver.compute_time)
+
+    for output in (log, "error\n"):
+        solver._log = "Elapsed time: 2.27252e+02 s\n" + output
+        solver.parse_solver_log()
+        assert solver.compute_time == pytest.approx(227.252)
+
+        solver._log = output
+        solver.parse_solver_log()
+        assert np.isnan(solver.compute_time)
 
 
 def test_investment_status_is_not_the_value():
