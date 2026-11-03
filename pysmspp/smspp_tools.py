@@ -355,7 +355,9 @@ class SMSPPSolverTool:
         start_solution_time = time.time()
         if self.fp_solution is not None:
             if Path(self.fp_solution).exists():
-                self._solution = SMSNetwork(self.fp_solution)
+                # the parts that SMS++ stacks in one group (the scenarios of a
+                # stochastic Block, say) as one sub-Block each, as before
+                self._solution = SMSNetwork(self.fp_solution).unstack()
             else:
                 raise FileNotFoundError(
                     f"solution file {self.fp_solution} does not exist."

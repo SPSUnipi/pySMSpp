@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import warnings
@@ -529,38 +530,70 @@ class Variable:
         return ax
 
 
-# The names with which SMS++ stacks the parts of a Block in one group [see
-# write_stacked() in SMSnetCDF.h]: the dimension of a stack is "Stacked", or
-# "Stacked_n" if stacks are nested in its parts
-STACKED_DIMENSION = "Stacked"
-STACKED_PARTS_DIMENSION = "NumberParts"
-STACKED_CLASS_VARIABLE = "PartStack"
-STACKED_POSITION_VARIABLE = "PartPosition"
-STACKED_CLASS_GROUP = "Stack_"
-
-
-def _stack_dimension(grb: nc.Group) -> str | None:
-    """Return the name of the dimension of the stack grb, None if none."""
-    for name in grb.dimensions:
-        if name == STACKED_DIMENSION or re.fullmatch(
-            STACKED_DIMENSION + r"_[1-9][0-9]*", name
-        ):
+def _stack_dimension(block) -> str | None:
+    """Return the dimension "Stacked" or "Stacked_n" of block, None if none."""
+    for name in block.dimensions:
+        if re.fullmatch(r"Stacked(_[1-9][0-9]*)?", name):
             return name
     return None
 
 
-def _stacked_size(grb: nc.Group) -> int:
-    """Return the number of parts stacked in grb, 0 if it is not a stack."""
-    name = _stack_dimension(grb)
-    if name is not None:
-        return grb.dimensions[name].size
-    if (
-        STACKED_PARTS_DIMENSION in grb.dimensions
-        and STACKED_CLASS_VARIABLE in grb.variables
-        and STACKED_POSITION_VARIABLE in grb.variables
+def _variables(block):
+    """Yield the variables of the tree of block."""
+    yield from block.variables.values()
+    for b in block.blocks.values():
+        yield from _variables(b)
+
+
+def _leads_with(block, dim: str) -> bool:
+    """Return True if the tree has variables and dim is the first dimension of each."""
+    variables = list(_variables(block))
+    return bool(variables) and all(tuple(v.dimensions[:1]) == (dim,) for v in variables)
+
+
+def _stacked_size(block) -> int:
+    """Return the number of parts that block stacks, 0 if it is not a stack."""
+    dim = _stack_dimension(block)
+    if dim is not None:  # one stack: its dimension leads every variable
+        return block.dimensions[dim].value if _leads_with(block, dim) else 0
+    stacks = [b for n, b in block.blocks.items() if n.startswith("Stack_")]
+    if (  # one stack per tree, with the index of the parts
+        "NumberParts" in block.dimensions
+        and {"PartStack", "PartPosition"} <= set(block.variables)
+        and stacks
+        and all(_stacked_size(b) for b in stacks)
     ):
-        return grb.dimensions[STACKED_PARTS_DIMENSION].size
+        return block.dimensions["NumberParts"].value
     return 0
+
+
+def _slice(block, dim: str, i: int, root: bool = True):
+    """Return the i-th element of the stack block along its dimension dim."""
+    return Block(
+        attributes=block.attributes,
+        # the dimension of the stack is that of its root only
+        dimensions=Dict(
+            {n: d for n, d in block.dimensions.items() if not root or n != dim}
+        ),
+        variables=Dict(
+            {
+                n: Variable(n, v.var_type, v.dimensions[1:], v.data[i])
+                for n, v in block.variables.items()
+            }
+        ),
+        blocks=Dict({n: _slice(b, dim, i, False) for n, b in block.blocks.items()}),
+    )
+
+
+def _stacked_part(block, i: int):
+    """Return the i-th part of the stack block (see Block.unstack())."""
+    dim = _stack_dimension(block)
+    if dim is not None:
+        return _slice(block, dim, i)
+    # one stack per tree: the part is in the stack of its tree
+    c = int(block.variables["PartStack"].data[i])
+    p = int(block.variables["PartPosition"].data[i])
+    return _stacked_part(block.blocks[f"Stack_{c}"], p)
 
 
 class Block:
@@ -946,30 +979,14 @@ class Block:
             self._to_netcdf_helper(ds)
 
     @classmethod
-    def _from_netcdf(
-        cls,
-        grb: nc.Dataset | nc.Group,
-        _sel: tuple = (),
-        _stacked: bool = False,
-    ):
+    def _from_netcdf(cls, grb: nc.Dataset | nc.Group):
         """
         Recursively load Block and sub-blocks from a NetCDF group.
-
-        A group in which SMS++ stacks the parts of a Block (e.g., the
-        solutions of the scenarios in the group "ScenarioSolution", see
-        write_stacked() in SMSnetCDF.h) is read as the groups "<name>_i", one
-        per part, as SMS++ writes them when they are not stacked.
 
         Parameters
         ----------
         grb : netCDF4.Dataset or netCDF4.Group
             The NetCDF dataset or group to read from.
-        _sel : tuple
-            The positions in the stacks that grb is in, outermost first:
-            each variable of grb has one leading dimension per stack.
-        _stacked : bool
-            True if grb is the root of a stack, whose dimension is then left
-            out.
 
         Returns
         -------
@@ -984,59 +1001,23 @@ class Block:
             new_block.add_attribute(name, grb.getncattr(name), force=True)
 
         # Retrieve dimensions
-        stack_dim = _stack_dimension(grb) if _stacked else None
         for dimname, dimobj in grb.dimensions.items():
-            if dimname == stack_dim:
-                continue
             new_block.add_dimension(dimname, dimobj.size)
 
-        # Retrieve variables, the values of the part of each stack
+        # Retrieve variables
         for varname, varobj in grb.variables.items():
             new_block.add_variable(
                 varname,
                 var_type=varobj.dtype,
-                dimensions=varobj.dimensions[len(_sel) :],
-                data=varobj[_sel + (Ellipsis,)] if _sel else varobj[:],
+                dimensions=varobj.dimensions,
+                data=varobj[:],
             )
 
-        # Recursively load sub-blocks, a stack as one per part
+        # Recursively load sub-blocks
         for subgrp_name, subgrb in grb.groups.items():
-            n = _stacked_size(subgrb)
-            if n:
-                for i in range(n):
-                    new_block.add_block(
-                        f"{subgrp_name}_{i}",
-                        block=Block._from_stacked(subgrb, _sel, i),
-                    )
-            else:
-                new_block.add_block(subgrp_name, block=Block._from_netcdf(subgrb, _sel))
+            new_block.add_block(subgrp_name, block=Block._from_netcdf(subgrb))
 
         return new_block
-
-    @classmethod
-    def _from_stacked(cls, grb: nc.Group, sel: tuple, i: int):
-        """
-        Load the i-th part of the stack grb as a Block.
-
-        Parameters
-        ----------
-        grb : netCDF4.Group
-            The stack, with one stack per tree of its parts if they differ.
-        sel : tuple
-            The positions in the stacks that grb is in, outermost first.
-        i : int
-            The part to load.
-
-        Returns
-        -------
-        Block
-            The part, as SMS++ writes it when it is not stacked.
-        """
-        if _stack_dimension(grb) is not None:
-            return Block._from_netcdf(grb, sel + (i,), _stacked=True)
-        c = int(grb.variables[STACKED_CLASS_VARIABLE][sel + (i,)])
-        p = int(grb.variables[STACKED_POSITION_VARIABLE][sel + (i,)])
-        return Block._from_stacked(grb.groups[f"{STACKED_CLASS_GROUP}{c}"], sel, p)
 
     @classmethod
     def from_netcdf(cls, filename):
@@ -1055,6 +1036,36 @@ class Block:
         """
         with nc.Dataset(filename, "r") as ncfile:
             return cls._from_netcdf(ncfile)
+
+    def unstack(self):
+        """
+        Return a copy of the Block in which each sub-Block where SMS++ stacked
+        the parts of a group (see write_stacked() in SMSnetCDF.h) is replaced
+        by the sub-Blocks "<name>_0", "<name>_1", ..., one per part, as SMS++
+        writes them when it does not stack them.
+
+        A stack is a sub-Block with a dimension "Stacked" (or "Stacked_n", if
+        stacks are nested in its parts) that is the first dimension of every
+        variable of its tree, the k-th element along it belonging to the k-th
+        part. Parts of different trees are in one such stack per tree, the
+        sub-Blocks "Stack_c", and the variables "PartStack" and "PartPosition"
+        say in which stack and where the i-th part is.
+
+        Returns
+        -------
+        Block
+            The unstacked copy; the Block itself is left as read.
+        """
+        new = copy.copy(self)
+        new._blocks = Dict()
+        for name, block in self.blocks.items():
+            n_parts = _stacked_size(block)
+            if n_parts:  # a stack: one sub-Block per part
+                for i in range(n_parts):
+                    new._blocks[f"{name}_{i}"] = _stacked_part(block, i).unstack()
+            else:  # an ordinary sub-Block, whose own stacks are unstacked
+                new._blocks[name] = block.unstack()
+        return new
 
     # Functions
 
