@@ -1,4 +1,5 @@
 import os
+import re
 import warnings
 from enum import IntEnum
 from pathlib import Path
@@ -528,6 +529,40 @@ class Variable:
         return ax
 
 
+# The names with which SMS++ stacks the parts of a Block in one group [see
+# write_stacked() in SMSnetCDF.h]: the dimension of a stack is "Stacked", or
+# "Stacked_n" if stacks are nested in its parts
+STACKED_DIMENSION = "Stacked"
+STACKED_PARTS_DIMENSION = "NumberParts"
+STACKED_CLASS_VARIABLE = "PartStack"
+STACKED_POSITION_VARIABLE = "PartPosition"
+STACKED_CLASS_GROUP = "Stack_"
+
+
+def _stack_dimension(grb: nc.Group) -> str | None:
+    """Return the name of the dimension of the stack grb, None if none."""
+    for name in grb.dimensions:
+        if name == STACKED_DIMENSION or re.fullmatch(
+            STACKED_DIMENSION + r"_[1-9][0-9]*", name
+        ):
+            return name
+    return None
+
+
+def _stacked_size(grb: nc.Group) -> int:
+    """Return the number of parts stacked in grb, 0 if it is not a stack."""
+    name = _stack_dimension(grb)
+    if name is not None:
+        return grb.dimensions[name].size
+    if (
+        STACKED_PARTS_DIMENSION in grb.dimensions
+        and STACKED_CLASS_VARIABLE in grb.variables
+        and STACKED_POSITION_VARIABLE in grb.variables
+    ):
+        return grb.dimensions[STACKED_PARTS_DIMENSION].size
+    return 0
+
+
 class Block:
     """
     Hierarchical container for SMS++ model components.
@@ -911,14 +946,30 @@ class Block:
             self._to_netcdf_helper(ds)
 
     @classmethod
-    def _from_netcdf(cls, grb: nc.Dataset | nc.Group):
+    def _from_netcdf(
+        cls,
+        grb: nc.Dataset | nc.Group,
+        _sel: tuple = (),
+        _stacked: bool = False,
+    ):
         """
         Recursively load Block and sub-blocks from a NetCDF group.
+
+        A group in which SMS++ stacks the parts of a Block (e.g., the
+        solutions of the scenarios in the group "ScenarioSolution", see
+        write_stacked() in SMSnetCDF.h) is read as the groups "<name>_i", one
+        per part, as SMS++ writes them when they are not stacked.
 
         Parameters
         ----------
         grb : netCDF4.Dataset or netCDF4.Group
             The NetCDF dataset or group to read from.
+        _sel : tuple
+            The positions in the stacks that grb is in, outermost first:
+            each variable of grb has one leading dimension per stack.
+        _stacked : bool
+            True if grb is the root of a stack, whose dimension is then left
+            out.
 
         Returns
         -------
@@ -933,23 +984,59 @@ class Block:
             new_block.add_attribute(name, grb.getncattr(name), force=True)
 
         # Retrieve dimensions
+        stack_dim = _stack_dimension(grb) if _stacked else None
         for dimname, dimobj in grb.dimensions.items():
+            if dimname == stack_dim:
+                continue
             new_block.add_dimension(dimname, dimobj.size)
 
-        # Retrieve variables
+        # Retrieve variables, the values of the part of each stack
         for varname, varobj in grb.variables.items():
             new_block.add_variable(
                 varname,
                 var_type=varobj.dtype,
-                dimensions=varobj.dimensions,
-                data=varobj[:],
+                dimensions=varobj.dimensions[len(_sel) :],
+                data=varobj[_sel + (Ellipsis,)] if _sel else varobj[:],
             )
 
-        # Recursively load sub-blocks
+        # Recursively load sub-blocks, a stack as one per part
         for subgrp_name, subgrb in grb.groups.items():
-            new_block.add_block(subgrp_name, block=Block._from_netcdf(subgrb))
+            n = _stacked_size(subgrb)
+            if n:
+                for i in range(n):
+                    new_block.add_block(
+                        f"{subgrp_name}_{i}",
+                        block=Block._from_stacked(subgrb, _sel, i),
+                    )
+            else:
+                new_block.add_block(subgrp_name, block=Block._from_netcdf(subgrb, _sel))
 
         return new_block
+
+    @classmethod
+    def _from_stacked(cls, grb: nc.Group, sel: tuple, i: int):
+        """
+        Load the i-th part of the stack grb as a Block.
+
+        Parameters
+        ----------
+        grb : netCDF4.Group
+            The stack, with one stack per tree of its parts if they differ.
+        sel : tuple
+            The positions in the stacks that grb is in, outermost first.
+        i : int
+            The part to load.
+
+        Returns
+        -------
+        Block
+            The part, as SMS++ writes it when it is not stacked.
+        """
+        if _stack_dimension(grb) is not None:
+            return Block._from_netcdf(grb, sel + (i,), _stacked=True)
+        c = int(grb.variables[STACKED_CLASS_VARIABLE][sel + (i,)])
+        p = int(grb.variables[STACKED_POSITION_VARIABLE][sel + (i,)])
+        return Block._from_stacked(grb.groups[f"{STACKED_CLASS_GROUP}{c}"], sel, p)
 
     @classmethod
     def from_netcdf(cls, filename):
