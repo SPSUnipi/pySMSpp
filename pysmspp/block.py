@@ -1,4 +1,3 @@
-import copy
 import os
 import re
 import warnings
@@ -322,6 +321,10 @@ class Attribute:
         """Return detailed representation of the attribute."""
         return f"Attribute(name={self.name!r}, value={self.value!r})"
 
+    def copy(self):
+        """Return a copy of the attribute."""
+        return Attribute(self.name, self.value)
+
     def __eq__(self, other) -> bool:
         """Compare attribute with another value or Attribute object."""
         if isinstance(other, Attribute):
@@ -373,6 +376,10 @@ class Dimension:
     def __repr__(self) -> str:
         """Return detailed representation of the dimension."""
         return f"Dimension(name={self.name!r}, value={self.value!r})"
+
+    def copy(self):
+        """Return a copy of the dimension."""
+        return Dimension(self.name, self.value)
 
     def __eq__(self, other) -> bool:
         """Compare dimension with another value or Dimension object."""
@@ -444,6 +451,11 @@ class Variable:
             f"{self.data!r}" if not isinstance(self.data, np.ndarray) else "array(...)"
         )
         return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
+
+    def copy(self):
+        """Return a copy of the variable, which shares no memory with it."""
+        data = self.data.copy() if hasattr(self.data, "copy") else self.data
+        return Variable(self.name, self.var_type, self.dimensions, data)
 
     def plot(self, ax=None, kind: str = "auto", **kwargs):
         """
@@ -568,31 +580,16 @@ def _stacked_size(block) -> int:
     return 0
 
 
-def _copy_data(data):
-    """Return a copy of the data of a variable, which shares no memory with it."""
-    return data.copy() if hasattr(data, "copy") else data
-
-
-def _copies(components: Dict) -> Dict:
-    """Return copies of the attributes, dimensions or variables components."""
-    out = Dict()
-    for n, c in components.items():
-        out[n] = copy.copy(c)
-        if isinstance(c, Variable):  # the values of the others are immutable
-            out[n].data = _copy_data(c.data)
-    return out
-
-
 def _slice(block, dim: str, i: int, root: bool = True):
     """Return the i-th element of the stack block along its dimension dim."""
     # the dimension of the stack is that of its root only
     dims = {n: d for n, d in block.dimensions.items() if not root or n != dim}
     return Block(
-        attributes=_copies(block.attributes),
-        dimensions=_copies(dims),
+        attributes=Dict(block.attributes).copy(),
+        dimensions=Dict(dims).copy(),
         variables=Dict(
             {
-                n: Variable(n, v.var_type, v.dimensions[1:], _copy_data(v.data[i]))
+                n: Variable(n, v.var_type, v.dimensions[1:], v.data[i]).copy()
                 for n, v in block.variables.items()
             }
         ),
@@ -1080,14 +1077,10 @@ class Block:
                     blocks[f"{name}_{i}"] = _stacked_part(block, i).unstack()
             else:  # an ordinary sub-Block, whose own stacks are unstacked
                 blocks[name] = block.unstack()
-        return self._with_blocks(blocks)
-
-    def _with_blocks(self, blocks: Dict):
-        """Return a Block with copies of the components of this one and blocks."""
-        return Block(
-            attributes=_copies(self.attributes),
-            dimensions=_copies(self.dimensions),
-            variables=_copies(self.variables),
+        return type(self)(
+            attributes=Dict(self.attributes).copy(),
+            dimensions=Dict(self.dimensions).copy(),
+            variables=Dict(self.variables).copy(),
             blocks=blocks,
         )
 
@@ -1421,7 +1414,7 @@ class SMSNetwork(Block):
     def __init__(
         self,
         fp: Path | str = "",
-        file_type: SMSFileType | int = SMSFileType.eProbFile,
+        file_type: SMSFileType | int | None = None,
         **kwargs,
     ):
         """
@@ -1441,7 +1434,8 @@ class SMSNetwork(Block):
             - eBlockFile (1): Block file only (no configuration)
             - eConfigFile (2): Configuration file only
             - eSolutionFile (3): Solution file
-            Default is eProbFile.
+            Default is that of the attribute "SMS++_file_type" given in
+            kwargs, if any, else eProbFile.
         **kwargs : dict
             Additional keyword arguments to pass to the Block constructor for
             dynamic component creation.
@@ -1461,7 +1455,10 @@ class SMSNetwork(Block):
             self._blocks = sms_network.blocks
         else:
             super().__init__(**kwargs)
-            self.file_type = file_type
+            if file_type is not None or "SMS++_file_type" not in self.attributes:
+                self.file_type = (
+                    SMSFileType.eProbFile if file_type is None else file_type
+                )
 
     def __repr__(self):
         """
@@ -1483,16 +1480,6 @@ class SMSNetwork(Block):
     def file_type(self, ft: SMSFileType | int):
         """Set the file type of the SMS file."""
         self.add_attribute("SMS++_file_type", int(ft), force=True)
-
-    def _with_blocks(self, blocks: Dict):
-        """Return an SMSNetwork with copies of the components of this one and blocks."""
-        return SMSNetwork(
-            file_type=self.file_type,
-            attributes=_copies(self.attributes),
-            dimensions=_copies(self.dimensions),
-            variables=_copies(self.variables),
-            blocks=blocks,
-        )
 
     @classmethod
     def _from_netcdf(cls, ncfile: nc.Dataset):

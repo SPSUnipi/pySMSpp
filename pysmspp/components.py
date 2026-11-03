@@ -10,6 +10,13 @@ class Dict(dict):
     Imported from https://github.com/PyPSA/pypsa, derived from addict https://github.com/mewwts/addict/ .
     """
 
+    def copy(self):
+        """
+        Return a Dict with a copy of each value that has one (attributes,
+        dimensions and variables), so that the two share no memory.
+        """
+        return Dict({k: v.copy() if hasattr(v, "copy") else v for k, v in self.items()})
+
     def __setattr__(self, name: str, value: Any) -> None:
         """
         Setattr is called when the syntax a.b = 2 is used to set a value.
