@@ -146,6 +146,7 @@ class SMSPPSolverTool:
         self._lower_bound = None
         self._upper_bound = None
         self._solution = None
+        self._compute_time = np.nan
         self._subprocess_time = None
         self._solution_time = None
         self._computational_time = None
@@ -393,10 +394,19 @@ class SMSPPSolverTool:
             logger.warning(f"Error checking availability of {self._solver_path}: {e}")
             return False
 
+    def _parse_compute_time(self):
+        res = re.search(
+            r"^Elapsed time:\s*(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)\s+s\s*$",
+            self._log,
+            re.MULTILINE,
+        )
+        self._compute_time = float(res.group(1)) if res else np.nan
+
     def parse_solver_log(self):
         """
         Check the output of the Solver.
-        It will extract the status, upper bound, lower bound, and objective value from the log.
+        It will extract the status, upper bound, lower bound, objective value,
+        and elapsed time from the log.
 
         Parameters
         ----------
@@ -405,6 +415,8 @@ class SMSPPSolverTool:
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
+        self._parse_compute_time()
 
         res = re.search("Status = (.*)\n", self._log)
 
@@ -475,6 +487,11 @@ class SMSPPSolverTool:
         classes if applicable.
         """
         return self._solution
+
+    @property
+    def compute_time(self):
+        """The elapsed time reported by the solver in seconds, or NaN if absent."""
+        return self._compute_time
 
     @property
     def subprocess_time(self):
@@ -586,6 +603,8 @@ class InvestmentBlockTestSolver(SMSPPSolverTool):
         if self._log is None:
             raise ValueError("Optimization was not launched.")
 
+        self._parse_compute_time()
+
         res = re.search(r"Fi\* = (.*)\n", self._log)
 
         if not res:  # if success not found
@@ -657,6 +676,8 @@ class InvestmentBlockSolver(SMSPPSolverTool):
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
+        self._parse_compute_time()
 
         res = re.search(r"Fi\* = (.*)\n", self._log)
 
@@ -758,6 +779,8 @@ class SDDPSolver(SMSPPSolverTool):
         """
         if self._log is None:
             raise ValueError("Optimization was not launched.")
+
+        self._parse_compute_time()
 
         lower_log = self._log.lower()
 
