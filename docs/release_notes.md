@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* Add `total_time` for the total optimization time and deprecate alias `computational_time`. See [PR #140](https://github.com/SPSUnipi/pySMSpp/pull/134)
+* Add `total_time` for the total optimization time and deprecate alias `computational_time`. See [PR #134](https://github.com/SPSUnipi/pySMSpp/pull/134)
 
 * Track the solver-reported `compute_time` in seconds and `NaN` when absent. See [PR #133](https://github.com/SPSUnipi/pySMSpp/pull/133)
 
