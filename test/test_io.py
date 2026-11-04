@@ -55,27 +55,26 @@ def test_unstack():
     group "U" of two parts of different trees; a group whose variables do not
     lead with its dimension "Stacked" is left as it is.
     """
+    from pysmspp import Block, Dimension, SMSFileType, SMSNetwork, Variable
 
     def stack(name, values):  # the stack of the parts with the given values
-        return pysmspp.Block(
-            dimensions={"Stacked": pysmspp.Dimension("Stacked", len(values[0]))},
+        return Block(
+            dimensions={"Stacked": Dimension("Stacked", len(values[0]))},
             variables={
-                name: pysmspp.Variable(
-                    name, "f8", ("Stacked_1", "Stacked"), np.array(values)
-                )
+                name: Variable(name, "f8", ("Stacked_1", "Stacked"), np.array(values))
             },
         )
 
-    u = pysmspp.Block(
-        dimensions={"NumberParts": pysmspp.Dimension("NumberParts", 2)},
+    u = Block(
+        dimensions={"NumberParts": Dimension("NumberParts", 2)},
         variables={
-            "PartStack": pysmspp.Variable(
+            "PartStack": Variable(
                 "PartStack",
                 "i4",
                 ("Stacked_1", "NumberParts"),
                 np.array([[0, 1], [1, 0]]),
             ),
-            "PartPosition": pysmspp.Variable(
+            "PartPosition": Variable(
                 "PartPosition",
                 "i4",
                 ("Stacked_1", "NumberParts"),
@@ -87,15 +86,15 @@ def test_unstack():
             "Stack_1": stack("y", [[1.0], [10.0]]),
         },
     )
-    plain = pysmspp.Block(
-        dimensions={"Stacked": pysmspp.Dimension("Stacked", 3)},
-        variables={"z": pysmspp.Variable("z", "f8", ("T",), np.zeros(4))},
+    plain = Block(
+        dimensions={"Stacked": Dimension("Stacked", 3)},
+        variables={"z": Variable("z", "f8", ("T",), np.zeros(4))},
     )
-    network = pysmspp.SMSNetwork(
-        file_type=pysmspp.SMSFileType.eSolutionFile,
+    network = SMSNetwork(
+        file_type=SMSFileType.eSolutionFile,
         blocks={
-            "O": pysmspp.Block(
-                dimensions={"Stacked_1": pysmspp.Dimension("Stacked_1", 2)},
+            "O": Block(
+                dimensions={"Stacked_1": Dimension("Stacked_1", 2)},
                 blocks={"U": u},
             ),
             "P": plain,
@@ -104,8 +103,8 @@ def test_unstack():
     root = network.unstack()
 
     # an SMSNetwork of the same type, which shares nothing with the network
-    assert isinstance(root, pysmspp.SMSNetwork)
-    assert root.file_type == pysmspp.SMSFileType.eSolutionFile
+    assert isinstance(root, SMSNetwork)
+    assert root.file_type == SMSFileType.eSolutionFile
     root.blocks["P"].variables["z"].data[0] = 1.0
     assert network.blocks["P"].variables["z"].data[0] == 0.0
     assert set(network.blocks) == {"O", "P"}

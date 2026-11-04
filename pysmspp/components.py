@@ -1,3 +1,4 @@
+import copy
 import re
 from typing import Any
 
@@ -10,12 +11,17 @@ class Dict(dict):
     Imported from https://github.com/PyPSA/pypsa, derived from addict https://github.com/mewwts/addict/ .
     """
 
-    def copy(self):
+    def deepcopy(self):
         """
-        Return a Dict with a copy of each value that has one (attributes,
-        dimensions and variables), so that the two share no memory.
+        Return a Dict with a deep copy of each value (by the deepcopy() of
+        attributes, dimensions and variables), so that the two share no memory.
         """
-        return Dict({k: v.copy() if hasattr(v, "copy") else v for k, v in self.items()})
+        return Dict(
+            {
+                k: v.deepcopy() if hasattr(v, "deepcopy") else copy.deepcopy(v)
+                for k, v in self.items()
+            }
+        )
 
     def __setattr__(self, name: str, value: Any) -> None:
         """

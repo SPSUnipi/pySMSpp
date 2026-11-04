@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import warnings
@@ -321,9 +322,9 @@ class Attribute:
         """Return detailed representation of the attribute."""
         return f"Attribute(name={self.name!r}, value={self.value!r})"
 
-    def copy(self):
-        """Return a copy of the attribute."""
-        return Attribute(self.name, self.value)
+    def deepcopy(self):
+        """Return a deep copy of the attribute, which shares no memory with it."""
+        return Attribute(self.name, copy.deepcopy(self.value))
 
     def __eq__(self, other) -> bool:
         """Compare attribute with another value or Attribute object."""
@@ -377,8 +378,8 @@ class Dimension:
         """Return detailed representation of the dimension."""
         return f"Dimension(name={self.name!r}, value={self.value!r})"
 
-    def copy(self):
-        """Return a copy of the dimension."""
+    def deepcopy(self):
+        """Return a deep copy of the dimension."""
         return Dimension(self.name, self.value)
 
     def __eq__(self, other) -> bool:
@@ -452,10 +453,11 @@ class Variable:
         )
         return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
 
-    def copy(self):
-        """Return a copy of the variable, which shares no memory with it."""
-        data = self.data.copy() if hasattr(self.data, "copy") else self.data
-        return Variable(self.name, self.var_type, self.dimensions, data)
+    def deepcopy(self):
+        """Return a deep copy of the variable, which shares no memory with it."""
+        return Variable(
+            self.name, self.var_type, self.dimensions, copy.deepcopy(self.data)
+        )
 
     def plot(self, ax=None, kind: str = "auto", **kwargs):
         """
@@ -580,20 +582,22 @@ def _stacked_size(block) -> int:
     return 0
 
 
-def _slice(block, dim: str, i: int, root: bool = True):
+def _slice(block, dim: str, i: int):
     """Return the i-th element of the stack block along its dimension dim."""
-    # the dimension of the stack is that of its root only
-    dims = {n: d for n, d in block.dimensions.items() if not root or n != dim}
+    # only the root of the stack has dim, a stack nested in a part having a
+    # dimension of another name (see _stack_dimension())
     return Block(
-        attributes=Dict(block.attributes).copy(),
-        dimensions=Dict(dims).copy(),
+        attributes=Dict(block.attributes).deepcopy(),
+        dimensions=Dict(
+            {n: d.deepcopy() for n, d in block.dimensions.items() if n != dim}
+        ),
         variables=Dict(
-            {
-                n: Variable(n, v.var_type, v.dimensions[1:], v.data[i]).copy()
+            {  # only the slice is copied, not the whole stacked data
+                n: Variable(n, v.var_type, v.dimensions[1:], copy.deepcopy(v.data[i]))
                 for n, v in block.variables.items()
             }
         ),
-        blocks=Dict({n: _slice(b, dim, i, False) for n, b in block.blocks.items()}),
+        blocks=Dict({n: _slice(b, dim, i) for n, b in block.blocks.items()}),
     )
 
 
@@ -1078,9 +1082,9 @@ class Block:
             else:  # an ordinary sub-Block, whose own stacks are unstacked
                 blocks[name] = block.unstack()
         return type(self)(
-            attributes=Dict(self.attributes).copy(),
-            dimensions=Dict(self.dimensions).copy(),
-            variables=Dict(self.variables).copy(),
+            attributes=Dict(self.attributes).deepcopy(),
+            dimensions=Dict(self.dimensions).deepcopy(),
+            variables=Dict(self.variables).deepcopy(),
             blocks=blocks,
         )
 
@@ -1455,10 +1459,10 @@ class SMSNetwork(Block):
             self._blocks = sms_network.blocks
         else:
             super().__init__(**kwargs)
-            if file_type is not None or "SMS++_file_type" not in self.attributes:
-                self.file_type = (
-                    SMSFileType.eProbFile if file_type is None else file_type
-                )
+            if file_type is not None:
+                self.file_type = file_type
+            elif "SMS++_file_type" not in self.attributes:
+                self.file_type = SMSFileType.eProbFile
 
     def __repr__(self):
         """
