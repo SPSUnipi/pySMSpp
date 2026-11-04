@@ -324,11 +324,11 @@ class Attribute:
 
     def __copy__(self):
         """Return a shallow copy of the attribute."""
-        return Attribute(self.name, self.value)
+        return self.__class__(self.name, self.value)
 
     def __deepcopy__(self, memo):
         """Return a deep copy of the attribute, which shares no memory with it."""
-        return Attribute(
+        return self.__class__(
             copy.deepcopy(self.name, memo), copy.deepcopy(self.value, memo)
         )
 
@@ -386,11 +386,11 @@ class Dimension:
 
     def __copy__(self):
         """Return a shallow copy of the dimension."""
-        return Dimension(self.name, self.value)
+        return self.__class__(self.name, self.value)
 
     def __deepcopy__(self, memo):
         """Return a deep copy of the dimension."""
-        return Dimension(
+        return self.__class__(
             copy.deepcopy(self.name, memo), copy.deepcopy(self.value, memo)
         )
 
@@ -467,11 +467,11 @@ class Variable:
 
     def __copy__(self):
         """Return a shallow copy of the variable, which shares its data."""
-        return Variable(self.name, self.var_type, self.dimensions, self.data)
+        return self.__class__(self.name, self.var_type, self.dimensions, self.data)
 
     def __deepcopy__(self, memo):
         """Return a deep copy of the variable, which shares no memory with it."""
-        return Variable(
+        return self.__class__(
             copy.deepcopy(self.name, memo),
             copy.deepcopy(self.var_type, memo),
             copy.deepcopy(self.dimensions, memo),
@@ -1100,7 +1100,7 @@ class Block:
                     blocks[f"{name}_{i}"] = _stacked_part(block, i).unstack()
             else:  # an ordinary sub-Block, whose own stacks are unstacked
                 blocks[name] = block.unstack()
-        return type(self)(
+        return self.__class__(
             attributes=copy.deepcopy(Dict(self.attributes)),
             dimensions=copy.deepcopy(Dict(self.dimensions)),
             variables=copy.deepcopy(Dict(self.variables)),

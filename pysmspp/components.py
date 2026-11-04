@@ -13,11 +13,11 @@ class Dict(dict):
 
     def __copy__(self):
         """Return a shallow copy, as a Dict, whose values are those of self."""
-        return Dict(self)
+        return self.__class__(self)
 
     def __deepcopy__(self, memo):
         """Return a deep copy, as a Dict, which shares no memory with self."""
-        return Dict(
+        return self.__class__(
             {copy.deepcopy(k, memo): copy.deepcopy(v, memo) for k, v in self.items()}
         )
 
