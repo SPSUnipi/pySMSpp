@@ -344,3 +344,41 @@ def test_unstack():
             ((name, var),) = parts[f"U_{j}"].variables.items()
             assert name == ("x" if (k + j) % 2 == 0 else "y")
             assert var.dimensions == () and float(var.data) == 10.0 * k + j
+
+
+def test_unstack_edge_cases():
+    """
+    The edge cases of Block.unstack(): a stack whose parts collide with a
+    sibling, an indexed stack whose tree has attributes only, and an
+    SMSNetwork given its file type as a plain value.
+    """
+    x = Block(
+        dimensions={"Stacked": Dimension("Stacked", 2)},
+        variables={"x": Variable("x", "f8", ("Stacked",), np.array([1.0, 2.0]))},
+    )
+    with pytest.raises(ValueError):
+        Block(blocks={"U": x, "U_0": Block()}).unstack()
+
+    attributes_only = Block(
+        attributes={"kind": Attribute("kind", "on")},
+        dimensions={"Stacked": Dimension("Stacked", 1)},
+    )
+    u = Block(
+        dimensions={"NumberParts": Dimension("NumberParts", 3)},
+        variables={
+            "PartStack": Variable(
+                "PartStack", "i4", ("NumberParts",), np.array([0, 1, 0])
+            ),
+            "PartPosition": Variable(
+                "PartPosition", "i4", ("NumberParts",), np.array([0, 0, 1])
+            ),
+        },
+        blocks={"Stack_0": x, "Stack_1": attributes_only},
+    )
+    parts = Block(blocks={"U": u}).unstack().blocks
+    assert set(parts) == {"U_0", "U_1", "U_2"}
+    assert float(parts["U_2"].variables["x"].data) == 2.0
+    assert parts["U_1"].attributes["kind"].value == "on"
+
+    network = SMSNetwork(attributes={"SMS++_file_type": 3})
+    assert network.file_type == SMSFileType.eSolutionFile

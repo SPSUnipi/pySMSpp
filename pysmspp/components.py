@@ -17,9 +17,11 @@ class Dict(dict):
 
     def __deepcopy__(self, memo):
         """Return a deep copy, as a Dict, which shares no memory with self."""
-        return self.__class__(
-            {copy.deepcopy(k, memo): copy.deepcopy(v, memo) for k, v in self.items()}
-        )
+        result = self.__class__()
+        memo[id(self)] = result  # so that a Dict that holds itself is copied
+        for k, v in self.items():
+            result[copy.deepcopy(k, memo)] = copy.deepcopy(v, memo)
+        return result
 
     def __setattr__(self, name: str, value: Any) -> None:
         """

@@ -250,6 +250,7 @@ class SMSPPSolverTool:
             are read as one sub-Block each [see Block.unstack()].
         """
         from pysmspp import SMSNetwork
+        from pysmspp.block import _has_stacks
 
         if not Path(self.configfile).exists():
             raise FileNotFoundError(
@@ -359,7 +360,7 @@ class SMSPPSolverTool:
         if self.fp_solution is not None:
             if Path(self.fp_solution).exists():
                 self._solution = SMSNetwork(self.fp_solution)
-                if unstack:
+                if unstack and _has_stacks(self._solution):
                     self._solution = self._solution.unstack()
             else:
                 raise FileNotFoundError(

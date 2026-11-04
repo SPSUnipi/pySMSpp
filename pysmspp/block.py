@@ -573,46 +573,69 @@ def _stack_dimension(block) -> str | None:
     return names[0] if names else None
 
 
-def _leads_with(block, dim: str) -> bool:
-    """Return True if the tree has variables and dim is the first dimension of each."""
-
-    def variables(b):
-        yield from b.variables.values()
-        for c in b.blocks.values():
-            yield from variables(c)
-
-    v = list(variables(block))
-    return bool(v) and all(tuple(x.dimensions[:1]) == (dim,) for x in v)
+def _variables(block):
+    """Yield the variables of the tree of block."""
+    yield from block.variables.values()
+    for b in block.blocks.values():
+        yield from _variables(b)
 
 
-def _stacked_size(block) -> int:
-    """Return the number of parts that block stacks, 0 if it is not a stack."""
+def _stacked_size(block, indexed: bool = False) -> int:
+    """
+    Return the number of parts that block stacks, 0 if it is not a stack; a
+    stack indexed by PartStack and PartPosition (indexed) may have a tree with
+    no variables, i.e., parts made of attributes only.
+    """
     dim = _stack_dimension(block)
     if dim is not None:  # one stack: its dimension leads every variable
-        return block.dimensions[dim].value if _leads_with(block, dim) else 0
+        v = list(_variables(block))
+        if v:
+            stack = all(tuple(x.dimensions[:1]) == (dim,) for x in v)
+        else:
+            stack = indexed
+        return block.dimensions[dim].value if stack else 0
     stacks = [b for n, b in block.blocks.items() if n.startswith("Stack_")]
     if (  # one stack per tree, with the index of the parts
         "NumberParts" in block.dimensions
         and {"PartStack", "PartPosition"} <= set(block.variables)
         and stacks
-        and all(_stacked_size(b) for b in stacks)
+        and all(_stacked_size(b, True) for b in stacks)
     ):
         return block.dimensions["NumberParts"].value
     return 0
 
 
+def _has_stacks(block) -> bool:
+    """Return True if some sub-Block in the tree of block is a stack."""
+    return any(_stacked_size(b) or _has_stacks(b) for b in block.blocks.values())
+
+
+class _View:
+    """
+    A tree with the components of a Block and none of its construction cost,
+    which shares its objects and data with the tree it is cut from.
+    """
+
+    def __init__(self, attributes, dimensions, variables, blocks):
+        self.attributes = attributes
+        self.dimensions = dimensions
+        self.variables = variables
+        self.blocks = blocks
+
+
 def _slice(block, dim: str, i: int):
-    """Return the i-th element of the stack block along its dimension dim."""
+    """
+    Return the i-th element of the stack block along its dimension dim, as a
+    view of it: _unstack() copies it once into Blocks.
+    """
     # only the root of the stack has dim, a stack nested in a part having a
     # dimension of another name (see _stack_dimension())
-    return Block(
-        attributes=copy.deepcopy(Dict(block.attributes)),
-        dimensions=Dict(
-            {n: copy.deepcopy(d) for n, d in block.dimensions.items() if n != dim}
-        ),
+    return _View(
+        attributes=Dict(block.attributes),
+        dimensions=Dict({n: d for n, d in block.dimensions.items() if n != dim}),
         variables=Dict(
-            {  # only the slice is copied, not the whole stacked data
-                n: Variable(n, v.var_type, v.dimensions[1:], copy.deepcopy(v.data[i]))
+            {
+                n: Variable(n, v.var_type, v.dimensions[1:], v.data[i])
                 for n, v in block.variables.items()
             }
         ),
@@ -629,6 +652,34 @@ def _stacked_part(block, i: int):
     c = int(block.variables["PartStack"].data[i])
     p = int(block.variables["PartPosition"].data[i])
     return _stacked_part(block.blocks[f"Stack_{c}"], p)
+
+
+def _unstack(block, cls):
+    """
+    Return a copy of the tree of block (a Block or a view of a part) as a
+    Block of class cls, each stack in it replaced by its parts [see
+    Block.unstack()].
+    """
+    blocks = Dict()
+
+    def put(name, b):
+        if name in blocks:  # e.g., a stack "U" next to a sub-Block "U_0"
+            raise ValueError(f"unstacking gives two sub-Blocks named {name}")
+        blocks[name] = b
+
+    for name, b in block.blocks.items():
+        n_parts = _stacked_size(b)
+        if n_parts:  # a stack: one sub-Block per part
+            for i in range(n_parts):
+                put(f"{name}_{i}", _unstack(_stacked_part(b, i), Block))
+        else:  # an ordinary sub-Block, whose own stacks are unstacked
+            put(name, _unstack(b, b.__class__ if isinstance(b, Block) else Block))
+    return cls(
+        attributes=copy.deepcopy(Dict(block.attributes)),
+        dimensions=copy.deepcopy(Dict(block.dimensions)),
+        variables=copy.deepcopy(Dict(block.variables)),
+        blocks=blocks,
+    )
 
 
 class Block:
@@ -1092,20 +1143,7 @@ class Block:
             The unstacked copy, of the class of the Block (an SMSNetwork
             gives an SMSNetwork); the Block itself is left as read.
         """
-        blocks = Dict()
-        for name, block in self.blocks.items():
-            n_parts = _stacked_size(block)
-            if n_parts:  # a stack: one sub-Block per part
-                for i in range(n_parts):
-                    blocks[f"{name}_{i}"] = _stacked_part(block, i).unstack()
-            else:  # an ordinary sub-Block, whose own stacks are unstacked
-                blocks[name] = block.unstack()
-        return self.__class__(
-            attributes=copy.deepcopy(Dict(self.attributes)),
-            dimensions=copy.deepcopy(Dict(self.dimensions)),
-            variables=copy.deepcopy(Dict(self.variables)),
-            blocks=blocks,
-        )
+        return _unstack(self, self.__class__)
 
     # Functions
 
@@ -1478,10 +1516,13 @@ class SMSNetwork(Block):
             self._blocks = sms_network.blocks
         else:
             super().__init__(**kwargs)
+            ft = self.attributes.get("SMS++_file_type")
             if file_type is not None:
                 self.file_type = file_type
-            elif "SMS++_file_type" not in self.attributes:
+            elif ft is None:
                 self.file_type = SMSFileType.eProbFile
+            elif not isinstance(ft, Attribute):  # a plain value
+                self.file_type = ft
 
     def __repr__(self):
         """

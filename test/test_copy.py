@@ -37,3 +37,10 @@ def test_dict():
     assert shallow["x"] is d["x"] and deep["x"] is not d["x"]
     d["x"].data[0] = 1.0
     assert deep["x"].data[0] == 0.0 and deep["a"] == 1
+
+
+def test_dict_holding_itself():
+    d = Dict(a=Attribute("a", 1))
+    d["self"] = d
+    deep = copy.deepcopy(d)
+    assert deep["self"] is deep and deep["a"] is not d["a"]
