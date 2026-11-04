@@ -1,3 +1,4 @@
+import copy
 import re
 from typing import Any
 
@@ -9,6 +10,18 @@ class Dict(dict):
 
     Imported from https://github.com/PyPSA/pypsa, derived from addict https://github.com/mewwts/addict/ .
     """
+
+    def __copy__(self):
+        """Return a shallow copy, as a Dict, whose values are those of self."""
+        return self.__class__(self)
+
+    def __deepcopy__(self, memo):
+        """Return a deep copy, as a Dict, which shares no memory with self."""
+        result = self.__class__()
+        memo[id(self)] = result  # so that a Dict that holds itself is copied
+        for k, v in self.items():
+            result[copy.deepcopy(k, memo)] = copy.deepcopy(v, memo)
+        return result
 
     def __setattr__(self, name: str, value: Any) -> None:
         """

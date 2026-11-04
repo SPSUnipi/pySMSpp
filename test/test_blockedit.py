@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+import pytest
 from conftest import (
     add_base_ucblock,
     add_bub_to_ucblock,
@@ -14,7 +16,7 @@ from conftest import (
     get_temp_file,
 )
 
-from pysmspp import Attribute, Block, Dimension, SMSNetwork, Variable
+from pysmspp import Attribute, Block, Dimension, SMSFileType, SMSNetwork, Variable
 
 
 def test_blocks_entry():
@@ -266,3 +268,117 @@ def test_tssb():
     sn.to_netcdf(fp_test_tssb)
 
     check_compare_nc(fp_test_tssb, fp_benchmark_tssb, fp_log_tssb)
+
+
+def test_unstack():
+    """
+    Block.unstack() turns the parts that SMS++ stacks in one group into one
+    sub-Block each: here two parts of an outer stack "O", each with an inner
+    group "U" of two parts of different trees; a group whose variables do not
+    lead with its dimension "Stacked" is left as it is.
+    """
+
+    def stack(name, values):  # the stack of the parts with the given values
+        return Block(
+            dimensions={"Stacked": Dimension("Stacked", len(values[0]))},
+            variables={
+                name: Variable(name, "f8", ("Stacked_1", "Stacked"), np.array(values))
+            },
+        )
+
+    u = Block(
+        dimensions={"NumberParts": Dimension("NumberParts", 2)},
+        variables={
+            "PartStack": Variable(
+                "PartStack",
+                "i4",
+                ("Stacked_1", "NumberParts"),
+                np.array([[0, 1], [1, 0]]),
+            ),
+            "PartPosition": Variable(
+                "PartPosition",
+                "i4",
+                ("Stacked_1", "NumberParts"),
+                np.array([[0, 0], [0, 0]]),
+            ),
+        },
+        blocks={
+            "Stack_0": stack("x", [[0.0], [11.0]]),
+            "Stack_1": stack("y", [[1.0], [10.0]]),
+        },
+    )
+    plain = Block(
+        dimensions={"Stacked": Dimension("Stacked", 3)},
+        variables={"z": Variable("z", "f8", ("T",), np.zeros(4))},
+    )
+    network = SMSNetwork(
+        file_type=SMSFileType.eSolutionFile,
+        blocks={
+            "O": Block(
+                dimensions={"Stacked_1": Dimension("Stacked_1", 2)},
+                blocks={"U": u},
+            ),
+            "P": plain,
+        },
+    )
+    root = network.unstack()
+
+    # an SMSNetwork of the same type, which shares nothing with the network
+    assert isinstance(root, SMSNetwork)
+    assert root.file_type == SMSFileType.eSolutionFile
+    root.blocks["P"].variables["z"].data[0] = 1.0
+    assert network.blocks["P"].variables["z"].data[0] == 0.0
+    assert set(network.blocks) == {"O", "P"}
+
+    assert set(root.blocks) == {"O_0", "O_1", "P"}
+
+    # a group with two stack dimensions is not something SMS++ writes
+    plain.add_dimension("Stacked_1", 2)
+    with pytest.raises(ValueError):
+        network.unstack()
+    assert "Stacked" in root.blocks["P"].dimensions
+    for k in range(2):
+        parts = root.blocks[f"O_{k}"].blocks
+        assert set(parts) == {"U_0", "U_1"}
+        for j in range(2):
+            ((name, var),) = parts[f"U_{j}"].variables.items()
+            assert name == ("x" if (k + j) % 2 == 0 else "y")
+            assert var.dimensions == () and float(var.data) == 10.0 * k + j
+
+
+def test_unstack_edge_cases():
+    """
+    The edge cases of Block.unstack(): a stack whose parts collide with a
+    sibling, an indexed stack whose tree has attributes only, and an
+    SMSNetwork given its file type as a plain value.
+    """
+    x = Block(
+        dimensions={"Stacked": Dimension("Stacked", 2)},
+        variables={"x": Variable("x", "f8", ("Stacked",), np.array([1.0, 2.0]))},
+    )
+    with pytest.raises(ValueError):
+        Block(blocks={"U": x, "U_0": Block()}).unstack()
+
+    attributes_only = Block(
+        attributes={"kind": Attribute("kind", "on")},
+        dimensions={"Stacked": Dimension("Stacked", 1)},
+    )
+    u = Block(
+        dimensions={"NumberParts": Dimension("NumberParts", 3)},
+        variables={
+            "PartStack": Variable(
+                "PartStack", "i4", ("NumberParts",), np.array([0, 1, 0])
+            ),
+            "PartPosition": Variable(
+                "PartPosition", "i4", ("NumberParts",), np.array([0, 0, 1])
+            ),
+        },
+        blocks={"Stack_0": x, "Stack_1": attributes_only},
+    )
+    parts = Block(blocks={"U": u}).unstack().blocks
+    assert set(parts) == {"U_0", "U_1", "U_2"}
+    assert float(parts["U_2"].variables["x"].data) == 2.0
+    assert parts["U_1"].attributes["kind"].value == "on"
+
+    network = SMSNetwork(attributes={"SMS++_file_type": 3})
+    assert network.file_type == SMSFileType.eSolutionFile

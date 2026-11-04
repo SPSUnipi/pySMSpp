@@ -1,4 +1,6 @@
+import copy
 import os
+import re
 import warnings
 from enum import IntEnum
 from pathlib import Path
@@ -320,6 +322,16 @@ class Attribute:
         """Return detailed representation of the attribute."""
         return f"Attribute(name={self.name!r}, value={self.value!r})"
 
+    def __copy__(self):
+        """Return a shallow copy of the attribute."""
+        return self.__class__(self.name, self.value)
+
+    def __deepcopy__(self, memo):
+        """Return a deep copy of the attribute, which shares no memory with it."""
+        return self.__class__(
+            copy.deepcopy(self.name, memo), copy.deepcopy(self.value, memo)
+        )
+
     def __eq__(self, other) -> bool:
         """Compare attribute with another value or Attribute object."""
         if isinstance(other, Attribute):
@@ -371,6 +383,16 @@ class Dimension:
     def __repr__(self) -> str:
         """Return detailed representation of the dimension."""
         return f"Dimension(name={self.name!r}, value={self.value!r})"
+
+    def __copy__(self):
+        """Return a shallow copy of the dimension."""
+        return self.__class__(self.name, self.value)
+
+    def __deepcopy__(self, memo):
+        """Return a deep copy of the dimension."""
+        return self.__class__(
+            copy.deepcopy(self.name, memo), copy.deepcopy(self.value, memo)
+        )
 
     def __eq__(self, other) -> bool:
         """Compare dimension with another value or Dimension object."""
@@ -442,6 +464,19 @@ class Variable:
             f"{self.data!r}" if not isinstance(self.data, np.ndarray) else "array(...)"
         )
         return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
+
+    def __copy__(self):
+        """Return a shallow copy of the variable, which shares its data."""
+        return self.__class__(self.name, self.var_type, self.dimensions, self.data)
+
+    def __deepcopy__(self, memo):
+        """Return a deep copy of the variable, which shares no memory with it."""
+        return self.__class__(
+            copy.deepcopy(self.name, memo),
+            copy.deepcopy(self.var_type, memo),
+            copy.deepcopy(self.dimensions, memo),
+            copy.deepcopy(self.data, memo),
+        )
 
     def plot(self, ax=None, kind: str = "auto", **kwargs):
         """
@@ -526,6 +561,125 @@ class Variable:
             )
 
         return ax
+
+
+def _stack_dimension(block) -> str | None:
+    """Return the dimension "Stacked" or "Stacked_n" of block, None if none."""
+    names = [n for n in block.dimensions if re.fullmatch(r"Stacked(_[1-9][0-9]*)?", n)]
+    # SMS++ gives the root of a stack one such dimension, those of the stacks
+    # nested in its parts being in their own roots
+    if len(names) > 1:
+        raise ValueError(f"a group with more than one stack dimension: {names}")
+    return names[0] if names else None
+
+
+def _variables(block):
+    """Yield the variables of the tree of block."""
+    yield from block.variables.values()
+    for b in block.blocks.values():
+        yield from _variables(b)
+
+
+def _stacked_size(block, indexed: bool = False) -> int:
+    """
+    Return the number of parts that block stacks, 0 if it is not a stack; a
+    stack indexed by PartStack and PartPosition (indexed) may have a tree with
+    no variables, i.e., parts made of attributes only.
+    """
+    dim = _stack_dimension(block)
+    if dim is not None:  # one stack: its dimension leads every variable
+        v = list(_variables(block))
+        if v:
+            stack = all(tuple(x.dimensions[:1]) == (dim,) for x in v)
+        else:
+            stack = indexed
+        return block.dimensions[dim].value if stack else 0
+    stacks = [b for n, b in block.blocks.items() if n.startswith("Stack_")]
+    if (  # one stack per tree, with the index of the parts
+        "NumberParts" in block.dimensions
+        and {"PartStack", "PartPosition"} <= set(block.variables)
+        and stacks
+        and all(_stacked_size(b, True) for b in stacks)
+    ):
+        return block.dimensions["NumberParts"].value
+    return 0
+
+
+def _has_stacks(block) -> bool:
+    """Return True if some sub-Block in the tree of block is a stack."""
+    return any(_stacked_size(b) or _has_stacks(b) for b in block.blocks.values())
+
+
+class _View:
+    """
+    A tree with the components of a Block and none of its construction cost,
+    which shares its objects and data with the tree it is cut from.
+    """
+
+    def __init__(self, attributes, dimensions, variables, blocks):
+        self.attributes = attributes
+        self.dimensions = dimensions
+        self.variables = variables
+        self.blocks = blocks
+
+
+def _slice(block, dim: str, i: int):
+    """
+    Return the i-th element of the stack block along its dimension dim, as a
+    view of it: _unstack() copies it once into Blocks.
+    """
+    # only the root of the stack has dim, a stack nested in a part having a
+    # dimension of another name (see _stack_dimension())
+    return _View(
+        attributes=Dict(block.attributes),
+        dimensions=Dict({n: d for n, d in block.dimensions.items() if n != dim}),
+        variables=Dict(
+            {
+                n: Variable(n, v.var_type, v.dimensions[1:], v.data[i])
+                for n, v in block.variables.items()
+            }
+        ),
+        blocks=Dict({n: _slice(b, dim, i) for n, b in block.blocks.items()}),
+    )
+
+
+def _stacked_part(block, i: int):
+    """Return the i-th part of the stack block (see Block.unstack())."""
+    dim = _stack_dimension(block)
+    if dim is not None:
+        return _slice(block, dim, i)
+    # one stack per tree: the part is in the stack of its tree
+    c = int(block.variables["PartStack"].data[i])
+    p = int(block.variables["PartPosition"].data[i])
+    return _stacked_part(block.blocks[f"Stack_{c}"], p)
+
+
+def _unstack(block, cls):
+    """
+    Return a copy of the tree of block (a Block or a view of a part) as a
+    Block of class cls, each stack in it replaced by its parts [see
+    Block.unstack()].
+    """
+    blocks = Dict()
+
+    def put(name, b):
+        if name in blocks:  # e.g., a stack "U" next to a sub-Block "U_0"
+            raise ValueError(f"unstacking gives two sub-Blocks named {name}")
+        blocks[name] = b
+
+    for name, b in block.blocks.items():
+        n_parts = _stacked_size(b)
+        if n_parts:  # a stack: one sub-Block per part
+            for i in range(n_parts):
+                put(f"{name}_{i}", _unstack(_stacked_part(b, i), Block))
+        else:  # an ordinary sub-Block, whose own stacks are unstacked
+            put(name, _unstack(b, b.__class__ if isinstance(b, Block) else Block))
+    return cls(
+        attributes=copy.deepcopy(Dict(block.attributes)),
+        dimensions=copy.deepcopy(Dict(block.dimensions)),
+        variables=copy.deepcopy(Dict(block.variables)),
+        blocks=blocks,
+    )
 
 
 class Block:
@@ -969,6 +1123,28 @@ class Block:
         with nc.Dataset(filename, "r") as ncfile:
             return cls._from_netcdf(ncfile)
 
+    def unstack(self):
+        """
+        Return a copy of the Block in which each sub-Block where SMS++ stacked
+        the parts of a group (see write_stacked() in SMSnetCDF.h) is replaced
+        by the sub-Blocks "<name>_0", "<name>_1", ..., one per part, as SMS++
+        writes them when it does not stack them.
+
+        A stack is a sub-Block with a dimension "Stacked" (or "Stacked_n", if
+        stacks are nested in its parts) that is the first dimension of every
+        variable of its tree, the k-th element along it belonging to the k-th
+        part. Parts of different trees are in one such stack per tree, the
+        sub-Blocks "Stack_c", and the variables "PartStack" and "PartPosition"
+        say in which stack and where the i-th part is.
+
+        Returns
+        -------
+        Block
+            The unstacked copy, of the class of the Block (an SMSNetwork
+            gives an SMSNetwork); the Block itself is left as read.
+        """
+        return _unstack(self, self.__class__)
+
     # Functions
 
     def add(self, component_name, name, *args, **kwargs):
@@ -1299,7 +1475,7 @@ class SMSNetwork(Block):
     def __init__(
         self,
         fp: Path | str = "",
-        file_type: SMSFileType | int = SMSFileType.eProbFile,
+        file_type: SMSFileType | int | None = None,
         **kwargs,
     ):
         """
@@ -1319,7 +1495,8 @@ class SMSNetwork(Block):
             - eBlockFile (1): Block file only (no configuration)
             - eConfigFile (2): Configuration file only
             - eSolutionFile (3): Solution file
-            Default is eProbFile.
+            Default is that of the attribute "SMS++_file_type" given in
+            kwargs, if any, else eProbFile.
         **kwargs : dict
             Additional keyword arguments to pass to the Block constructor for
             dynamic component creation.
@@ -1339,7 +1516,13 @@ class SMSNetwork(Block):
             self._blocks = sms_network.blocks
         else:
             super().__init__(**kwargs)
-            self.file_type = file_type
+            ft = self.attributes.get("SMS++_file_type")
+            if file_type is not None:
+                self.file_type = file_type
+            elif ft is None:
+                self.file_type = SMSFileType.eProbFile
+            elif not isinstance(ft, Attribute):  # a plain value
+                self.file_type = ft
 
     def __repr__(self):
         """
@@ -1448,6 +1631,7 @@ class SMSNetwork(Block):
         inner_block_name: str = "Block_0",
         logging=True,
         tracking_period=0.1,
+        unstack=True,
         **kwargs,
     ):
         """
@@ -1478,6 +1662,9 @@ class SMSNetwork(Block):
             Whether to enable logging during optimization.
         tracking_period : float (default: 0.1)
             The period (in seconds) to track optimization progress when logging is enabled.
+        unstack : bool (default: True)
+            Whether the parts that SMS++ stacks in one group of the solution are
+            read as one sub-Block each [see Block.unstack()].
         kwargs : dict
             Optional arguments to pass to the solver constructor. These can include any additional parameters required by specific solvers.
         """
@@ -1529,4 +1716,6 @@ class SMSNetwork(Block):
             )
 
         self.to_netcdf(fp_temp, force=True)
-        return smspp_solver.optimize(logging=logging, tracking_period=tracking_period)
+        return smspp_solver.optimize(
+            logging=logging, tracking_period=tracking_period, unstack=unstack
+        )
