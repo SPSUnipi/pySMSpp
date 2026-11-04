@@ -4,7 +4,7 @@
 
 ### New Features and Major Changes
 
-* 
+* Read the solutions that SMS++ writes stacked in one group (the scenarios of a `TwoStageStochasticBlockSolution`, the units and the networks of a `UCBlockSolution`) as they are, and expand each stack in one sub-Block per part with `Block.unstack()`, which `optimize()` applies to the solution unless `unstack=False`; `Attribute`, `Dimension`, `Variable` and `Dict` support `copy.copy()` and `copy.deepcopy()`. See [PR #132](https://github.com/SPSUnipi/pySMSpp/pull/132)
 
 ### Minor Changes and Bug Fixes
 
