@@ -11,16 +11,14 @@ class Dict(dict):
     Imported from https://github.com/PyPSA/pypsa, derived from addict https://github.com/mewwts/addict/ .
     """
 
-    def deepcopy(self):
-        """
-        Return a Dict with a deep copy of each value (by the deepcopy() of
-        attributes, dimensions and variables), so that the two share no memory.
-        """
+    def __copy__(self):
+        """Return a shallow copy, as a Dict, whose values are those of self."""
+        return Dict(self)
+
+    def __deepcopy__(self, memo):
+        """Return a deep copy, as a Dict, which shares no memory with self."""
         return Dict(
-            {
-                k: v.deepcopy() if hasattr(v, "deepcopy") else copy.deepcopy(v)
-                for k, v in self.items()
-            }
+            {copy.deepcopy(k, memo): copy.deepcopy(v, memo) for k, v in self.items()}
         )
 
     def __setattr__(self, name: str, value: Any) -> None:

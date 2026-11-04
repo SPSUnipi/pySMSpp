@@ -322,9 +322,15 @@ class Attribute:
         """Return detailed representation of the attribute."""
         return f"Attribute(name={self.name!r}, value={self.value!r})"
 
-    def deepcopy(self):
+    def __copy__(self):
+        """Return a shallow copy of the attribute."""
+        return Attribute(self.name, self.value)
+
+    def __deepcopy__(self, memo):
         """Return a deep copy of the attribute, which shares no memory with it."""
-        return Attribute(self.name, copy.deepcopy(self.value))
+        return Attribute(
+            copy.deepcopy(self.name, memo), copy.deepcopy(self.value, memo)
+        )
 
     def __eq__(self, other) -> bool:
         """Compare attribute with another value or Attribute object."""
@@ -378,9 +384,15 @@ class Dimension:
         """Return detailed representation of the dimension."""
         return f"Dimension(name={self.name!r}, value={self.value!r})"
 
-    def deepcopy(self):
-        """Return a deep copy of the dimension."""
+    def __copy__(self):
+        """Return a shallow copy of the dimension."""
         return Dimension(self.name, self.value)
+
+    def __deepcopy__(self, memo):
+        """Return a deep copy of the dimension."""
+        return Dimension(
+            copy.deepcopy(self.name, memo), copy.deepcopy(self.value, memo)
+        )
 
     def __eq__(self, other) -> bool:
         """Compare dimension with another value or Dimension object."""
@@ -453,10 +465,17 @@ class Variable:
         )
         return f"Variable(name={self.name!r}, var_type={self.var_type!r}, dimensions={self.dimensions!r}, data={data_repr})"
 
-    def deepcopy(self):
+    def __copy__(self):
+        """Return a shallow copy of the variable, which shares its data."""
+        return Variable(self.name, self.var_type, self.dimensions, self.data)
+
+    def __deepcopy__(self, memo):
         """Return a deep copy of the variable, which shares no memory with it."""
         return Variable(
-            self.name, self.var_type, self.dimensions, copy.deepcopy(self.data)
+            copy.deepcopy(self.name, memo),
+            copy.deepcopy(self.var_type, memo),
+            copy.deepcopy(self.dimensions, memo),
+            copy.deepcopy(self.data, memo),
         )
 
     def plot(self, ax=None, kind: str = "auto", **kwargs):
@@ -587,9 +606,9 @@ def _slice(block, dim: str, i: int):
     # only the root of the stack has dim, a stack nested in a part having a
     # dimension of another name (see _stack_dimension())
     return Block(
-        attributes=Dict(block.attributes).deepcopy(),
+        attributes=copy.deepcopy(Dict(block.attributes)),
         dimensions=Dict(
-            {n: d.deepcopy() for n, d in block.dimensions.items() if n != dim}
+            {n: copy.deepcopy(d) for n, d in block.dimensions.items() if n != dim}
         ),
         variables=Dict(
             {  # only the slice is copied, not the whole stacked data
@@ -1082,9 +1101,9 @@ class Block:
             else:  # an ordinary sub-Block, whose own stacks are unstacked
                 blocks[name] = block.unstack()
         return type(self)(
-            attributes=Dict(self.attributes).deepcopy(),
-            dimensions=Dict(self.dimensions).deepcopy(),
-            variables=Dict(self.variables).deepcopy(),
+            attributes=copy.deepcopy(Dict(self.attributes)),
+            dimensions=copy.deepcopy(Dict(self.dimensions)),
+            variables=copy.deepcopy(Dict(self.variables)),
             blocks=blocks,
         )
 

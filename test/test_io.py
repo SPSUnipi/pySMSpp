@@ -123,3 +123,21 @@ def test_unstack():
             ((name, var),) = parts[f"U_{j}"].variables.items()
             assert name == ("x" if (k + j) % 2 == 0 else "y")
             assert var.dimensions == () and float(var.data) == 10.0 * k + j
+
+
+def test_copy():
+    """copy.copy() shares the data of the values, copy.deepcopy() does not."""
+    import copy
+
+    from pysmspp import Attribute, Variable
+    from pysmspp.components import Dict
+
+    d = Dict(x=Variable("x", "f8", ("T",), np.zeros(3)), a=Attribute("a", np.zeros(2)))
+    shallow, deep = copy.copy(d), copy.deepcopy(d)
+    assert type(shallow) is Dict and type(deep) is Dict
+    d["x"].data[0] = 1.0
+    d["a"].value[0] = 1.0
+    assert shallow["x"].data[0] == 1.0 and deep["x"].data[0] == 0.0
+    assert shallow["a"].value[0] == 1.0 and deep["a"].value[0] == 0.0
+    v = copy.copy(d["x"])
+    assert v is not d["x"] and v.data is d["x"].data
