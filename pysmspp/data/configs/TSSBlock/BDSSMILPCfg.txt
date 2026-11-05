@@ -12,7 +12,7 @@ ComputeConfig # exact type of the ComputeConfig object
 0  # f_diff == 0 ==> all non-provided parameters are set to the default value
    # f_diff == 1 ==> all non-provided parameters are not changed
 
-6  # number of integer parameters
+7  # number of integer parameters
 
 # now all the integer parameters
 intLogVerb        0  # LogVerb, log verbosity of the MILPSolver
@@ -27,6 +27,9 @@ intThrowReducedCostException  0  # a Variable whose bounds are those of its
                      # type, as a relaxed binary of a leaf, has no
                      # OneVarConstraint to take its reduced cost, which the
                      # cut, read off the coupling rows, does not need
+intHomogeneousDirection 1  # the multipliers of the columns of a Farkas
+                     # certificate are - A' y, without the costs, or the
+                     # feasibility cut is wrong
 
 1  # number of double parameters
 

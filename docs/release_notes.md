@@ -8,7 +8,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* 
+* Fix the feasibility cuts of the Benders configuration `TSSBlock/BDSSMILPCfg.txt`, whose subproblems give the multipliers of the columns of a Farkas certificate without the costs (`intHomogeneousDirection 1`). See [PR #135](https://github.com/SPSUnipi/pySMSpp/pull/135)
 
 
 ## Version v0.2.0
