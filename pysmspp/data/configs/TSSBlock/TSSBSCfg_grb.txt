@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - TSSBSCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - TSSBSCfg_grb.txt  - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a TSSBSolver
 #
@@ -73,5 +73,5 @@ BarConvTol            1e-5 # the accuracy PyPSA-Eur asks of the barrier
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END TSSBSCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END TSSBSCfg_grb.txt  - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

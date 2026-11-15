@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - SVMSCfg-libsvm.txt- - - - - - - - - - - - -
+# - - - - - - - - - - - - - SVMSCfg-libsvm.txt  - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a SVMBlock to be trained by
 # LIBSVM, the reference implementation of the very algorithm SMOSolver
@@ -63,5 +63,5 @@ dblLSVMTol 1e-6 # tolerance on the optimality conditions of the dual
 * # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END SVMSCfg-libsvm.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - END SVMSCfg-libsvm.txt  - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

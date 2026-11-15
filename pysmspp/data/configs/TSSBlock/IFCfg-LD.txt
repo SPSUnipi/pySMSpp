@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - IFCfg-LD.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - IFCfg-LD.txt  - - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of the InvestmentFunction of IFCfg.txt, whose inner
 # Block is solved by the recursive Lagrangian dual of TSSBSCfg-LDrec.txt
@@ -32,5 +32,5 @@ SimpleConfiguration<std::map<std::string,Configuration*>>
 BlockSolverConfig  *TSSBSCfg-LDrec.txt
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END IFCfg-LD.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END IFCfg-LD.txt  - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

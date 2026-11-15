@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - BDSCfg-CVX-int.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - BDSCfg-CVX-int.txt  - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of BDSCfg.txt in the convex regime when the design is
 # integer: the master is solved by the BundleSolver of BDSMCfg-CVX-int.txt,
@@ -35,5 +35,5 @@ str_Mstr_BSCfg  BDSMCfg-CVX-int.txt  # BlockSolverConfig of the master
 * # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END BDSCfg-CVX-int.txt - - - - - - - - - - - - -
+# - - - - - - - - - - - - END BDSCfg-CVX-int.txt  - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

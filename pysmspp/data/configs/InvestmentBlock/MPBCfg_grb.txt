@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - MPBCfg_grb.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - MPBCfg_grb.txt  - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for the inner :MILPSolver of the
 # MasterProblemBlock used by the BundleSolver
@@ -116,5 +116,5 @@ OptimalityTol   1e-09 # how much a reduced cost of the master may be off
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END MPBCfg_grb.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END MPBCfg_grb.txt  - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
