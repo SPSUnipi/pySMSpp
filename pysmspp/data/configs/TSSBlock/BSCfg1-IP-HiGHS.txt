@@ -2,8 +2,9 @@
 # - - - - - - - - - - - - - BSCfg1-IP-HiGHS.txt - - - - - - - - - - - - - - -
 #
 # A Block solved by HiGHS with its integer Variable, to the relative gap of
-# 1e-4 that Gurobi has by default, in one thread: the recovery of a feasible
-# solution of BDSCfg-HiGHS-UC.txt, which solves the scenarios in parallel.
+# 1e-4 that Gurobi has by default or for at most 1800 s, in one thread: the
+# recovery of a feasible solution of BDSCfg-HiGHS-UC.txt, which solves the
+# scenarios in parallel.
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,10 +33,11 @@ intLogVerb      0 # log verbosity of the MILPSolver
 intRelaxIntVars 0 # nonzero if the continuous relaxation is solved
 threads         1 # one thread, the scenarios running in parallel
 
-1 # number of double parameters
+2 # number of double parameters
 
 # now all the double parameters
 dblRelAcc       1e-4 # relative gap of the MILP
+dblMaxTime      1800 # time limit of the MILP, in seconds
 
 0 # number of string parameters
 
