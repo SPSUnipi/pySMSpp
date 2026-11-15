@@ -261,6 +261,42 @@ def test_optimize_tssbsolver(force_smspp):
         pytest.skip("TSSBBlockSolver not available in PATH")
 
 
+def test_optimize_tssbsolver_bds_highs_uc(force_smspp):
+    """
+    The Benders decomposition with HiGHS of a two-stage problem whose
+    scenarios are unit commitments: the continuous relaxations of the
+    scenarios give a bound below the optimum of the extensive form, and the
+    scenarios solved as MILPs at the design of the master a feasible solution
+    within their relative gap of it.
+    """
+    from pysmspp import TSSBSolver
+
+    fp_network = get_network("TSSB_EC_CO_Test_TUB_simple.nc4")
+
+    mip = TSSBSolver(
+        fp_network=fp_network,
+        fp_log=get_temp_file("test_optimize_tssbsolver_mip.txt"),
+        configfile=str(SMSConfig(template="TSSBlock/TSSBSCfg.txt")),
+    )
+    bds = TSSBSolver(
+        fp_network=fp_network,
+        fp_log=get_temp_file("test_optimize_tssbsolver_bds_highs_uc.txt"),
+        configfile=str(SMSConfig(template="TSSBlock/TSSBSCfg-BDS-HiGHS-UC.txt")),
+        k=None,
+    )
+
+    if bds.is_available() or force_smspp:
+        mip.optimize(logging=True)
+        bds.optimize(logging=True)
+
+        assert mip.is_optimal
+        opt = mip.objective_value
+        assert bds.lower_bound <= opt * (1 + 1e-9)
+        assert bds.upper_bound == pytest.approx(opt, rel=1e-4)
+    else:
+        pytest.skip("TSSBSolver not available in PATH")
+
+
 def test_help_svmsolver(force_smspp):
     from pysmspp import SVMSolver
 

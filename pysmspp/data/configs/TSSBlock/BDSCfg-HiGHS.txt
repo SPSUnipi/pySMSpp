@@ -1,0 +1,36 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - BDSCfg-HiGHS.txt  - - - - - - - - - - - - - - -
+#
+# The ComputeConfig of the BendersDecompositionSolver of
+# TSSBSCfg-BDS-HiGHS.txt: that of BDSCfg.txt with HiGHS in the master
+# (BDSMCfg-HiGHS.txt) and in the subproblems (BDSSCfg-HiGHS.txt).
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+*BDSCfg.txt +
+
+1  # f_diff == 1 ==> only the entries listed below are changed
+
+0  # number of integer parameters
+
+0  # number of double parameters
+
+2  # number of string parameters
+
+# now all the string parameters
+str_Bsub_BSCfg  BDSSCfg-HiGHS.txt  # BlockSolverConfig of the subproblems
+str_Mstr_BSCfg  BDSMCfg-HiGHS.txt  # BlockSolverConfig of the master
+
+0  # number of vector-of-int parameters
+
+0  # number of vector-of-double parameters
+
+0  # number of vector-of-string parameters
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END BDSCfg-HiGHS.txt  - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -4,7 +4,7 @@
 
 ### New Features and Major Changes
 
-* 
+* Add the templates `TSSBlock/TSSBSCfg-BDS-HiGHS.txt`, the Benders decomposition of a two-stage problem with HiGHS in the master and in the subproblems, and `TSSBlock/TSSBSCfg-BDS-HiGHS-UC.txt`, the same for scenarios that are unit commitments, which recovers a feasible solution with each scenario a MILP at the design of the master. See [PR #NNN](https://github.com/SPSUnipi/pySMSpp/pull/NNN)
 
 ### Minor Changes and Bug Fixes
 
