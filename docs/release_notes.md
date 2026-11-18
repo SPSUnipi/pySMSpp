@@ -9,6 +9,8 @@
 ### Minor Changes and Bug Fixes
 
 * Fix the feasibility cuts of the Benders configuration `TSSBlock/BDSSMILPCfg.txt`, whose subproblems give the multipliers of the columns of a Farkas certificate without the costs (`intHomogeneousDirection 1`). See [PR #135](https://github.com/SPSUnipi/pySMSpp/pull/135)
+* Support newer numpy and netcdf. See [PR #136](https://github.com/SPSUnipi/pySMSpp/pull/136)
+* Drop unnecessary dependencies mypy and h5py. See [PR #137](https://github.com/SPSUnipi/pySMSpp/pull/137)
 
 
 ## Version v0.2.0
