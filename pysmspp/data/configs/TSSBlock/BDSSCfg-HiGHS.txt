@@ -1,0 +1,65 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - BDSSCfg-HiGHS.txt - - - - - - - - - - - - - - -
+#
+# The subproblems of TSSBSCfg-BDS-HiGHS.txt: those of BDSSCfg.txt solved by
+# HiGHS, the linear program of a scenario by the dual simplex with the
+# presolve off, which a Farkas certificate needs.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+BlockSolverConfig     # exact type of the Configuration object
+
+0  # the BlockSolverConfig is not a "differential" one
+
+1  # number of (the names of) Solver in this BlockSolverConfig
+# now all the names of the Solver - - - - - - - - - - - - - - - - - - - - - -
+HiGHSMILPSolver    # name of Solver
+
+1  # number of ComputeConfig in this BlockSolverConfig
+# now all the ComputeConfig
+# 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ComputeConfig # exact type of the ComputeConfig object
+
+0  # f_diff == 0 ==> all non-provided parameters are set to the default value
+   # f_diff == 1 ==> all non-provided parameters are not changed
+
+6  # number of integer parameters
+
+# now all the integer parameters
+intLogVerb                    0  # log verbosity of the MILPSolver
+threads                       1  # one thread, as in BDSSMILPCfg.txt
+intRelaxIntVars               1  # solve the continuous (LP) relaxation
+simplex_strategy              1  # dual simplex
+intThrowReducedCostException  0  # as in BDSSMILPCfg.txt
+intHomogeneousDirection       1  # as in BDSSMILPCfg.txt
+
+1  # number of double parameters
+
+# now all the double parameters
+dblRelAcc                  1e-9  # relative accuracy required to solution
+
+2  # number of string parameters
+
+# now all the string parameters
+solver                  simplex  # the simplex, which the strategy above
+                                 # makes the dual one
+presolve                    off  # or an infeasible subproblem leaves no
+                                 # Farkas certificate for the cut
+
+0  # number of vector-of-int parameters
+
+0  # number of vector-of-double parameters
+
+0  # number of vector-of-string parameters
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# end of 1st ComputeConfig - - - - - - - - - - - - - - - - - - - - - - - - -
+# end of BlockSolverConfig - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END BDSSCfg-HiGHS.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

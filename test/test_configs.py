@@ -46,6 +46,8 @@ def _named_files(path):
         "TSSBlock/TSSBSCfg-LDLD.txt",
         "TSSBlock/TSSBSCfg-LDrec.txt",
         "TSSBlock/TSSBSCfg-BDS.txt",
+        "TSSBlock/TSSBSCfg-BDS-HiGHS.txt",
+        "TSSBlock/TSSBSCfg-BDS-HiGHS-UC.txt",
         "TSSBlock/TSSBSCfg-PPH.txt",
         "TSSBlock/InnerBCfg.txt",
         "TSSBlock/TSSBSCfg-IB.txt",
