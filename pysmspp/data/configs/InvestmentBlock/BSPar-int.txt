@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - BSPar-int.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - BSPar-int.txt - - - - - - - - - - - - - - - -
 #
 # A BlockSolverConfig for an InvestmentBlock whose design is integer, e.g.,
 # the number of modules of a modular asset: the BundleSolver of BSPar.txt
@@ -68,5 +68,5 @@ strMPBSolverCfg  MPBCfg-IP.txt  # the master, which keeps the integers
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END BSPar-int.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END BSPar-int.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

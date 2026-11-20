@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - TSSBSCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - TSSBSCfg.txt  - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a TSSBSolver
 #
@@ -65,5 +65,5 @@ intLogVerb               1 # log verbosity
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END TSSBSCfg.txt- - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END TSSBSCfg.txt  - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

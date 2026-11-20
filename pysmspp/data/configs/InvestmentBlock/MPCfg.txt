@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - MPCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - MPCfg.txt - - - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of the :MILPSolver of the MasterProblemBlock used by
 # the BundleSolver, shared by MPBCfg.txt and MPBCfg-IP.txt.
@@ -93,5 +93,5 @@ dblRAccSol      1e-08 # relative accuracy of the solution pool
 * # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END MPCfg.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - END MPCfg.txt - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

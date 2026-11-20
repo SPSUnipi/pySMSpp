@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - BDSMBundleCfg.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - BDSMBundleCfg.txt - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of the BundleSolver on the master problem of
 # BendersDecompositionSolver in the convex regime, shared by
@@ -98,5 +98,5 @@ strMPBSolverCfg  MPBCfg.txt     # BlockSolverConfig of the
 * # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - END BDSMBundleCfg.txt - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END BDSMBundleCfg.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

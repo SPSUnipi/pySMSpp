@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - BDSCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - BDSCfg.txt  - - - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of the BendersDecompositionSolver of TSSBSCfg-BDS.txt:
 # the MILP regime, one cut per scenario, the scenarios of a round evaluated
@@ -52,5 +52,5 @@ str_Mstr_BSCfg  BDSMCfg.txt  # BlockSolverConfig of the master
 * # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END BDSCfg.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END BDSCfg.txt  - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

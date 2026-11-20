@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - MPBCfg.txt- - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - MPBCfg.txt  - - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for the inner :MILPSolver of the
 # MasterProblemBlock used by the BundleSolver
@@ -119,5 +119,5 @@ dblRAccSol      1e-08 # relative accuracy of the solution pool
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END MPBCfg.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END MPBCfg.txt  - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

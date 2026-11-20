@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - SVMSCfg_grb.txt  - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - SVMSCfg_grb.txt - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a SVMBlock whose abstract
 # representation encodes either the Wolfe dual or the training problem itself,
@@ -27,5 +27,5 @@ GRBMILPSolver                   # name of Solver
 *LPCCfg.txt
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END SVMSCfg_grb.txt  - - - - - - - - - - -
+# - - - - - - - - - - - - - END SVMSCfg_grb.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

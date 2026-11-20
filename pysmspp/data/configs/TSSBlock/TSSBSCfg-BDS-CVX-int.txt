@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - TSSBSCfg-BDS-CVX-int.txt - - - - - - - - - - - - -
+# - - - - - - - - - - - - TSSBSCfg-BDS-CVX-int.txt  - - - - - - - - - - - - -
 #
 # The BendersDecompositionSolver of TSSBSCfg-BDS.txt in the convex regime
 # when the design is integer (BDSCfg-CVX-int.txt): a BundleSolver on the
@@ -29,5 +29,5 @@ BendersDecompositionSolver # name of Solver
 # end of BlockSolverConfig  - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - END TSSBSCfg-BDS-CVX-int.txt - - - - - - - - - - - -
+# - - - - - - - - - - - END TSSBSCfg-BDS-CVX-int.txt  - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

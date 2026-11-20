@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - MPBCfg-IP.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - MPBCfg-IP.txt - - - - - - - - - - - - - - - -
 #
 # A BlockSolverConfig for the :MILPSolver of the MasterProblemBlock of
 # BSPar-int.txt, which keeps the integer Variable integer [see MPCfg.txt].
@@ -69,5 +69,5 @@ mip_feasibility_tolerance 1e-10
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END MPBCfg-IP.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END MPBCfg-IP.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
