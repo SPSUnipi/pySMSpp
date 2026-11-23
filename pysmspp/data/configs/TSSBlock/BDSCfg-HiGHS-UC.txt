@@ -1,0 +1,39 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - BDSCfg-HiGHS-UC.txt - - - - - - - - - - - - - - -
+#
+# The ComputeConfig of the BendersDecompositionSolver of
+# TSSBSCfg-BDS-HiGHS-UC.txt: that of BDSCfg-HiGHS.txt for scenarios that are
+# unit commitments, whose continuous relaxations give the lower bound, with
+# the recovery of a feasible solution at the design of the master, each
+# scenario a MILP of BSCfg1-IP-HiGHS.txt, which gives the upper bound.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+*BDSCfg-HiGHS.txt +
+
+1  # f_diff == 1 ==> only the entries listed below are changed
+
+0  # number of integer parameters
+
+0  # number of double parameters
+
+1  # number of string parameters
+
+# now all the string parameters
+strRecoveryBSC  BSCfg1-IP-HiGHS.txt  # the recovery of a feasible solution:
+                                     # each subproblem solved as a MILP at
+                                     # the design of the master
+
+0  # number of vector-of-int parameters
+
+0  # number of vector-of-double parameters
+
+0  # number of vector-of-string parameters
+
+# pointer to the "extra" Configuration
+* # [none]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - END BDSCfg-HiGHS-UC.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
