@@ -93,7 +93,7 @@ jobs:
     - name: Install smspp-project and pysmspp dependencies from conda-forge
       run: |
         # SMS++ 0.8.0 links libnetcdf-cxx4.so.1; netcdf-cxx4 4.3.2 ships .so.3.
-        conda install -c conda-forge "smspp-project>=0.8.0" "netcdf4>=1.7.5" "pytest" "numpy" "matplotlib" "pandas" "psutil" -y
+        conda install -c conda-forge "smspp-project>=0.8.0" "netcdf4>=1.7.5" "pytest" "numpy" "matplotlib" "pandas" "psutil" "ncompare" -y
 
     - name: Install package and dependencies
       run: |
