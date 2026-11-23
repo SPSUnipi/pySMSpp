@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - BundleCfg.txt - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - BundleCfg.txt - - - - - - - - - - - - - - - -
 #
 # The ComputeConfig of the BundleSolver that solves an InvestmentBlock,
 # shared by BSPar.txt and BSPar-int.txt.
@@ -78,5 +78,5 @@ strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's
 * # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END BundleCfg.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END BundleCfg.txt - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

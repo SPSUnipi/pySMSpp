@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - SVMCfg-prml.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - SVMCfg-primal.txt - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockConfig for a SVMBlock asking its abstract
 # representation to encode the training problem itself, which only exists for the
@@ -48,5 +48,5 @@ SimpleConfiguration<int>
 *    # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END SVMCfg-prml.txt - - - - - - - - - - - -
+# - - - - - - - - - - - - - END SVMCfg-primal.txt - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

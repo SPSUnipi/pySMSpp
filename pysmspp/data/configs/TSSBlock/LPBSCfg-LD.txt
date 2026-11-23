@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - LPBSCfg-LD.txt- - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - LPBSCfg-LD.txt  - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for a TSSBlock to be solved by a
 # LagrangianDualSolver using a BundleSolver as the inner Solver
@@ -104,5 +104,5 @@ strMPBSolverCfg   MPBCfg.txt # BlockSolverConfig for the MasterProblemBlock's So
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - END LPBSCfg-LD.txt- - - - - - - - - - - - - -
+# - - - - - - - - - - - - - END LPBSCfg-LD.txt  - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

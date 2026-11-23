@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - SVMCfg-dual.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - SVMCfg.txt  - - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockConfig for a SVMBlock asking its abstract
 # representation to encode the Wolfe dual of the training problem, which is the
@@ -48,5 +48,5 @@ SimpleConfiguration<int>
 *    # [none]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END SVMCfg-dual.txt - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END SVMCfg.txt  - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

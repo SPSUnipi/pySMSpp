@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - SVMSCfg-LD.txt - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - SVMSCfg-LD.txt  - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for the Block that the training
 # problem of a SVMBlock is rewritten into when it is split in chunks tied by
@@ -29,5 +29,5 @@ LagrangianDualSolver            # name of Solver
 *LDCfg.txt
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - - END SVMSCfg-LD.txt - - - - - - - - - - - -
+# - - - - - - - - - - - - - END SVMSCfg-LD.txt  - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

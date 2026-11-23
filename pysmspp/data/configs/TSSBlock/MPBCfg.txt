@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - - MPBCfg.txt - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - MPBCfg.txt  - - - - - - - - - - - - - - - - -
 #
 # A txt description of a BlockSolverConfig for the inner :MILPSolver of the
 # MasterProblemBlock used by the BundleSolver [see MPCfg.txt]
@@ -33,5 +33,5 @@ HiGHSMILPSolver       # name of Solver
 # end of BlockSolverConfig- - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - - - - - - - - - - - END MPBCfg.txt - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - END MPBCfg.txt  - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
